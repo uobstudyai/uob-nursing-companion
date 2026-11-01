@@ -557,7 +557,7 @@ async function sendMessage() {
   const input = document.getElementById("user-input");
   const text  = input.value.trim();
   if (!text) return;
-  if (CONFIG.PROXY_URL === "https://uob-companion.uobstudyai.workers.dev") {
+  if (CONFIG.PROXY_URL === "YOUR_CLOUDFLARE_WORKER_URL_HERE") {
     showToast("⚠️ Proxy not configured. Add your Cloudflare Worker URL to the CONFIG section.");
     return;
   }
