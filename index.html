@@ -5,721 +5,680 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UoB Nursing AI Companion</title>
 <style>
-  :root {
-    --navy: #1F4E79;
-    --blue: #2E74B5;
-    --lightblue: #D6E4F0;
-    --green: #1E6B4A;
-    --lightgreen: #D4EDDA;
-    --orange: #C25700;
-    --lightorange: #FDE8D8;
-    --purple: #4B2A7E;
-    --lightpurple: #E8DFFE;
-    --gray: #F5F6FA;
-    --border: #DEE2E6;
-    --text: #212529;
-    --muted: #6C757D;
-    --white: #FFFFFF;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #1F3864;
+  --navy-light: #2E5494;
+  --gold: #C8A84B;
+  --gold-light: #F5E6B8;
+  --blue: #3B82F6;
+  --blue-light: #EFF6FF;
+  --green: #059669;
+  --green-light: #ECFDF5;
+  --orange: #D97706;
+  --orange-light: #FFFBEB;
+  --purple: #7C3AED;
+  --purple-light: #F5F3FF;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-400: #9CA3AF;
+  --gray-600: #4B5563;
+  --gray-800: #1F2937;
+  --white: #FFFFFF;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.06);
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+}
 
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: var(--gray);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
 
-  /* ── HEADER ── */
-  header {
-    background: var(--navy);
-    color: white;
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.25);
-  }
-  header .logo {
-    width: 44px; height: 44px;
-    background: white;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
-  header h1 { font-size: 17px; font-weight: 700; line-height: 1.2; }
-  header p  { font-size: 12px; opacity: .75; }
-  header .status-dot {
-    margin-left: auto;
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; opacity: .85;
-  }
-  header .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #4caf50;
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%,100%{opacity:1} 50%{opacity:.4}
-  }
+body {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-800);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* ── LOGIN SCREEN ── */
-  #login-screen {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    padding: 24px;
-  }
-  .login-card {
-    background: white;
-    border-radius: 16px;
-    padding: 40px;
-    max-width: 480px; width: 100%;
-    box-shadow: 0 4px 24px rgba(0,0,0,.10);
-  }
-  .login-card h2 { color: var(--navy); margin-bottom: 6px; }
-  .login-card .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-  .form-group { margin-bottom: 18px; }
-  .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
-  .form-group input, .form-group select {
-    width: 100%; padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: 14px;
-    transition: border-color .2s;
-    background: white;
-  }
-  .form-group input:focus, .form-group select:focus {
-    outline: none; border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(46,116,181,.15);
-  }
-  .btn-start {
-    width: 100%; padding: 13px;
-    background: var(--navy); color: white;
-    border: none; border-radius: 8px;
-    font-size: 15px; font-weight: 600; cursor: pointer;
-    transition: background .2s;
-  }
-  .btn-start:hover { background: var(--blue); }
-  .disclaimer {
-    margin-top: 20px; padding: 12px 14px;
-    background: var(--lightblue); border-radius: 8px;
-    font-size: 12px; color: var(--navy); line-height: 1.6;
-  }
+/* ── SCREENS ── */
+.screen { display: none; flex: 1; flex-direction: column; min-height: 100vh; }
+.screen.active { display: flex; }
 
-  /* ── MAIN APP ── */
-  #app-screen { flex: 1; display: none; flex-direction: column; }
+/* ════════════════════════════════════════════
+   ROLE SELECTION SCREEN
+════════════════════════════════════════════ */
+#role-screen {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, #1a6b9a 100%);
+  align-items: center; justify-content: center; padding: 24px;
+}
 
-  /* mode bar */
-  .mode-bar {
-    background: white;
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex; gap: 4px; align-items: flex-end;
-  }
-  .mode-btn {
-    padding: 13px 20px;
-    border: none; background: none;
-    font-size: 13px; font-weight: 600;
-    color: var(--muted); cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all .2s;
-    display: flex; align-items: center; gap: 7px;
-  }
-  .mode-btn:hover { color: var(--navy); }
-  .mode-btn.active { color: var(--navy); border-bottom-color: var(--navy); }
-  .mode-btn .icon { font-size: 16px; }
+.role-card {
+  background: rgba(255,255,255,.07);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 24px;
+  padding: 48px 40px;
+  max-width: 520px; width: 100%;
+  text-align: center;
+}
 
-  .session-info {
-    margin-left: auto;
-    font-size: 12px; color: var(--muted);
-    padding-bottom: 10px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .tag {
-    background: var(--lightblue); color: var(--navy);
-    padding: 2px 10px; border-radius: 20px;
-    font-size: 11px; font-weight: 600;
-  }
+.role-card .brand { margin-bottom: 32px; }
+.role-card .brand-icon {
+  width: 72px; height: 72px;
+  background: var(--gold);
+  border-radius: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 32px; margin-bottom: 16px;
+  box-shadow: 0 8px 24px rgba(200,168,75,.4);
+}
+.role-card h1 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.role-card .subtitle { color: rgba(255,255,255,.65); font-size: 14px; }
 
-  /* chat area */
-  .chat-wrapper {
-    flex: 1; display: flex; flex-direction: column;
-    max-width: 860px; width: 100%;
-    margin: 0 auto; padding: 20px 20px 0;
-  }
+.role-card h2 { color: rgba(255,255,255,.9); font-size: 15px; font-weight: 500; margin-bottom: 20px; }
 
-  /* mode header */
-  .mode-header {
-    padding: 14px 18px; border-radius: 12px 12px 0 0;
-    font-size: 13px; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .mode-header.learn   { background: var(--lightblue); color: var(--navy); }
-  .mode-header.practice { background: var(--lightorange); color: var(--orange); }
-  .mode-header.check   { background: var(--lightgreen); color: var(--green); }
+.role-buttons { display: flex; flex-direction: column; gap: 12px; }
 
-  /* messages */
-  #messages {
-    flex: 1; overflow-y: auto;
-    padding: 20px;
-    background: white;
-    min-height: 380px; max-height: 55vh;
-    display: flex; flex-direction: column; gap: 14px;
-  }
+.role-btn {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: var(--radius);
+  cursor: pointer; text-align: left;
+  transition: all .2s; color: white;
+  text-decoration: none;
+}
+.role-btn:hover {
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.35);
+  transform: translateY(-1px);
+}
+.role-btn .role-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.role-btn.student .role-icon { background: rgba(59,130,246,.3); }
+.role-btn.faculty .role-icon { background: rgba(5,150,105,.3); }
+.role-btn.admin   .role-icon { background: rgba(124,58,237,.3); }
+.role-btn .role-text strong { display: block; font-size: 15px; font-weight: 600; }
+.role-btn .role-text span   { font-size: 12px; opacity: .7; }
+.role-btn .arrow { margin-left: auto; opacity: .5; font-size: 18px; }
 
-  .msg { display: flex; gap: 10px; animation: fadein .25s; }
-  @keyframes fadein { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+/* ════════════════════════════════════════════
+   SHARED HEADER
+════════════════════════════════════════════ */
+.app-header {
+  background: var(--navy);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.2);
+  flex-shrink: 0;
+}
+.app-header .logo {
+  width: 40px; height: 40px; background: var(--gold);
+  border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 20px; flex-shrink: 0;
+}
+.app-header .header-text h1 { color: white; font-size: 16px; font-weight: 700; }
+.app-header .header-text p  { color: rgba(255,255,255,.6); font-size: 11px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.header-badge {
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.12); color: rgba(255,255,255,.85);
+}
+.header-badge.student { background: rgba(59,130,246,.25); color: #93C5FD; }
+.header-badge.faculty { background: rgba(5,150,105,.25); color: #6EE7B7; }
+.header-badge.admin   { background: rgba(124,58,237,.25); color: #C4B5FD; }
+.status-pill {
+  display: flex; align-items: center; gap: 5px;
+  color: rgba(255,255,255,.6); font-size: 11px;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  .msg.user { flex-direction: row-reverse; }
-  .msg .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-  }
-  .msg.user .avatar   { background: var(--navy); color: white; }
-  .msg.ai .avatar { background: var(--lightblue); }
-  .bubble {
-    max-width: 78%; padding: 11px 15px;
-    border-radius: 14px; font-size: 14px; line-height: 1.65;
-    white-space: pre-wrap;
-  }
-  .msg.user .bubble { background: var(--navy); color: white; border-radius: 14px 4px 14px 14px; }
-  .msg.ai  .bubble { background: var(--gray); color: var(--text); border-radius: 4px 14px 14px 14px; }
-  .msg.ai.practice .bubble { background: var(--lightorange); }
-  .msg.ai.check    .bubble { background: var(--lightgreen); }
+.back-btn {
+  background: rgba(255,255,255,.1); border: none; color: rgba(255,255,255,.8);
+  padding: 6px 14px; border-radius: var(--radius-xs);
+  font-size: 12px; cursor: pointer; transition: all .2s;
+}
+.back-btn:hover { background: rgba(255,255,255,.2); }
 
-  /* typing indicator */
-  .typing-dots { display: flex; gap: 4px; padding: 4px 0; }
-  .typing-dots span {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--muted); animation: bounce .8s infinite;
-  }
-  .typing-dots span:nth-child(2){ animation-delay:.15s }
-  .typing-dots span:nth-child(3){ animation-delay:.3s }
-  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+/* ════════════════════════════════════════════
+   STUDENT LOGIN
+════════════════════════════════════════════ */
+#student-login-screen {
+  align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #EFF6FF 0%, #F9FAFB 60%, #F0FDF4 100%);
+  padding: 24px;
+}
 
-  /* input bar */
-  .input-bar {
-    background: white;
-    border: 1px solid var(--border);
-    border-top: none;
-    border-radius: 0 0 12px 12px;
-    padding: 14px 16px;
-    display: flex; gap: 10px; align-items: flex-end;
-  }
-  #user-input {
-    flex: 1; resize: none;
-    border: 1.5px solid var(--border);
-    border-radius: 8px; padding: 10px 14px;
-    font-size: 14px; font-family: inherit;
-    max-height: 120px; line-height: 1.5;
-    transition: border-color .2s;
-  }
-  #user-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(46,116,181,.12); }
-  #user-input::placeholder { color: var(--muted); }
-  .send-btn {
-    padding: 10px 22px;
-    background: var(--navy); color: white;
-    border: none; border-radius: 8px;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    transition: background .2s; white-space: nowrap;
-  }
-  .send-btn:hover { background: var(--blue); }
-  .send-btn:disabled { background: var(--muted); cursor: not-allowed; }
+.login-panel {
+  background: white; border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden; max-width: 460px; width: 100%;
+}
+.login-panel-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  padding: 32px 36px;
+  text-align: center;
+}
+.login-panel-header .icon {
+  width: 60px; height: 60px; background: rgba(255,255,255,.15);
+  border-radius: 16px; display: inline-flex; align-items: center;
+  justify-content: center; font-size: 28px; margin-bottom: 14px;
+}
+.login-panel-header h2 { color: white; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.login-panel-header p  { color: rgba(255,255,255,.65); font-size: 13px; }
+.login-panel-body { padding: 32px 36px; }
 
-  /* quick prompts */
-  .quick-prompts {
-    padding: 10px 20px 16px;
-    background: white; border-radius: 0 0 12px 12px;
-    border: 1px solid var(--border); border-top: 1px dashed var(--border);
-    display: flex; flex-wrap: wrap; gap: 7px;
-  }
-  .qp {
-    padding: 5px 12px;
-    background: var(--gray); border: 1px solid var(--border);
-    border-radius: 20px; font-size: 12px; cursor: pointer;
-    color: var(--navy); transition: all .15s;
-  }
-  .qp:hover { background: var(--lightblue); border-color: var(--blue); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--gray-600); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.form-group input, .form-group select {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm); font-size: 14px;
+  font-family: inherit; background: var(--gray-50);
+  transition: all .2s; color: var(--gray-800);
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none; border-color: var(--blue);
+  background: white; box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: white; border: none; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all .2s; font-family: inherit;
+  box-shadow: 0 4px 12px rgba(31,56,100,.3);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(31,56,100,.35); }
+.btn-secondary {
+  width: 100%; padding: 10px;
+  background: transparent; color: var(--gray-600);
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+  font-size: 13px; cursor: pointer; font-family: inherit;
+  transition: all .2s; margin-top: 10px;
+}
+.btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
 
-  /* end session */
-  .end-bar {
-    max-width: 860px; width: 100%; margin: 10px auto 20px;
-    display: flex; justify-content: flex-end; padding: 0 20px;
-  }
-  .end-btn {
-    padding: 8px 18px; background: white;
-    border: 1.5px solid var(--border);
-    border-radius: 8px; font-size: 13px; color: var(--muted);
-    cursor: pointer; transition: all .2s;
-  }
-  .end-btn:hover { border-color: #dc3545; color: #dc3545; }
+.disclaimer-box {
+  margin-top: 16px; padding: 12px 14px;
+  background: var(--blue-light); border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--navy); line-height: 1.6;
+  border-left: 3px solid var(--blue);
+}
 
-  /* toast */
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #333; color: white; padding: 10px 20px;
-    border-radius: 8px; font-size: 13px;
-    opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 99;
-  }
-  #toast.show { opacity: 1; }
+/* ════════════════════════════════════════════
+   STUDENT CHAT INTERFACE
+════════════════════════════════════════════ */
+#student-chat-screen { background: var(--gray-100); }
 
-  /* scrollbar */
-  #messages::-webkit-scrollbar { width: 5px; }
-  #messages::-webkit-scrollbar-track { background: transparent; }
-  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.chat-layout {
+  display: flex; flex: 1; overflow: hidden;
+}
+
+/* sidebar */
+.chat-sidebar {
+  width: 260px; background: white;
+  border-right: 1px solid var(--gray-200);
+  display: flex; flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-student {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.student-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 18px; font-weight: 700; margin-bottom: 10px;
+}
+.sidebar-student .name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+.sidebar-student .course-tag {
+  display: inline-block; margin-top: 4px;
+  padding: 2px 10px; background: var(--blue-light); color: var(--blue);
+  border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.sidebar-student .section-tag {
+  display: inline-block; margin-top: 4px; margin-left: 4px;
+  padding: 2px 10px; background: var(--gray-100); color: var(--gray-600);
+  border-radius: 20px; font-size: 11px;
+}
+
+.sidebar-modes { padding: 12px 10px; flex: 1; }
+.sidebar-modes p { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .6px; padding: 0 6px; margin-bottom: 8px; }
+.mode-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .15s;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: inherit;
+}
+.mode-item:hover { background: var(--gray-100); }
+.mode-item.active { background: var(--blue-light); }
+.mode-item .mode-dot {
+  width: 32px; height: 32px; border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.mode-item.learn   .mode-dot { background: var(--blue-light); }
+.mode-item.practice .mode-dot { background: var(--orange-light); }
+.mode-item.check    .mode-dot { background: var(--green-light); }
+.mode-item.active.learn   .mode-dot { background: rgba(59,130,246,.2); }
+.mode-item .mode-info strong { display: block; font-size: 13px; font-weight: 600; color: var(--gray-800); }
+.mode-item .mode-info span   { font-size: 11px; color: var(--gray-400); }
+.mode-item.active .mode-info strong { color: var(--blue); }
+
+.sidebar-bottom {
+  padding: 12px 10px;
+  border-top: 1px solid var(--gray-100);
+}
+.end-session-btn {
+  width: 100%; padding: 10px; border-radius: var(--radius-sm);
+  background: none; border: 1.5px solid var(--gray-200);
+  color: var(--gray-400); font-size: 13px; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+}
+.end-session-btn:hover { border-color: #FCA5A5; color: #EF4444; background: #FEF2F2; }
+
+/* chat main */
+.chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.mode-banner {
+  padding: 12px 20px;
+  font-size: 13px; font-weight: 500;
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.mode-banner.learn    { background: var(--blue-light); color: var(--navy); }
+.mode-banner.practice { background: var(--orange-light); color: var(--orange); }
+.mode-banner.check    { background: var(--green-light); color: var(--green); }
+
+#messages {
+  flex: 1; overflow-y: auto; padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.msg { display: flex; gap: 10px; animation: fadein .2s ease; }
+@keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.msg.user { flex-direction: row-reverse; }
+
+.msg-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0; margin-top: 2px;
+}
+.msg.user .msg-avatar { background: var(--navy); color: white; font-weight: 700; font-size: 13px; }
+.msg.ai   .msg-avatar { background: var(--gold-light); font-size: 18px; }
+
+.bubble {
+  max-width: 75%; padding: 13px 16px;
+  font-size: 14px; line-height: 1.7;
+}
+.msg.user  .bubble {
+  background: var(--navy); color: white;
+  border-radius: 18px 4px 18px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.msg.ai .bubble {
+  background: white; color: var(--gray-800);
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
+}
+.msg.ai.practice .bubble { border-left: 3px solid var(--orange); }
+.msg.ai.check    .bubble { border-left: 3px solid var(--green); }
+.msg.ai.learn    .bubble { border-left: 3px solid var(--blue); }
+
+.typing-indicator { display: flex; gap: 5px; padding: 5px 2px; }
+.typing-indicator span {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--gray-400);
+  animation: bounce .9s infinite;
+}
+.typing-indicator span:nth-child(2){ animation-delay:.18s }
+.typing-indicator span:nth-child(3){ animation-delay:.36s }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+/* quick prompts */
+.quick-chips {
+  padding: 10px 20px 14px;
+  display: flex; flex-wrap: wrap; gap: 7px;
+  background: white; border-top: 1px dashed var(--gray-200);
+}
+.chip {
+  padding: 6px 14px; border-radius: 20px;
+  background: var(--gray-100); border: 1px solid var(--gray-200);
+  font-size: 12px; color: var(--gray-600); cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.chip:hover { background: var(--blue-light); border-color: var(--blue); color: var(--navy); }
+
+/* input area */
+.chat-input-area {
+  background: white; border-top: 1px solid var(--gray-200);
+  padding: 16px 20px;
+  display: flex; gap: 10px; align-items: flex-end;
+}
+#user-input {
+  flex: 1; resize: none;
+  border: 1.5px solid var(--gray-200); border-radius: 12px;
+  padding: 11px 16px; font-size: 14px; font-family: inherit;
+  max-height: 130px; line-height: 1.5; background: var(--gray-50);
+  transition: all .2s; color: var(--gray-800);
+}
+#user-input:focus {
+  outline: none; border-color: var(--blue); background: white;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+#user-input::placeholder { color: var(--gray-400); }
+#send-btn {
+  padding: 11px 20px;
+  background: var(--navy); color: white;
+  border: none; border-radius: 12px;
+  font-size: 20px; cursor: pointer;
+  transition: all .2s; flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+#send-btn:hover { background: var(--navy-light); transform: scale(1.03); }
+#send-btn:disabled { background: var(--gray-400); transform: none; cursor: not-allowed; }
+
+/* ════════════════════════════════════════════
+   FACULTY PORTAL
+════════════════════════════════════════════ */
+#faculty-screen { background: var(--gray-50); }
+
+.portal-layout {
+  flex: 1; display: flex; flex-direction: column;
+  max-width: 900px; width: 100%; margin: 0 auto; padding: 28px 24px;
+}
+
+.portal-welcome {
+  background: linear-gradient(135deg, var(--green) 0%, #047857 100%);
+  border-radius: var(--radius); padding: 28px 32px; margin-bottom: 24px; color: white;
+  display: flex; align-items: center; gap: 20px;
+}
+.portal-welcome .welcome-icon { font-size: 48px; }
+.portal-welcome h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.portal-welcome p  { opacity: .8; font-size: 14px; }
+
+.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.info-card {
+  background: white; border-radius: var(--radius); padding: 20px 22px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
+}
+.info-card .card-icon { font-size: 28px; margin-bottom: 10px; }
+.info-card h3 { font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; }
+.info-card .card-value { font-size: 20px; font-weight: 700; color: var(--gray-800); }
+.info-card .card-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+.section-card {
+  background: white; border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); margin-bottom: 20px;
+}
+.section-card h3 { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+.section-card .section-desc { font-size: 13px; color: var(--gray-400); margin-bottom: 20px; }
+
+.audit-week {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+}
+.audit-week label { font-size: 13px; font-weight: 600; color: var(--gray-600); min-width: 80px; }
+.week-select {
+  padding: 8px 14px; border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-xs); font-size: 13px; font-family: inherit;
+  background: var(--gray-50);
+}
+.week-select:focus { outline: none; border-color: var(--green); }
+
+.audit-table { width: 100%; border-collapse: collapse; }
+.audit-table th {
+  background: var(--gray-50); padding: 10px 14px;
+  text-align: left; font-size: 12px; font-weight: 600;
+  color: var(--gray-600); text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 2px solid var(--gray-200);
+}
+.audit-table td {
+  padding: 12px 14px; border-bottom: 1px solid var(--gray-100);
+  font-size: 13px; vertical-align: top;
+}
+.audit-table tr:hover td { background: var(--gray-50); }
+.accuracy-select {
+  padding: 5px 10px; border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-xs); font-size: 12px;
+  font-family: inherit; background: white;
+}
+.accuracy-select:focus { outline: none; border-color: var(--green); }
+.accuracy-select.accurate { border-color: var(--green); color: var(--green); background: var(--green-light); }
+.accuracy-select.inaccurate { border-color: #EF4444; color: #EF4444; background: #FEF2F2; }
+
+.audit-notes {
+  width: 100%; padding: 8px 12px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius-xs);
+  font-size: 12px; font-family: inherit; resize: vertical; min-height: 44px;
+}
+.audit-notes:focus { outline: none; border-color: var(--green); }
+
+.submit-audit-btn {
+  padding: 12px 28px;
+  background: var(--green); color: white;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: inherit; transition: all .2s;
+  box-shadow: 0 4px 12px rgba(5,150,105,.25);
+}
+.submit-audit-btn:hover { background: #047857; transform: translateY(-1px); }
+
+.faculty-login-form {
+  background: white; border-radius: var(--radius); padding: 32px;
+  box-shadow: var(--shadow-lg); max-width: 420px; width: 100%;
+}
+
+/* ════════════════════════════════════════════
+   ADMIN DASHBOARD
+════════════════════════════════════════════ */
+#admin-screen { background: var(--gray-50); }
+
+.admin-layout {
+  flex: 1; display: flex; flex-direction: column;
+  max-width: 960px; width: 100%; margin: 0 auto; padding: 28px 24px;
+}
+
+.admin-welcome {
+  background: linear-gradient(135deg, var(--purple) 0%, #5B21B6 100%);
+  border-radius: var(--radius); padding: 28px 32px; margin-bottom: 24px; color: white;
+  display: flex; align-items: center; gap: 20px;
+}
+.admin-welcome .welcome-icon { font-size: 48px; }
+.admin-welcome h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.admin-welcome p  { opacity: .8; font-size: 14px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: white; border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); text-align: center;
+}
+.stat-card .stat-icon { font-size: 26px; margin-bottom: 8px; }
+.stat-card .stat-num { font-size: 26px; font-weight: 700; color: var(--gray-800); }
+.stat-card .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+.admin-card {
+  background: white; border-radius: var(--radius); padding: 22px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
+}
+.admin-card h3 { font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+.course-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+}
+.course-row:last-child { border-bottom: none; }
+.course-row .course-info strong { display: block; font-size: 13px; font-weight: 600; }
+.course-row .course-info span   { font-size: 12px; color: var(--gray-400); }
+.status-badge {
+  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+}
+.status-badge.active  { background: var(--green-light); color: var(--green); }
+.status-badge.pending { background: var(--orange-light); color: var(--orange); }
+.status-badge.ready   { background: var(--blue-light); color: var(--blue); }
+
+.timeline-item {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  margin-top: 5px; flex-shrink: 0;
+}
+.timeline-dot.done { background: var(--green); }
+.timeline-dot.now  { background: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
+.timeline-dot.soon { background: var(--gray-300); }
+.timeline-item .t-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+.timeline-item .t-date  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+.action-btn {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 12px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--gray-200); background: var(--gray-50);
+  cursor: pointer; transition: all .2s; text-decoration: none;
+  font-family: inherit; margin-bottom: 8px; color: var(--gray-700); font-size: 13px;
+}
+.action-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
+.action-btn .ab-icon { font-size: 18px; }
+.action-btn .ab-text strong { display: block; font-weight: 600; font-size: 13px; }
+.action-btn .ab-text span   { font-size: 11px; color: var(--gray-400); }
+.action-btn .ab-arrow { margin-left: auto; color: var(--gray-400); }
+
+.admin-login-form {
+  background: white; border-radius: var(--radius); padding: 32px;
+  box-shadow: var(--shadow-lg); max-width: 380px; width: 100%;
+}
+
+/* ════════════════════════════════════════════
+   SHARED LOGIN WRAPPERS
+════════════════════════════════════════════ */
+.portal-login-screen {
+  flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.portal-login-screen.faculty-bg {
+  background: linear-gradient(160deg, #ECFDF5 0%, #F9FAFB 60%, #EFF6FF 100%);
+}
+.portal-login-screen.admin-bg {
+  background: linear-gradient(160deg, #F5F3FF 0%, #F9FAFB 60%, #FFF7ED 100%);
+}
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--gray-800); color: white;
+  padding: 12px 20px; border-radius: 10px; font-size: 13px;
+  opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999;
+  box-shadow: var(--shadow);
+}
+#toast.show { opacity: 1; }
+
+/* scrollbar */
+#messages::-webkit-scrollbar { width: 4px; }
+#messages::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+
+/* responsive */
+@media (max-width: 640px) {
+  .chat-sidebar { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">🏥</div>
-  <div>
-    <h1>UoB Nursing AI Companion</h1>
-    <p>University of Bahrain — Department of Nursing</p>
-  </div>
-  <div class="status-dot"><span class="dot"></span> Online</div>
-</header>
-
-<!-- ── LOGIN ── -->
-<div id="login-screen">
-  <div class="login-card">
-    <h2>Welcome</h2>
-    <p class="subtitle">Sign in to start your study session</p>
-
-    <div class="form-group">
-      <label for="student-id">Student ID</label>
-      <input type="text" id="student-id" placeholder="e.g. 20220001">
+<!-- ════════════════════════════════════════════
+     ROLE SELECTION
+════════════════════════════════════════════ -->
+<div id="role-screen" class="screen active">
+  <div class="role-card">
+    <div class="brand">
+      <div class="brand-icon">🏥</div>
+      <h1>UoB Nursing AI Companion</h1>
+      <p class="subtitle">University of Bahrain — Department of Nursing</p>
     </div>
-    <div class="form-group">
-      <label for="student-name">Full Name</label>
-      <input type="text" id="student-name" placeholder="Your full name">
-    </div>
-    <div class="form-group">
-      <label for="course-select">Course</label>
-      <select id="course-select">
-        <option value="">— Select your course —</option>
-        <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
-        <option value="NUR225">NUR225 — Adult Health Nursing I</option>
-        <option value="NUR312">NUR312 — Nursing Research and Evidence-Based Practice</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="section-input">Section</label>
-      <input type="text" id="section-input" placeholder="e.g. Section 1">
-    </div>
-
-    <button class="btn-start" onclick="startSession()">Start Session →</button>
-
-    <div class="disclaimer">
-      ⚠️ This AI companion is restricted to approved course materials only.
-      It is a learning support tool and does not replace your instructor, textbooks, or clinical training.
-      Your interactions are logged for research purposes as described in the study consent form.
+    <h2>Who are you?</h2>
+    <div class="role-buttons">
+      <button class="role-btn student" onclick="showScreen('student-login-screen')">
+        <div class="role-icon">🎓</div>
+        <div class="role-text">
+          <strong>Student</strong>
+          <span>Access your AI study companion</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
+      <button class="role-btn faculty" onclick="showFacultyLogin()">
+        <div class="role-icon">👩‍🏫</div>
+        <div class="role-text">
+          <strong>Faculty</strong>
+          <span>Fidelity audit and course management</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
+      <button class="role-btn admin" onclick="showAdminLogin()">
+        <div class="role-icon">⚙️</div>
+        <div class="role-text">
+          <strong>Administrator</strong>
+          <span>Study dashboard and oversight</span>
+        </div>
+        <span class="arrow">›</span>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ── MAIN APP ── -->
-<div id="app-screen">
-
-  <div class="mode-bar">
-    <button class="mode-btn active" id="btn-learn" onclick="setMode('learn')">
-      <span class="icon">📖</span> Learn
-    </button>
-    <button class="mode-btn" id="btn-practice" onclick="setMode('practice')">
-      <span class="icon">✏️</span> Practice
-    </button>
-    <button class="mode-btn" id="btn-check" onclick="setMode('check')">
-      <span class="icon">✅</span> Check Your Understanding
-    </button>
-    <div class="session-info">
-      <span class="tag" id="course-tag"></span>
-      <span id="student-tag" style="font-size:12px;color:#6C757D;"></span>
-    </div>
-  </div>
-
-  <div class="chat-wrapper">
-    <div class="mode-header learn" id="mode-header">
-      <span id="mode-icon">📖</span>
-      <span id="mode-label">Learn Mode — Ask me to explain any concept from your course</span>
-    </div>
-
-    <div id="messages"></div>
-
-    <div class="input-bar">
-      <textarea id="user-input" rows="1" placeholder="Type your question here…"
-        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="send-btn" onclick="sendMessage()">Send ➤</button>
-    </div>
-
-    <div class="quick-prompts" id="quick-prompts"></div>
-  </div>
-
-  <div class="end-bar">
-    <button class="end-btn" onclick="endSession()">End Session</button>
-  </div>
-
-</div>
-
-<div id="toast"></div>
-
-<script>
-// ── CONFIGURATION ──────────────────────────────────────────────────────────
-// Replace these placeholders before deploying:
-const CONFIG = {
-  // Cloudflare Worker URL — safe to publish (API key is stored inside Cloudflare, not here)
-  PROXY_URL: "https://uob-companion.uobstudyai.workers.dev",
-
-  // OpenAI model
-  MODEL: "gpt-4o-mini",
-
-  // Google Sheets logging endpoint
-  SHEETS_ENDPOINT: "https://script.google.com/macros/s/AKfycbxjFzPBL_Svg_ODJYLY05Z0GAQbm8jhDfatNJEaKxRxv5OOTHRKzGtB589xGOt3KHGI/exec",
-
-  // Maximum conversation turns kept in memory (to control token costs)
-  MAX_HISTORY: 20,
-};
-
-// ── SYSTEM PROMPTS PER COURSE AND MODE ────────────────────────────────────
-// These will be updated once instructor materials arrive.
-// Currently set to general nursing scope placeholders.
-
-const COURSE_INFO = {
-  NUR125: {
-    name: "Fundamentals of Nursing I",
-    level: "first-year undergraduate nursing students",
-    scope: "fundamental nursing concepts including vital signs, infection control, patient safety, basic nursing procedures, patient communication, documentation, and the nursing process.",
-  },
-  NUR225: {
-    name: "Adult Health Nursing I",
-    level: "second-year undergraduate nursing students",
-    scope: "adult health nursing including common medical-surgical conditions, pharmacology basics, nursing assessment, patient education, and clinical reasoning.",
-  },
-  NUR312: {
-    name: "Nursing Research and Evidence-Based Practice",
-    level: "third-year undergraduate nursing students",
-    scope: "nursing research methodology including quantitative and qualitative designs, research ethics, literature review, evidence-based practice, data collection tools, and critical appraisal of research.",
-  },
-};
-
-const MODE_PROMPTS = {
-  learn: (course) => `You are an AI learning companion for ${COURSE_INFO[course].name} at the University of Bahrain, Department of Nursing. You are supporting ${COURSE_INFO[course].level}.
-
-YOUR ROLE:
-- Explain nursing concepts clearly, accurately, and in a way appropriate for undergraduate nursing students
-- Use examples, analogies, and step-by-step explanations
-- Encourage deeper understanding rather than rote memorisation
-- Connect concepts to clinical relevance where appropriate
-
-YOUR SCOPE:
-You are restricted to: ${COURSE_INFO[course].scope}
-If a student asks about something outside this scope, politely redirect them to their instructor or the relevant course.
-
-BOUNDARIES:
-- Do NOT provide clinical diagnoses or medical advice for real patients
-- Do NOT help with exam cheating or writing assignments for students
-- Do NOT speculate beyond the approved course content
-- If unsure about a specific detail, say so and encourage the student to verify with their textbook or instructor
-
-TONE: Supportive, clear, professional. You are a study companion, not a replacement for the instructor.`,
-
-  practice: (course) => `You are an AI practice companion for ${COURSE_INFO[course].name} at the University of Bahrain, Department of Nursing, supporting ${COURSE_INFO[course].level}.
-
-YOUR ROLE — PRACTICE MODE:
-- Present the student with practice questions, scenarios, or case studies relevant to ${COURSE_INFO[course].scope}
-- After the student responds, give constructive feedback: what was correct, what was missing, and why
-- Follow up with a related question or deeper probe to extend learning
-- Vary question types: multiple choice, short answer, scenario-based, fill-in-the-blank
-
-HOW TO RUN A PRACTICE SESSION:
-1. Ask the student which topic they want to practise (or choose one if they say "anything")
-2. Present one question at a time
-3. Wait for their answer before giving feedback
-4. After feedback, offer to continue with another question or move to a different topic
-
-BOUNDARIES:
-- Do NOT give the answer before the student attempts the question
-- Keep questions within the approved course scope
-- Do NOT provide actual exam questions if not authorised
-
-TONE: Encouraging, specific in feedback, patient with repeated attempts.`,
-
-  check: (course) => `You are an AI study-check companion for ${COURSE_INFO[course].name} at the University of Bahrain, Department of Nursing, supporting ${COURSE_INFO[course].level}.
-
-YOUR ROLE — CHECK YOUR UNDERSTANDING MODE:
-- Help students consolidate their understanding through self-testing
-- Present short diagnostic questions to identify gaps in knowledge
-- Give targeted feedback highlighting exactly what the student understands well and what needs more attention
-- Suggest what to review based on their performance
-
-HOW TO RUN A CHECK SESSION:
-1. Ask the student what they have been studying or revising
-2. Run a short 5-question diagnostic (mix of formats)
-3. After all 5 questions, give a brief summary: strengths identified, areas to review
-4. Offer to run another diagnostic or shift to Learn mode for a specific gap
-
-BOUNDARIES:
-- Restrict to ${COURSE_INFO[course].scope}
-- Do NOT simulate actual university exams
-- Encourage the student to follow up with their textbook and instructor
-
-TONE: Honest, supportive, specific. Help students feel confident about what they know and clear about what to review.`,
-};
-
-// ── STATE ──────────────────────────────────────────────────────────────────
-let state = {
-  student: { id: "", name: "", course: "", section: "" },
-  mode: "learn",
-  history: [],     // [{role, content}]
-  sessionStart: null,
-  messageCount: 0,
-};
-
-// ── SESSION START ──────────────────────────────────────────────────────────
-function startSession() {
-  const id   = document.getElementById("student-id").value.trim();
-  const name = document.getElementById("student-name").value.trim();
-  const course = document.getElementById("course-select").value;
-  const section = document.getElementById("section-input").value.trim();
-
-  if (!id || !name || !course || !section) {
-    showToast("Please fill in all fields to continue.");
-    return;
-  }
-
-  state.student = { id, name, course, section };
-  state.sessionStart = new Date().toISOString();
-  state.mode = "learn";
-  state.history = [];
-  state.messageCount = 0;
-
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app-screen").style.display = "flex";
-  document.getElementById("course-tag").textContent = course;
-  document.getElementById("student-tag").textContent = name;
-
-  logEvent("session_start", "", "");
-  setMode("learn");
-  addWelcome();
-}
-
-function addWelcome() {
-  const c = state.student.course;
-  const msgs = {
-    learn: `Hello ${state.student.name.split(" ")[0]}! 👋\n\nI'm your AI study companion for **${COURSE_INFO[c].name}**. In **Learn mode**, you can ask me to explain any concept from your course — I'm here to help you understand, not just memorise.\n\nWhat would you like to explore today?`,
-    practice: `Ready to practise! 💪\n\nI'll give you questions from **${COURSE_INFO[c].name}**. Answer them as best you can, and I'll give you detailed feedback after each one.\n\nWhich topic would you like to practise — or shall I pick one?`,
-    check: `Let's check your understanding! ✅\n\nI'll run a short 5-question diagnostic for **${COURSE_INFO[c].name}**. Be honest — this is just for you.\n\nWhat have you been studying recently, or would you like me to choose a topic?`,
-  };
-  addAIMessage(msgs[state.mode]);
-}
-
-// ── MODE ───────────────────────────────────────────────────────────────────
-const MODE_META = {
-  learn:    { icon:"📖", label:"Learn Mode — Ask me to explain any concept from your course", cls:"learn",
-    prompts:["Explain the nursing process","What is infection control?","How do I document patient care?","Explain vital signs monitoring"] },
-  practice: { icon:"✏️", label:"Practice Mode — I'll quiz you with questions and give feedback", cls:"practice",
-    prompts:["Give me a practice question","Test me on a scenario","Multiple choice questions please","Quiz me on the last topic"] },
-  check:    { icon:"✅", label:"Check Your Understanding — Diagnose your knowledge gaps", cls:"check",
-    prompts:["Run a 5-question check","Test what I know about...","What are my weak areas?","Check my understanding of..."] },
-};
-
-function setMode(m) {
-  state.mode = m;
-  state.history = [];  // fresh context per mode switch
-
-  ["learn","practice","check"].forEach(x => {
-    document.getElementById("btn-"+x).classList.toggle("active", x===m);
-  });
-
-  const meta = MODE_META[m];
-  const hdr = document.getElementById("mode-header");
-  hdr.className = "mode-header " + meta.cls;
-  document.getElementById("mode-icon").textContent = meta.icon;
-  document.getElementById("mode-label").textContent = meta.label;
-
-  const qp = document.getElementById("quick-prompts");
-  qp.innerHTML = meta.prompts.map(p =>
-    `<span class="qp" onclick="useQuickPrompt('${p}')">${p}</span>`
-  ).join("");
-
-  document.getElementById("messages").innerHTML = "";
-  addWelcome();
-}
-
-function useQuickPrompt(text) {
-  document.getElementById("user-input").value = text;
-  sendMessage();
-}
-
-// ── SEND MESSAGE ───────────────────────────────────────────────────────────
-async function sendMessage() {
-  const input = document.getElementById("user-input");
-  const text  = input.value.trim();
-  if (!text) return;
-  if (CONFIG.PROXY_URL === "YOUR_CLOUDFLARE_WORKER_URL_HERE") {
-    showToast("⚠️ Proxy not configured. Add your Cloudflare Worker URL to the CONFIG section.");
-    return;
-  }
-
-  input.value = "";
-  input.style.height = "auto";
-  document.getElementById("send-btn").disabled = true;
-
-  addUserMessage(text);
-  const typingId = addTyping();
-
-  // Build messages for API
-  const systemPrompt = MODE_PROMPTS[state.mode](state.student.course);
-  const messages = [
-    { role: "system", content: systemPrompt },
-    ...state.history.slice(-CONFIG.MAX_HISTORY),
-    { role: "user", content: text },
-  ];
-
-  try {
-    const res = await fetch(CONFIG.PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: CONFIG.MODEL,
-        messages,
-        max_tokens: 800,
-        temperature: 0.5,
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(()=>({}));
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    const reply = data.choices[0].message.content;
-
-    removeTyping(typingId);
-    addAIMessage(reply);
-
-    // Update history
-    state.history.push({ role:"user", content:text });
-    state.history.push({ role:"assistant", content:reply });
-    state.messageCount++;
-
-    // Log to Google Sheets
-    logEvent("message", text, reply);
-
-  } catch (e) {
-    removeTyping(typingId);
-    addAIMessage(`⚠️ I encountered an error: ${e.message}\n\nPlease try again or contact the study team if the problem persists.`);
-    logEvent("error", text, e.message);
-  }
-
-  document.getElementById("send-btn").disabled = false;
-  document.getElementById("user-input").focus();
-}
-
-// ── MESSAGES ───────────────────────────────────────────────────────────────
-function addUserMessage(text) {
-  const div = document.createElement("div");
-  div.className = "msg user";
-  div.innerHTML = `<div class="avatar">👤</div><div class="bubble">${escHtml(text)}</div>`;
-  appendMsg(div);
-}
-
-function addAIMessage(text) {
-  const div = document.createElement("div");
-  div.className = "msg ai " + state.mode;
-  div.innerHTML = `<div class="avatar">🤖</div><div class="bubble">${formatMarkdown(escHtml(text))}</div>`;
-  appendMsg(div);
-}
-
-function addTyping() {
-  const id = "typing-" + Date.now();
-  const div = document.createElement("div");
-  div.className = "msg ai"; div.id = id;
-  div.innerHTML = `<div class="avatar">🤖</div><div class="bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
-  appendMsg(div);
-  return id;
-}
-function removeTyping(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-}
-
-function appendMsg(el) {
-  const box = document.getElementById("messages");
-  box.appendChild(el);
-  box.scrollTop = box.scrollHeight;
-}
-
-// ── FORMATTING ─────────────────────────────────────────────────────────────
-function escHtml(t) {
-  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
-function formatMarkdown(t) {
-  return t
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`(.*?)`/g, "<code>$1</code>")
-    .replace(/^#{1,3}\s(.+)$/gm, "<strong>$1</strong>")
-    .replace(/\n/g, "<br>");
-}
-
-// ── INPUT ──────────────────────────────────────────────────────────────────
-function handleKey(e) {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-}
-function autoResize(el) {
-  el.style.height = "auto";
-  el.style.height = Math.min(el.scrollHeight, 120) + "px";
-}
-
-// ── END SESSION ────────────────────────────────────────────────────────────
-function endSession() {
-  if (!confirm("End this study session?")) return;
-  logEvent("session_end", "", `${state.messageCount} messages exchanged`);
-  setTimeout(() => {
-    document.getElementById("app-screen").style.display = "none";
-    document.getElementById("login-screen").style.display = "flex";
-    document.getElementById("messages").innerHTML = "";
-    state.history = []; state.messageCount = 0;
-    showToast("Session ended. Thank you for studying! 📚");
-  }, 400);
-}
-
-// ── LOGGING ────────────────────────────────────────────────────────────────
-function logEvent(type, userMsg, aiMsg) {
-  if (CONFIG.SHEETS_ENDPOINT === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") return;
-
-  const payload = {
-    timestamp: new Date().toISOString(),
-    studentId: state.student.id,
-    studentName: state.student.name,
-    course: state.student.course,
-    section: state.student.section,
-    mode: state.mode,
-    eventType: type,
-    userMessage: userMsg,
-    aiResponse: aiMsg.substring(0, 500), // cap at 500 chars
-    sessionStart: state.sessionStart,
-    messageCount: state.messageCount,
-  };
-
-  fetch(CONFIG.SHEETS_ENDPOINT, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "text/plain" },
-    body: JSON.stringify(payload),
-  });
-}
-
-// ── TOAST ──────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 3500);
-}
-</script>
-</body>
-</html>
+<!-- ════════════════════════════════════════════
+     STUDENT LOGIN
+════════════════════════════════════════════ -->
+<div id="student-login-screen" class="screen">
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#EFF6FF 0%,#F9FAFB 60%,#F0FDF4 100%);padding:24px;">
+    <div class="login-panel">
+      <div class="login-panel-header">
+        <div class="icon">🎓</div>
+        <h2>Student Sign In</h2>
+        <p>Enter your details to start your study session</p>
+      </div>
+      <div class="login-panel-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" id="s-id" placeholder="e.g. 20220001">
+          </div>
+          <div class="form-group">
+            <label>Section</label>
+            <input type="text" id="s-section" placeholder="e.g. Section 1">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="s-name" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label>Course</label>
+          <select id="s-course">
+            <option value="">— Select your course —</option>
+            <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
+            <option value="NUR225">NUR2
