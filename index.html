@@ -681,4 +681,652 @@ body {
           <select id="s-course">
             <option value="">— Select your course —</option>
             <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
-            <option value="NUR225">NUR2
+            <option value="NUR225">NUR225 — Adult Health Nursing I</option>
+            <option value="NUR312">NUR312 — Nursing Research and Evidence-Based Practice</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="startStudentSession()">Start Study Session →</button>
+        <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
+        <div class="disclaimer-box">
+          ℹ️ This companion is restricted to approved course materials. Your interactions are logged for research purposes as described in your consent form.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     STUDENT CHAT
+════════════════════════════════════════════ -->
+<div id="student-chat-screen" class="screen">
+  <div class="app-header">
+    <div class="logo">🏥</div>
+    <div class="header-text">
+      <h1>UoB Nursing AI Companion</h1>
+      <p>University of Bahrain — Department of Nursing</p>
+    </div>
+    <div class="header-right">
+      <span class="header-badge student" id="chat-course-badge"></span>
+      <span class="status-pill"><span class="status-dot"></span> Live</span>
+    </div>
+  </div>
+  <div class="chat-layout">
+    <!-- sidebar -->
+    <div class="chat-sidebar">
+      <div class="sidebar-student">
+        <div class="student-avatar" id="s-avatar-letter">S</div>
+        <div class="name" id="s-display-name">Student</div>
+        <span class="course-tag" id="s-course-tag">Course</span>
+        <span class="section-tag" id="s-section-tag">Section</span>
+      </div>
+      <div class="sidebar-modes">
+        <p>Study Modes</p>
+        <button class="mode-item learn active" id="mode-learn" onclick="setMode('learn')">
+          <div class="mode-dot">📖</div>
+          <div class="mode-info"><strong>Learn</strong><span>Explain concepts</span></div>
+        </button>
+        <button class="mode-item practice" id="mode-practice" onclick="setMode('practice')">
+          <div class="mode-dot">✏️</div>
+          <div class="mode-info"><strong>Practice</strong><span>Q&A with feedback</span></div>
+        </button>
+        <button class="mode-item check" id="mode-check" onclick="setMode('check')">
+          <div class="mode-dot">✅</div>
+          <div class="mode-info"><strong>Check</strong><span>Knowledge diagnostic</span></div>
+        </button>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="end-session-btn" onclick="endSession()">End Session</button>
+      </div>
+    </div>
+    <!-- chat -->
+    <div class="chat-main">
+      <div class="mode-banner learn" id="mode-banner">
+        <span id="mode-banner-icon">📖</span>
+        <span id="mode-banner-text">Learn Mode — Ask me to explain any concept from your course</span>
+      </div>
+      <div id="messages"></div>
+      <div class="quick-chips" id="quick-chips"></div>
+      <div class="chat-input-area">
+        <textarea id="user-input" rows="1" placeholder="Ask a question or type a message…"
+          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button id="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     FACULTY LOGIN
+════════════════════════════════════════════ -->
+<div id="faculty-login-screen" class="screen">
+  <div class="portal-login-screen faculty-bg">
+    <div class="faculty-login-form">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:44px;margin-bottom:12px;">👩‍🏫</div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:4px;">Faculty Portal</h2>
+        <p style="font-size:13px;color:var(--gray-400);">Sign in to access the fidelity audit dashboard</p>
+      </div>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="f-name" placeholder="Dr. / Mr. / Ms. ...">
+      </div>
+      <div class="form-group">
+        <label>Assigned Course</label>
+        <select id="f-course">
+          <option value="">— Select your course —</option>
+          <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
+          <option value="NUR225">NUR225 — Adult Health Nursing I</option>
+          <option value="NUR312">NUR312 — Nursing Research and Evidence-Based Practice</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Access Password</label>
+        <input type="password" id="f-pass" placeholder="Provided by the PI">
+      </div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,var(--green),#047857);box-shadow:0 4px 12px rgba(5,150,105,.3);" onclick="loginFaculty()">Access Faculty Portal →</button>
+      <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     FACULTY DASHBOARD
+════════════════════════════════════════════ -->
+<div id="faculty-screen" class="screen">
+  <div class="app-header">
+    <div class="logo">🏥</div>
+    <div class="header-text">
+      <h1>Faculty Portal</h1>
+      <p>UoB Nursing AI Companion Study — Project 25-2024</p>
+    </div>
+    <div class="header-right">
+      <span class="header-badge faculty" id="f-course-badge"></span>
+      <span class="header-badge faculty" id="f-name-badge"></span>
+      <button class="back-btn" onclick="showScreen('role-screen')">Sign Out</button>
+    </div>
+  </div>
+  <div class="portal-layout">
+    <div class="portal-welcome">
+      <div class="welcome-icon">👩‍🏫</div>
+      <div>
+        <h2 id="f-welcome-name">Welcome</h2>
+        <p>Weekly Fidelity Audit Dashboard — Review AI responses for accuracy and scope compliance</p>
+      </div>
+    </div>
+    <div class="cards-grid">
+      <div class="info-card">
+        <div class="card-icon">📋</div>
+        <h3>Study Period</h3>
+        <div class="card-value">Weeks 1 – 7</div>
+        <div class="card-sub">Semester 2, Feb – Apr 2027</div>
+      </div>
+      <div class="info-card">
+        <div class="card-icon">🕐</div>
+        <h3>Audit Frequency</h3>
+        <div class="card-value">Weekly</div>
+        <div class="card-sub">~15–20 minutes per week</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>Weekly Fidelity Audit</h3>
+      <p class="section-desc">Review the 10 sample AI responses below. For each, mark whether the response was accurate and within scope, then add notes for any issues. Submit at the end.</p>
+
+      <div class="audit-week">
+        <label>Study Week:</label>
+        <select class="week-select" id="audit-week">
+          <option>Week 1</option><option>Week 2</option><option>Week 3</option>
+          <option>Week 4</option><option>Week 5</option><option>Week 6</option><option>Week 7</option>
+        </select>
+      </div>
+
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">#</th>
+            <th>Student Question</th>
+            <th>AI Response (excerpt)</th>
+            <th style="width:130px;">Accuracy</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="audit-rows">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+
+      <div style="margin-top:20px;display:flex;align-items:center;gap:14px;">
+        <button class="submit-audit-btn" onclick="submitAudit()">Submit Audit Report</button>
+        <span style="font-size:12px;color:var(--gray-400);">Results are sent to the research team automatically</span>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <h3>📌 Instructions</h3>
+      <p class="section-desc">Your responsibilities during the study period:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
+          <span style="font-size:13px;">Each week, you will receive 10 randomly selected AI interaction samples from your course via this portal.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
+          <span style="font-size:13px;">Mark each response as <strong>Accurate & In-Scope</strong>, <strong>Inaccurate</strong>, or <strong>Out of Scope</strong>.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
+          <span style="font-size:13px;">Add notes for any issues. The PI will correct problems within 48 hours.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <span style="color:var(--orange);font-size:18px;flex-shrink:0;">!</span>
+          <span style="font-size:13px;">For urgent issues, contact the PI directly: <strong>maltheeb@uob.edu.bh</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     ADMIN LOGIN
+════════════════════════════════════════════ -->
+<div id="admin-login-screen" class="screen">
+  <div class="portal-login-screen admin-bg">
+    <div class="admin-login-form">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-size:44px;margin-bottom:12px;">⚙️</div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:4px;">Admin Dashboard</h2>
+        <p style="font-size:13px;color:var(--gray-400);">Principal Investigator access only</p>
+      </div>
+      <div class="form-group">
+        <label>Admin Password</label>
+        <input type="password" id="a-pass" placeholder="Enter admin password">
+      </div>
+      <button class="btn-primary" style="background:linear-gradient(135deg,var(--purple),#5B21B6);box-shadow:0 4px 12px rgba(124,58,237,.3);" onclick="loginAdmin()">Access Dashboard →</button>
+      <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     ADMIN DASHBOARD
+════════════════════════════════════════════ -->
+<div id="admin-screen" class="screen">
+  <div class="app-header">
+    <div class="logo">🏥</div>
+    <div class="header-text">
+      <h1>Admin Dashboard</h1>
+      <p>UoB Nursing AI Companion Study — Project 25-2024</p>
+    </div>
+    <div class="header-right">
+      <span class="header-badge admin">Principal Investigator</span>
+      <button class="back-btn" onclick="showScreen('role-screen')">Sign Out</button>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <div class="admin-welcome">
+      <div class="welcome-icon">📊</div>
+      <div>
+        <h2>Study Overview — Project 25-2024</h2>
+        <p>Impact of a Customized AI Companion on Nursing Students' Motivation for Learning and Self-Directed Learning</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📚</div>
+        <div class="stat-num">3</div>
+        <div class="stat-label">Courses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num">18</div>
+        <div class="stat-label">Sections</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🧪</div>
+        <div class="stat-num">7</div>
+        <div class="stat-label">Study Weeks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num">Feb 2027</div>
+        <div class="stat-label">Start Date</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="admin-card">
+        <h3>📚 Course Status</h3>
+        <div class="course-row">
+          <div class="course-info">
+            <strong>NUR125 — Fundamentals of Nursing I</strong>
+            <span>Level 1 · 6 sections · ~30 students each</span>
+          </div>
+          <span class="status-badge pending">Materials Pending</span>
+        </div>
+        <div class="course-row">
+          <div class="course-info">
+            <strong>NUR225 — Adult Health Nursing I</strong>
+            <span>Level 2 · 6 sections · ~30 students each</span>
+          </div>
+          <span class="status-badge pending">Materials Pending</span>
+        </div>
+        <div class="course-row">
+          <div class="course-info">
+            <strong>NUR312 — Nursing Research & EBP</strong>
+            <span>Level 3 · 6 sections · ~30 students each</span>
+          </div>
+          <span class="status-badge pending">Materials Pending</span>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>📅 Study Timeline</h3>
+        <div class="timeline-item">
+          <div class="timeline-dot done"></div>
+          <div><div class="t-title">Ethics Application Submitted</div><div class="t-date">Completed</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot done"></div>
+          <div><div class="t-title">AI Companion Platform Built</div><div class="t-date">Completed — Nov 2026</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot now"></div>
+          <div><div class="t-title">Instructor Materials Collection</div><div class="t-date">In Progress — Nov 2026</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot soon"></div>
+          <div><div class="t-title">Expert Review & Sign-Off</div><div class="t-date">Planned — Jan 2027</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot soon"></div>
+          <div><div class="t-title">Data Collection (T1 → T2)</div><div class="t-date">Feb – Apr 2027</div></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot soon"></div>
+          <div><div class="t-title">Analysis & Write-Up</div><div class="t-date">May – Aug 2027</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <h3>🔗 Quick Actions</h3>
+      <a class="action-btn" href="https://script.google.com/macros/s/AKfycbxjFzPBL_Svg_ODJYLY05Z0GAQbm8jhDfatNJEaKxRxv5OOTHRKzGtB589xGOt3KHGI/exec" target="_blank">
+        <span class="ab-icon">📊</span>
+        <div class="ab-text"><strong>Open Interaction Log</strong><span>Google Sheets — live student usage data</span></div>
+        <span class="ab-arrow">›</span>
+      </a>
+      <a class="action-btn" href="https://github.com/uobstudyai/uob-nursing-companion" target="_blank">
+        <span class="ab-icon">💻</span>
+        <div class="ab-text"><strong>GitHub Repository</strong><span>Update index.html with course materials</span></div>
+        <span class="ab-arrow">›</span>
+      </a>
+      <a class="action-btn" href="https://dash.cloudflare.com" target="_blank">
+        <span class="ab-icon">☁️</span>
+        <div class="ab-text"><strong>Cloudflare Workers</strong><span>Monitor API proxy usage and costs</span></div>
+        <span class="ab-arrow">›</span>
+      </a>
+      <a class="action-btn" href="https://platform.openai.com/usage" target="_blank">
+        <span class="ab-icon">🤖</span>
+        <div class="ab-text"><strong>OpenAI Usage Dashboard</strong><span>Monitor API spend and token usage</span></div>
+        <span class="ab-arrow">›</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CONFIGURATION ──────────────────────────────────────────────────────────
+const CONFIG = {
+  PROXY_URL: "https://uob-companion.uobstudyai.workers.dev",
+  MODEL: "gpt-4o-mini",
+  SHEETS_ENDPOINT: "https://script.google.com/macros/s/AKfycbxjFzPBL_Svg_ODJYLY05Z0GAQbm8jhDfatNJEaKxRxv5OOTHRKzGtB589xGOt3KHGI/exec",
+  MAX_HISTORY: 20,
+  FACULTY_PASSWORD: "faculty2027",
+  ADMIN_PASSWORD: "admin2027",
+};
+
+// ── COURSE INFO ────────────────────────────────────────────────────────────
+const COURSE_INFO = {
+  NUR125: { name:"Fundamentals of Nursing I", level:"first-year undergraduate nursing students",
+    scope:"fundamental nursing concepts including vital signs, infection control, patient safety, basic nursing procedures, patient communication, documentation, and the nursing process." },
+  NUR225: { name:"Adult Health Nursing I", level:"second-year undergraduate nursing students",
+    scope:"adult health nursing including common medical-surgical conditions, pharmacology basics, nursing assessment, patient education, and clinical reasoning." },
+  NUR312: { name:"Nursing Research and Evidence-Based Practice", level:"third-year undergraduate nursing students",
+    scope:"nursing research methodology including quantitative and qualitative designs, research ethics, literature review, evidence-based practice, data collection tools, and critical appraisal of research." },
+};
+
+const MODE_PROMPTS = {
+  learn: c => `You are an AI learning companion for ${COURSE_INFO[c].name} at the University of Bahrain, Department of Nursing, supporting ${COURSE_INFO[c].level}.\n\nExplain nursing concepts clearly using examples and analogies. Restrict your responses to: ${COURSE_INFO[c].scope}\n\nDo not provide clinical diagnoses, help with assignments, or speculate beyond approved content. Tone: supportive, clear, professional.`,
+  practice: c => `You are an AI practice companion for ${COURSE_INFO[c].name} at UoB, supporting ${COURSE_INFO[c].level}.\n\nPresent practice questions and scenarios from: ${COURSE_INFO[c].scope}. After each student answer, give constructive feedback. Ask one question at a time. Never reveal the answer before the student attempts it. Tone: encouraging and specific.`,
+  check: c => `You are an AI study-check companion for ${COURSE_INFO[c].name} at UoB, supporting ${COURSE_INFO[c].level}.\n\nRun 5-question diagnostics from: ${COURSE_INFO[c].scope}. After all 5, summarise strengths and gaps. Do not simulate real exams. Tone: honest, supportive, specific.`,
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let state = {
+  student: { id:"", name:"", course:"", section:"" },
+  mode: "learn",
+  history: [],
+  sessionStart: null,
+  messageCount: 0,
+};
+
+// ── SCREEN NAVIGATION ──────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showFacultyLogin() { showScreen('faculty-login-screen'); }
+function showAdminLogin()   { showScreen('admin-login-screen'); }
+
+// ── STUDENT SESSION ────────────────────────────────────────────────────────
+function startStudentSession() {
+  const id      = document.getElementById('s-id').value.trim();
+  const name    = document.getElementById('s-name').value.trim();
+  const course  = document.getElementById('s-course').value;
+  const section = document.getElementById('s-section').value.trim();
+  if (!id || !name || !course || !section) { showToast('Please fill in all fields.'); return; }
+
+  state.student = { id, name, course, section };
+  state.sessionStart = new Date().toISOString();
+  state.mode = 'learn'; state.history = []; state.messageCount = 0;
+
+  const initial = name.charAt(0).toUpperCase();
+  document.getElementById('s-avatar-letter').textContent = initial;
+  document.getElementById('s-display-name').textContent  = name;
+  document.getElementById('s-course-tag').textContent    = course;
+  document.getElementById('s-section-tag').textContent   = section;
+  document.getElementById('chat-course-badge').textContent = course;
+
+  showScreen('student-chat-screen');
+  logEvent('session_start', '', '');
+  setMode('learn');
+}
+
+// ── MODE ───────────────────────────────────────────────────────────────────
+const MODE_META = {
+  learn:    { icon:'📖', text:'Learn Mode — Ask me to explain any concept from your course', cls:'learn',
+    chips:['Explain the nursing process','What is infection control?','How do I take vital signs?','Explain patient documentation'] },
+  practice: { icon:'✏️', text:'Practice Mode — I\'ll quiz you and give detailed feedback', cls:'practice',
+    chips:['Give me a practice question','Test me on a case scenario','Multiple choice please','Quiz me on today\'s topic'] },
+  check:    { icon:'✅', text:'Check Your Understanding — 5-question diagnostic', cls:'check',
+    chips:['Run a knowledge check','Test what I know about...','Check my understanding of...','What are my weak areas?'] },
+};
+
+function setMode(m) {
+  state.mode = m; state.history = [];
+  ['learn','practice','check'].forEach(x => {
+    document.getElementById('mode-'+x).classList.toggle('active', x===m);
+  });
+  const meta = MODE_META[m];
+  const banner = document.getElementById('mode-banner');
+  banner.className = 'mode-banner ' + meta.cls;
+  document.getElementById('mode-banner-icon').textContent = meta.icon;
+  document.getElementById('mode-banner-text').textContent = meta.text;
+  document.getElementById('quick-chips').innerHTML = meta.chips.map(c =>
+    `<button class="chip" onclick="useChip('${c}')">${c}</button>`).join('');
+  document.getElementById('messages').innerHTML = '';
+  addWelcome();
+}
+
+function addWelcome() {
+  const c = state.student.course;
+  const first = state.student.name.split(' ')[0];
+  const msgs = {
+    learn: `Hello ${first}! 👋\n\nI'm your AI study companion for **${COURSE_INFO[c].name}**. I'm here to help you understand — not just memorise.\n\nWhat would you like to explore today?`,
+    practice: `Ready to practise! 💪\n\nI'll give you questions from **${COURSE_INFO[c].name}** and give you detailed feedback on each answer.\n\nWhich topic would you like to practise, or shall I choose one?`,
+    check: `Let's check your understanding! ✅\n\nI'll run a 5-question diagnostic for **${COURSE_INFO[c].name}**.\n\nWhat topic have you been studying, or would you like me to choose?`,
+  };
+  addAIMessage(msgs[state.mode]);
+}
+
+function useChip(text) {
+  document.getElementById('user-input').value = text;
+  sendMessage();
+}
+
+// ── SEND MESSAGE ───────────────────────────────────────────────────────────
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  if (CONFIG.PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL_HERE') {
+    showToast('⚠️ Proxy not configured.'); return;
+  }
+  input.value = ''; input.style.height = 'auto';
+  document.getElementById('send-btn').disabled = true;
+  addUserMessage(text);
+  const tid = addTyping();
+
+  const messages = [
+    { role:'system', content: MODE_PROMPTS[state.mode](state.student.course) },
+    ...state.history.slice(-CONFIG.MAX_HISTORY),
+    { role:'user', content: text },
+  ];
+
+  try {
+    const res = await fetch(CONFIG.PROXY_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:CONFIG.MODEL, messages, max_tokens:800, temperature:0.5 }),
+    });
+    if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${res.status}`); }
+    const data  = await res.json();
+    const reply = data.choices[0].message.content;
+    removeTyping(tid);
+    addAIMessage(reply);
+    state.history.push({role:'user',content:text},{role:'assistant',content:reply});
+    state.messageCount++;
+    logEvent('message', text, reply);
+  } catch(e) {
+    removeTyping(tid);
+    addAIMessage(`⚠️ Error: ${e.message}\n\nPlease try again.`);
+    logEvent('error', text, e.message);
+  }
+
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('user-input').focus();
+}
+
+// ── MESSAGES ───────────────────────────────────────────────────────────────
+function addUserMessage(text) {
+  const d = document.createElement('div');
+  d.className = 'msg user';
+  const initial = (state.student.name||'S').charAt(0).toUpperCase();
+  d.innerHTML = `<div class="msg-avatar">${initial}</div><div class="bubble">${esc(text)}</div>`;
+  appendMsg(d);
+}
+function addAIMessage(text) {
+  const d = document.createElement('div');
+  d.className = 'msg ai ' + state.mode;
+  d.innerHTML = `<div class="msg-avatar">🤖</div><div class="bubble">${fmt(esc(text))}</div>`;
+  appendMsg(d);
+}
+function addTyping() {
+  const id = 'typ-'+Date.now(), d = document.createElement('div');
+  d.className = 'msg ai'; d.id = id;
+  d.innerHTML = `<div class="msg-avatar">🤖</div><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+  appendMsg(d); return id;
+}
+function removeTyping(id) { const el=document.getElementById(id); if(el) el.remove(); }
+function appendMsg(el) {
+  const box = document.getElementById('messages');
+  box.appendChild(el); box.scrollTop = box.scrollHeight;
+}
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(t) {
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g,'<em>$1</em>')
+          .replace(/`(.*?)`/g,'<code>$1</code>')
+          .replace(/^#{1,3}\s(.+)$/gm,'<strong>$1</strong>')
+          .replace(/\n/g,'<br>');
+}
+
+// ── INPUT ──────────────────────────────────────────────────────────────────
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
+
+// ── END SESSION ────────────────────────────────────────────────────────────
+function endSession() {
+  if(!confirm('End this study session?')) return;
+  logEvent('session_end','',`${state.messageCount} messages`);
+  setTimeout(()=>{ showScreen('role-screen'); document.getElementById('messages').innerHTML=''; state.history=[];state.messageCount=0; showToast('Session ended. Well done! 📚'); },300);
+}
+
+// ── FACULTY LOGIN ──────────────────────────────────────────────────────────
+function loginFaculty() {
+  const name   = document.getElementById('f-name').value.trim();
+  const course = document.getElementById('f-course').value;
+  const pass   = document.getElementById('f-pass').value;
+  if(!name||!course) { showToast('Please fill in all fields.'); return; }
+  if(pass !== CONFIG.FACULTY_PASSWORD) { showToast('Incorrect password. Please contact the PI.'); return; }
+  document.getElementById('f-course-badge').textContent = course;
+  document.getElementById('f-name-badge').textContent   = name;
+  document.getElementById('f-welcome-name').textContent = `Welcome, ${name}`;
+  buildAuditTable();
+  showScreen('faculty-screen');
+}
+
+function buildAuditTable() {
+  const rows = document.getElementById('audit-rows');
+  rows.innerHTML = '';
+  const samples = [
+    ['What is the nursing process?','The nursing process is a systematic approach consisting of five steps: Assessment, Diagnosis, Planning, Implementation, and Evaluation...'],
+    ['How do I measure blood pressure correctly?','To measure blood pressure accurately: position the patient seated with their arm at heart level, apply the cuff 2–3 cm above the antecubital fossa...'],
+    ['What is standard precautions?','Standard precautions are infection control measures applied to all patients regardless of their diagnosis, including hand hygiene, PPE use...'],
+    ['Explain documentation principles','Accurate nursing documentation follows the FACT principle: Factual, Accurate, Complete, and Timely. Always record objectively...'],
+    ['What is a nursing diagnosis?','A nursing diagnosis identifies a patient\'s response to actual or potential health problems, distinct from a medical diagnosis...'],
+    ['How to prevent pressure ulcers?','Pressure ulcer prevention includes repositioning every 2 hours, skin assessment, moisture management, and nutritional support...'],
+    ['Explain vital signs normal ranges','Normal vital sign ranges for adults: BP 90–120/60–80 mmHg, HR 60–100 bpm, RR 12–20/min, Temp 36.1–37.2°C, SpO2 ≥95%...'],
+    ['What is the medication rights?','The 10 Rights of medication administration include: right patient, right drug, right dose, right route, right time, right documentation...'],
+    ['Explain patient handover (SBAR)','SBAR is a structured communication tool: Situation, Background, Assessment, Recommendation. Used during patient handover...'],
+    ['What is the difference between asepsis and sterile technique?','Surgical asepsis (sterile technique) involves complete elimination of microorganisms. Medical asepsis reduces their number...'],
+  ];
+  samples.forEach(([q,a],i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--gray-400);font-weight:600;">${i+1}</td>
+      <td style="font-size:12px;">${q}</td>
+      <td style="font-size:12px;color:var(--gray-600);">${a.substring(0,90)}…</td>
+      <td>
+        <select class="accuracy-select" id="acc-${i}" onchange="styleAccuracy(this)">
+          <option value="">— Rate —</option>
+          <option value="accurate">✓ Accurate</option>
+          <option value="inaccurate">✗ Inaccurate</option>
+          <option value="outofscope">⚠ Out of Scope</option>
+        </select>
+      </td>
+      <td><textarea class="audit-notes" id="note-${i}" placeholder="Notes…" rows="2"></textarea></td>`;
+    rows.appendChild(tr);
+  });
+}
+
+function styleAccuracy(sel) {
+  sel.className = 'accuracy-select ' + (sel.value==='accurate'?'accurate':sel.value?'inaccurate':'');
+}
+
+function submitAudit() {
+  const week   = document.getElementById('audit-week').value;
+  const course = document.getElementById('f-course-badge').textContent;
+  const name   = document.getElementById('f-name-badge').textContent;
+  const results = [];
+  for(let i=0;i<10;i++) {
+    results.push({ q:i+1, rating:document.getElementById('acc-'+i)?.value||'', note:document.getElementById('note-'+i)?.value||'' });
+  }
+  const payload = { timestamp:new Date().toISOString(), auditor:name, course, week, type:'fidelity_audit', results:JSON.stringify(results) };
+  fetch(CONFIG.SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+  showToast('Audit submitted successfully. Thank you!');
+}
+
+// ── ADMIN LOGIN ────────────────────────────────────────────────────────────
+function loginAdmin() {
+  const pass = document.getElementById('a-pass').value;
+  if(pass !== CONFIG.ADMIN_PASSWORD) { showToast('Incorrect admin password.'); return; }
+  showScreen('admin-screen');
+}
+
+// ── LOGGING ────────────────────────────────────────────────────────────────
+function logEvent(type, userMsg, aiMsg) {
+  if(!CONFIG.SHEETS_ENDPOINT||CONFIG.SHEETS_ENDPOINT.includes('YOUR_')) return;
+  const payload = {
+    timestamp: new Date().toISOString(),
+    studentId: state.student.id, studentName: state.student.name,
+    course: state.student.course, section: state.student.section,
+    mode: state.mode, eventType: type,
+    userMessage: userMsg, aiResponse: (aiMsg||'').substring(0,500),
+    sessionStart: state.sessionStart, messageCount: state.messageCount,
+  };
+  fetch(CONFIG.SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>
