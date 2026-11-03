@@ -1042,7 +1042,9 @@ body {
 const CONFIG = {
   PROXY_URL: "https://uob-companion.uobstudyai.workers.dev",
   MODEL: "gpt-4o-mini",
-  SHEETS_ENDPOINT: "https://script.google.com/macros/s/AKfycbxjFzPBL_Svg_ODJYLY05Z0GAQbm8jhDfatNJEaKxRxv5OOTHRKzGtB589xGOt3KHGI/exec",
+  // Logging goes through the Worker's /log route. The Google Sheets URL and
+  // its password are stored in Cloudflare, never in this public page.
+  LOG_URL: "https://uob-companion.uobstudyai.workers.dev/log",
   MAX_HISTORY: 20,
   FACULTY_PASSWORD: "faculty2027",
   ADMIN_PASSWORD: "admin2027",
@@ -1538,7 +1540,7 @@ function submitAudit() {
     results.push({ q:i+1, rating:document.getElementById('acc-'+i)?.value||'', note:document.getElementById('note-'+i)?.value||'' });
   }
   const payload = { timestamp:new Date().toISOString(), auditor:name, course, week, type:'fidelity_audit', results:JSON.stringify(results) };
-  fetch(CONFIG.SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+  fetch(CONFIG.LOG_URL, { method:'POST', keepalive:true, headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) }).catch(()=>{});
   showToast('Audit submitted successfully. Thank you!');
 }
 
@@ -1551,7 +1553,6 @@ function loginAdmin() {
 
 // ── LOGGING ────────────────────────────────────────────────────────────────
 function logEvent(type, userMsg, aiMsg) {
-  if(!CONFIG.SHEETS_ENDPOINT||CONFIG.SHEETS_ENDPOINT.includes('YOUR_')) return;
   const payload = {
     timestamp: new Date().toISOString(),
     studentId: state.student.id, studentName: state.student.name,
@@ -1560,7 +1561,7 @@ function logEvent(type, userMsg, aiMsg) {
     userMessage: userMsg, aiResponse: (aiMsg||'').substring(0,500),
     sessionStart: state.sessionStart, messageCount: state.messageCount,
   };
-  fetch(CONFIG.SHEETS_ENDPOINT, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+  fetch(CONFIG.LOG_URL, { method:'POST', keepalive:true, headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) }).catch(()=>{});
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────
@@ -1571,4 +1572,3 @@ function showToast(msg) {
 }
 </script>
 </body>
-</html>
