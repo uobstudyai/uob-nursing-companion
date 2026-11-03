@@ -99,7 +99,7 @@ a { color: var(--brand); text-underline-offset: 3px; text-decoration-thickness: 
 
 /* ── Entry (role picker) ────────────────────────────────────────────────── */
 .entry {
-  flex: 1; width: 100%; max-width: 560px; margin: 0 auto;
+  width: 100%; max-width: 560px; margin: 0 auto;
   padding: 56px 24px 40px; display: flex; flex-direction: column;
 }
 .entry h1 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
@@ -114,11 +114,11 @@ a { color: var(--brand); text-underline-offset: 3px; text-decoration-thickness: 
 .role-row span { display: block; font-size: var(--fs-sm); color: var(--muted); }
 .role-row svg { margin-left: auto; width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
 @media (hover: hover) and (pointer: fine) { .role-row:hover { background: var(--brand-soft); } }
-.entry-foot { margin-top: auto; padding-top: 40px; font-size: var(--fs-sm); color: var(--muted); }
+.entry-foot { margin-top: 40px; font-size: var(--fs-sm); color: var(--muted); }
 .entry-foot a { color: var(--brand); text-underline-offset: 3px; }
 
 /* ── Forms ──────────────────────────────────────────────────────────────── */
-.form-wrap { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 40px 24px; }
+.form-wrap { width: 100%; max-width: 480px; margin: 0 auto; padding: 40px 24px; }
 .form-wrap h1 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
 .form-wrap .lede { margin-top: 8px; color: var(--ink-2); }
 .panel { margin-top: 28px; background: var(--surface); border-radius: var(--r); padding: 24px; }
@@ -268,6 +268,30 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 .links a span { font-size: var(--fs-sm); color: var(--muted); }
 @media (hover: hover) and (pointer: fine) { .links a:hover { background: var(--brand-soft); } }
 
+
+/* ── Illustrations (each <figure data-photo-slot> can later hold a photo) ── */
+.hero { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.hero > .entry, .hero > .form-wrap { margin: 0 auto; align-self: center; }
+.hero-art { background: var(--brand); display: flex; align-items: center; justify-content: center; padding: 56px; }
+.hero-art svg { width: 100%; max-width: 520px; height: auto; }
+.side-art { background: var(--brand-soft); display: flex; align-items: center; justify-content: center; padding: 48px; }
+.side-art svg { width: 100%; max-width: 360px; height: auto; }
+.hero-art img, .side-art img { width: 100%; height: 100%; object-fit: cover; }
+.hero-art:has(img), .side-art:has(img) { padding: 0; }
+.hero.art-left { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+.hero.art-left > figure { order: -1; }
+@media (max-width: 900px) {
+  .hero, .hero.art-left { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .hero > figure { order: -1; padding: 20px 24px; }
+  .hero-art svg { max-width: 300px; }
+  .side-art svg { max-width: 200px; }
+  .hero > .entry, .hero > .form-wrap { align-self: start; }
+  .hero > .entry { padding-top: 32px; }
+  .hero > .form-wrap { padding-top: 28px; }
+}
+
+@media (min-width: 901px) { .hero .entry h1 { font-size: 2.5rem; letter-spacing: -0.025em; } }
+
 /* ── Toast ──────────────────────────────────────────────────────────────── */
 #toast {
   position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 8px);
@@ -312,6 +336,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 <!-- ═══ ROLE PICKER ═══════════════════════════════════════════════════════ -->
 <div id="role-screen" class="screen active">
   <header class="bar"><span class="wordmark"><b>UoB</b> Nursing AI Companion</span></header>
+  <div class="hero">
   <main class="entry">
     <h1>Your nursing study companion</h1>
     <p class="lede">Ask questions, practise, and check your understanding in NUR125, NUR225 and NUR312. Part of research project 25-2024, University of Bahrain Department of Nursing.</p>
@@ -331,6 +356,30 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
     </div>
     <p class="entry-foot">Questions about the study? Contact the principal investigator, Marwan Altheeb, at <a href="mailto:maltheeb@uob.edu.bh">maltheeb@uob.edu.bh</a>.</p>
   </main>
+    <figure class="hero-art" aria-hidden="true" data-photo-slot="welcome">
+      <svg viewBox="0 0 480 400" xmlns="http://www.w3.org/2000/svg">
+        <rect x="88" y="104" width="12" height="36" rx="3" fill="#B8912E"/><rect x="76" y="116" width="36" height="12" rx="3" fill="#B8912E"/>
+        <path d="M240 344 C196 326 134 320 70 328 L70 206 C134 198 196 204 240 222 Z" fill="#B8912E"/>
+        <path d="M240 344 C284 326 346 320 410 328 L410 206 C346 198 284 204 240 222 Z" fill="#B8912E"/>
+        <path d="M240 332 C200 314 140 308 84 316 L84 196 C140 188 200 194 240 212 Z" fill="#FFFFFF"/>
+        <path d="M240 332 C280 314 340 308 396 316 L396 196 C340 188 280 194 240 212 Z" fill="#F4F6FA"/>
+        <path d="M240 212 L240 332" stroke="#C9D3E6" stroke-width="3"/>
+        <g stroke="#C9D3E6" stroke-width="7" stroke-linecap="round" fill="none">
+          <path d="M110 232 C150 227 190 230 218 240"/><path d="M110 260 C150 255 190 258 218 268"/><path d="M110 288 C150 283 180 285 200 292"/>
+        </g>
+        <path d="M262 266 L296 266 L307 242 L320 296 L333 250 L343 266 L374 266" stroke="#1F3864" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <g stroke="#E3C77A" stroke-width="12" stroke-linecap="round" fill="none">
+          <path d="M148 66 C144 106 158 130 172 142"/><path d="M196 66 C200 106 186 130 172 142"/>
+          <path d="M172 142 C176 206 286 150 352 176"/>
+        </g>
+        <circle cx="148" cy="60" r="9" fill="#FFFFFF"/><circle cx="196" cy="60" r="9" fill="#FFFFFF"/>
+        <circle cx="374" cy="184" r="30" fill="#E3C77A"/><circle cx="374" cy="184" r="16" fill="#FFFFFF"/>
+        <rect x="288" y="44" width="136" height="86" rx="24" fill="#FFFFFF"/>
+        <path d="M318 126 L306 156 L346 128 Z" fill="#FFFFFF"/>
+        <circle cx="330" cy="87" r="8" fill="#1F3864"/><circle cx="356" cy="87" r="8" fill="#1F3864"/><circle cx="382" cy="87" r="8" fill="#1F3864"/>
+      </svg>
+    </figure>
+  </div>
 </div>
 
 <!-- ═══ STUDENT SIGN-IN ═══════════════════════════════════════════════════ -->
@@ -339,6 +388,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
     <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
     <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
   </header>
+  <div class="hero art-left">
   <main class="form-wrap">
     <h1>Start a study session</h1>
     <p class="lede">Use the details you gave when you joined the study.</p>
@@ -374,6 +424,21 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
       <p class="note">The companion answers within your course's approved topics. Your messages are recorded for research, as explained in your consent form.</p>
     </form>
   </main>
+    <figure class="side-art" aria-hidden="true" data-photo-slot="student">
+      <svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+        <rect x="92" y="44" width="136" height="196" rx="16" fill="#FFFFFF" stroke="#1F3864" stroke-width="6"/>
+        <rect x="126" y="28" width="68" height="32" rx="10" fill="#E3C77A" stroke="#1F3864" stroke-width="6"/>
+        <g stroke="#1F3864" stroke-width="5" fill="#FFFFFF"><rect x="116" y="92" width="24" height="24" rx="6"/><rect x="116" y="138" width="24" height="24" rx="6"/><rect x="116" y="184" width="24" height="24" rx="6"/></g>
+        <g stroke="#9AA7BE" stroke-width="7" stroke-linecap="round"><path d="M154 104 H204"/><path d="M154 150 H196"/><path d="M154 196 H200"/></g>
+        <g stroke="#B8912E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M120 104 l7 7 l14 -15"/><path d="M120 150 l7 7 l14 -15"/></g>
+        <g transform="rotate(32 252 168)">
+          <rect x="240" y="96" width="26" height="112" rx="5" fill="#E3C77A" stroke="#1F3864" stroke-width="6"/>
+          <path d="M240 208 L253 236 L266 208 Z" fill="#FFFFFF" stroke="#1F3864" stroke-width="6" stroke-linejoin="round"/>
+          <rect x="240" y="96" width="26" height="18" rx="4" fill="#1F3864"/>
+        </g>
+      </svg>
+    </figure>
+  </div>
 </div>
 
 <!-- ═══ STUDENT CHAT ══════════════════════════════════════════════════════ -->
@@ -416,6 +481,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
     <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
     <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
   </header>
+  <div class="hero art-left">
   <main class="form-wrap">
     <h1>Instructor sign-in</h1>
     <p class="lede">For the weekly fidelity audit. The password comes from the principal investigator.</p>
@@ -444,6 +510,19 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
       <p class="form-msg" id="f-msg" aria-live="polite"></p>
     </form>
   </main>
+    <figure class="side-art" aria-hidden="true" data-photo-slot="instructor">
+      <svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="40" width="170" height="70" rx="18" fill="#FFFFFF" stroke="#1F3864" stroke-width="6"/>
+        <path d="M70 108 L62 132 L94 110" fill="#FFFFFF" stroke="#1F3864" stroke-width="6" stroke-linejoin="round"/>
+        <g stroke="#9AA7BE" stroke-width="7" stroke-linecap="round"><path d="M66 66 H180"/><path d="M66 86 H150"/></g>
+        <rect x="96" y="132" width="170" height="70" rx="18" fill="#FFFFFF" stroke="#1F3864" stroke-width="6"/>
+        <g stroke="#9AA7BE" stroke-width="7" stroke-linecap="round"><path d="M122 158 H236"/><path d="M122 178 H200"/></g>
+        <circle cx="214" cy="150" r="50" fill="#F4F6FA" fill-opacity=".85" stroke="#1F3864" stroke-width="9"/>
+        <path d="M250 186 L284 222" stroke="#1F3864" stroke-width="16" stroke-linecap="round"/>
+        <path d="M192 150 l14 14 l28 -30" stroke="#B8912E" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </figure>
+  </div>
 </div>
 
 <!-- ═══ FACULTY AUDIT ═════════════════════════════════════════════════════ -->
@@ -496,6 +575,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
     <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
     <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
   </header>
+  <div class="hero art-left">
   <main class="form-wrap">
     <h1>Principal investigator</h1>
     <p class="lede">Sign in to see study usage.</p>
@@ -509,6 +589,16 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
       <p class="form-msg" id="a-msg" aria-live="polite"></p>
     </form>
   </main>
+    <figure class="side-art" aria-hidden="true" data-photo-slot="admin">
+      <svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+        <rect x="44" y="40" width="232" height="190" rx="18" fill="#FFFFFF" stroke="#1F3864" stroke-width="6"/>
+        <g stroke="#E2E8F2" stroke-width="4"><path d="M76 92 H248"/><path d="M76 132 H248"/><path d="M76 172 H248"/></g>
+        <path d="M76 70 V200 H248" stroke="#1F3864" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M92 182 L132 150 L170 164 L208 112 L238 90" stroke="#B8912E" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <g fill="#FFFFFF" stroke="#1F3864" stroke-width="5"><circle cx="92" cy="182" r="8"/><circle cx="132" cy="150" r="8"/><circle cx="170" cy="164" r="8"/><circle cx="208" cy="112" r="8"/><circle cx="238" cy="90" r="8"/></g>
+      </svg>
+    </figure>
+  </div>
 </div>
 
 <!-- ═══ ADMIN OVERVIEW ════════════════════════════════════════════════════ -->
