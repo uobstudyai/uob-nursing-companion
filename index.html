@@ -580,7 +580,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 // passwords) live in the Cloudflare Worker. Nothing secret belongs in this page.
 const CONFIG = {
   API: "https://uob-companion.uobstudyai.workers.dev",
-  MODEL: "gpt-4o-mini",
+  MODEL: "gpt-6-luna",   // the Worker enforces this; shown here for reference
   MAX_HISTORY: 20,
   LOG_ANSWER_CHARS: 6000,
 };
@@ -852,6 +852,7 @@ let state = {
   sessionStart: null,
   messageCount: 0,
   busy: false,
+  modelVersion: '',
 };
 let portal = { role: null, password: "", name: "", course: "", items: [] };
 
@@ -1004,12 +1005,14 @@ async function sendMessage() {
     const res = await fetch(CONFIG.API + '/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: CONFIG.MODEL, messages, max_tokens: 800, temperature: 0.5 }),
+      body: JSON.stringify({ model: CONFIG.MODEL, messages }),
     });
     status = res.status;
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data  = await res.json();
-    const reply = data.choices[0].message.content;
+    const reply = (data.choices && data.choices[0].message.content || '').trim();
+    if (!reply) throw new Error('empty reply');
+    state.modelVersion = data.model || '';
     removeTyping(tid);
     addAIMessage(reply);
     state.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
@@ -1238,6 +1241,7 @@ function logEvent(type, userMsg, aiMsg) {
     mode: state.mode, eventType: type,
     userMessage: userMsg, aiResponse: (aiMsg || '').substring(0, CONFIG.LOG_ANSWER_CHARS),
     sessionStart: state.sessionStart, messageCount: state.messageCount,
+    model: state.modelVersion,
   };
   fetch(CONFIG.API + '/log', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) }).catch(() => {});
 }
