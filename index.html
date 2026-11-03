@@ -4,1050 +4,585 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UoB Nursing AI Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
 :root {
-  --navy: #1F3864;
-  --navy-light: #2E5494;
-  --gold: #C8A84B;
-  --gold-light: #F5E6B8;
-  --blue: #3B82F6;
-  --blue-light: #EFF6FF;
-  --green: #059669;
-  --green-light: #ECFDF5;
-  --orange: #D97706;
-  --orange-light: #FFFBEB;
-  --purple: #7C3AED;
-  --purple-light: #F5F3FF;
-  --gray-50: #F9FAFB;
-  --gray-100: #F3F4F6;
-  --gray-200: #E5E7EB;
-  --gray-400: #9CA3AF;
-  --gray-600: #4B5563;
-  --gray-800: #1F2937;
-  --white: #FFFFFF;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-  --shadow-lg: 0 20px 40px rgba(0,0,0,.12), 0 8px 16px rgba(0,0,0,.06);
-  --radius: 16px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
+  --ground:    #F2F4F7;
+  --surface:   #FFFFFF;
+  --surface-2: #E9EDF2;
+  --line:      #D5DBE3;
+  --ink:       #14213D;
+  --ink-2:     #3B475A;
+  --muted:     #525F73;
+  --brand:     #1F3864;
+  --brand-2:   #17294A;
+  --brand-soft:#E2E8F2;
+  --gold:      #B8912E;
+  --ok:        #1D6B46;  --ok-soft:  #E1F0E7;
+  --bad:       #A3271F;  --bad-soft: #F7E3E1;
+  --warn:      #7A5200;  --warn-soft:#F5EBD6;
+  --focus:     #2B66C9;
+
+  --r-sm: 8px;  --r: 12px;  --r-pill: 999px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --t-fast: 140ms;  --t: 200ms;
+
+  --fs-xs: 0.8125rem;  /* 13 */
+  --fs-sm: 0.875rem;   /* 14 */
+  --fs-md: 1rem;       /* 16 */
+  --fs-lg: 1.25rem;    /* 20 */
+  --fs-xl: 1.75rem;    /* 28 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
-
 body {
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  background: var(--gray-50);
-  color: var(--gray-800);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: var(--fs-md); line-height: 1.55;
+  background: var(--ground); color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
+::selection { background: var(--brand); color: #fff; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.num { font-variant-numeric: tabular-nums; }
+a { color: var(--brand); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
-/* ── SCREENS ── */
-.screen { display: none; flex: 1; flex-direction: column; min-height: 100vh; }
+/* ── Screens ────────────────────────────────────────────────────────────── */
+.screen { display: none; min-height: 100vh; min-height: 100dvh; flex-direction: column; }
 .screen.active { display: flex; }
 
-/* ════════════════════════════════════════════
-   ROLE SELECTION SCREEN
-════════════════════════════════════════════ */
-#role-screen {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, #1a6b9a 100%);
-  align-items: center; justify-content: center; padding: 24px;
+/* ── Top bar ────────────────────────────────────────────────────────────── */
+.bar {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 60px; padding: 10px 24px;
+  background: var(--brand); color: #fff; flex-shrink: 0;
 }
+.wordmark { font-weight: 600; font-size: var(--fs-md); letter-spacing: -0.01em; white-space: nowrap; }
+.wordmark b { color: #E9D7A6; font-weight: 600; }
+.bar .ctx { color: #C9D3E6; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .spacer { flex: 1; }
+.bar .who { color: #C9D3E6; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 22ch; }
+.bar-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 36px; padding: 6px 14px; border-radius: var(--r-sm);
+  background: rgba(255,255,255,.12); border: 0; color: #fff; font-size: var(--fs-sm); font-weight: 500;
+  transition: background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+  white-space: nowrap;
+}
+.bar-btn svg { width: 16px; height: 16px; }
 
-.role-card {
-  background: rgba(255,255,255,.07);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 24px;
-  padding: 48px 40px;
-  max-width: 520px; width: 100%;
-  text-align: center;
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 10px 20px; border-radius: var(--r-sm);
+  border: 0; font-size: var(--fs-md); font-weight: 600;
+  transition: background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out), opacity var(--t-fast) ease;
 }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-quiet   { background: transparent; color: var(--ink-2); font-weight: 500; }
+.btn-ghost   { background: var(--surface-2); color: var(--ink); }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
+.btn-block { width: 100%; }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover:not([disabled]) { background: var(--brand-2); }
+  .btn-quiet:hover { background: var(--surface-2); }
+  .btn-ghost:hover { background: var(--line); }
+  .bar-btn:hover { background: rgba(255,255,255,.2); }
+}
+.btn:active:not([disabled]), .bar-btn:active, .chip:active, .role-row:active, .seg button:active { transform: scale(0.97); }
 
-.role-card .brand { margin-bottom: 32px; }
-.role-card .brand-icon {
-  width: 72px; height: 72px;
-  background: var(--gold);
-  border-radius: 20px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 32px; margin-bottom: 16px;
-  box-shadow: 0 8px 24px rgba(200,168,75,.4);
+/* ── Entry (role picker) ────────────────────────────────────────────────── */
+.entry {
+  flex: 1; width: 100%; max-width: 560px; margin: 0 auto;
+  padding: 56px 24px 40px; display: flex; flex-direction: column;
 }
-.role-card h1 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-.role-card .subtitle { color: rgba(255,255,255,.65); font-size: 14px; }
+.entry h1 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
+.entry .lede { margin-top: 12px; color: var(--ink-2); max-width: 46ch; }
+.roles { margin-top: 36px; display: flex; flex-direction: column; gap: 10px; }
+.role-row {
+  display: flex; align-items: center; gap: 16px; width: 100%; text-align: left;
+  padding: 18px 20px; border-radius: var(--r); border: 0; background: var(--surface);
+  transition: background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.role-row strong { display: block; font-size: var(--fs-md); font-weight: 600; }
+.role-row span { display: block; font-size: var(--fs-sm); color: var(--muted); }
+.role-row svg { margin-left: auto; width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) { .role-row:hover { background: var(--brand-soft); } }
+.entry-foot { margin-top: auto; padding-top: 40px; font-size: var(--fs-sm); color: var(--muted); }
+.entry-foot a { color: var(--brand); text-underline-offset: 3px; }
 
-.role-card h2 { color: rgba(255,255,255,.9); font-size: 15px; font-weight: 500; margin-bottom: 20px; }
+/* ── Forms ──────────────────────────────────────────────────────────────── */
+.form-wrap { flex: 1; width: 100%; max-width: 480px; margin: 0 auto; padding: 40px 24px; }
+.form-wrap h1 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
+.form-wrap .lede { margin-top: 8px; color: var(--ink-2); }
+.panel { margin-top: 28px; background: var(--surface); border-radius: var(--r); padding: 24px; }
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2); margin-bottom: 6px; }
+.field input, .field select, .field textarea {
+  width: 100%; min-height: 46px; padding: 10px 14px;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface);
+  font-size: var(--fs-md);
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+.field input::placeholder, textarea::placeholder { color: #6B778A; }
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px rgba(43,102,201,.18);
+}
+.field .err { display: none; margin-top: 6px; font-size: var(--fs-sm); color: var(--bad); }
+.field.invalid input, .field.invalid select { border-color: var(--bad); }
+.field.invalid .err { display: block; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.actions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.note { margin-top: 20px; font-size: var(--fs-sm); color: var(--ink-2); background: var(--surface-2); border-radius: var(--r-sm); padding: 12px 14px; }
+.form-msg { min-height: 1.4em; margin-top: 12px; font-size: var(--fs-sm); color: var(--bad); }
 
-.role-buttons { display: flex; flex-direction: column; gap: 12px; }
+/* ── Chat ───────────────────────────────────────────────────────────────── */
+#student-chat-screen { height: 100vh; height: 100dvh; }
+.modebar {
+  background: var(--surface); padding: 12px 24px 14px; flex-shrink: 0;
+  border-bottom: 1px solid var(--line);
+}
+.modebar-in { max-width: 820px; margin: 0 auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: var(--r-sm); padding: 3px; gap: 2px; }
+.seg button {
+  min-height: 38px; padding: 6px 16px; border: 0; border-radius: 6px; background: transparent;
+  font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2);
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.seg button[aria-selected="true"] { background: var(--surface); color: var(--brand); font-weight: 600; box-shadow: 0 1px 2px rgba(20,33,61,.12); }
+#mode-desc { font-size: var(--fs-sm); color: var(--muted); }
 
-.role-btn {
-  display: flex; align-items: center; gap: 16px;
-  padding: 18px 20px;
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: var(--radius);
-  cursor: pointer; text-align: left;
-  transition: all .2s; color: white;
-  text-decoration: none;
-}
-.role-btn:hover {
-  background: rgba(255,255,255,.18);
-  border-color: rgba(255,255,255,.35);
-  transform: translateY(-1px);
-}
-.role-btn .role-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
-}
-.role-btn.student .role-icon { background: rgba(59,130,246,.3); }
-.role-btn.faculty .role-icon { background: rgba(5,150,105,.3); }
-.role-btn.admin   .role-icon { background: rgba(124,58,237,.3); }
-.role-btn .role-text strong { display: block; font-size: 15px; font-weight: 600; }
-.role-btn .role-text span   { font-size: 12px; opacity: .7; }
-.role-btn .arrow { margin-left: auto; opacity: .5; font-size: 18px; }
+.thread { flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth; }
+.thread-in { max-width: 820px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.msg { display: flex; flex-direction: column; max-width: 100%; animation: rise var(--t) var(--ease-out); }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.msg .who-label { font-size: var(--fs-xs); color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+.msg .body { font-size: var(--fs-md); line-height: 1.6; }
+.msg.ai .body { background: var(--surface); border-radius: var(--r); padding: 14px 18px; max-width: 68ch; }
+.msg.user { align-items: flex-end; }
+.msg.user .body { background: var(--brand); color: #fff; border-radius: var(--r) var(--r) 4px var(--r); padding: 10px 16px; max-width: min(56ch, 85%); white-space: pre-wrap; }
+.msg.err .body { background: var(--warn-soft); color: var(--warn); }
+.msg .body p + p, .msg .body p + ul, .msg .body ul + p, .msg .body p + ol, .msg .body ol + p { margin-top: 10px; }
+.msg .body ul, .msg .body ol { padding-left: 1.3em; }
+.msg .body li + li { margin-top: 4px; }
+.msg .body code { font-family: ui-monospace, Consolas, monospace; font-size: .9em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+.typing { display: inline-flex; gap: 5px; padding: 4px 0; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); opacity: .35; animation: blink 1.1s infinite; }
+.typing i:nth-child(2) { animation-delay: .18s; } .typing i:nth-child(3) { animation-delay: .36s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: .9; } }
 
-/* ════════════════════════════════════════════
-   SHARED HEADER
-════════════════════════════════════════════ */
-.app-header {
-  background: var(--navy);
-  padding: 14px 24px;
-  display: flex; align-items: center; gap: 14px;
-  box-shadow: 0 2px 12px rgba(0,0,0,.2);
-  flex-shrink: 0;
-}
-.app-header .logo {
-  width: 40px; height: 40px; background: var(--gold);
-  border-radius: 10px; display: flex; align-items: center;
-  justify-content: center; font-size: 20px; flex-shrink: 0;
-}
-.app-header .header-text h1 { color: white; font-size: 16px; font-weight: 700; }
-.app-header .header-text p  { color: rgba(255,255,255,.6); font-size: 11px; }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.header-badge {
-  padding: 4px 12px; border-radius: 20px;
-  font-size: 11px; font-weight: 600;
-  background: rgba(255,255,255,.12); color: rgba(255,255,255,.85);
-}
-.header-badge.student { background: rgba(59,130,246,.25); color: #93C5FD; }
-.header-badge.faculty { background: rgba(5,150,105,.25); color: #6EE7B7; }
-.header-badge.admin   { background: rgba(124,58,237,.25); color: #C4B5FD; }
-.status-pill {
-  display: flex; align-items: center; gap: 5px;
-  color: rgba(255,255,255,.6); font-size: 11px;
-}
-.status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-.back-btn {
-  background: rgba(255,255,255,.1); border: none; color: rgba(255,255,255,.8);
-  padding: 6px 14px; border-radius: var(--radius-xs);
-  font-size: 12px; cursor: pointer; transition: all .2s;
-}
-.back-btn:hover { background: rgba(255,255,255,.2); }
-
-/* ════════════════════════════════════════════
-   STUDENT LOGIN
-════════════════════════════════════════════ */
-#student-login-screen {
-  align-items: center; justify-content: center;
-  background: linear-gradient(160deg, #EFF6FF 0%, #F9FAFB 60%, #F0FDF4 100%);
-  padding: 24px;
-}
-
-.login-panel {
-  background: white; border-radius: 24px;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden; max-width: 460px; width: 100%;
-}
-.login-panel-header {
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-  padding: 32px 36px;
-  text-align: center;
-}
-.login-panel-header .icon {
-  width: 60px; height: 60px; background: rgba(255,255,255,.15);
-  border-radius: 16px; display: inline-flex; align-items: center;
-  justify-content: center; font-size: 28px; margin-bottom: 14px;
-}
-.login-panel-header h2 { color: white; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.login-panel-header p  { color: rgba(255,255,255,.65); font-size: 13px; }
-.login-panel-body { padding: 32px 36px; }
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-group { margin-bottom: 16px; }
-.form-group label {
-  display: block; font-size: 12px; font-weight: 600;
-  color: var(--gray-600); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
-}
-.form-group input, .form-group select {
-  width: 100%; padding: 11px 14px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--radius-sm); font-size: 14px;
-  font-family: inherit; background: var(--gray-50);
-  transition: all .2s; color: var(--gray-800);
-}
-.form-group input:focus, .form-group select:focus {
-  outline: none; border-color: var(--blue);
-  background: white; box-shadow: 0 0 0 3px rgba(59,130,246,.12);
-}
-.btn-primary {
-  width: 100%; padding: 13px;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-  color: white; border: none; border-radius: var(--radius-sm);
-  font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: all .2s; font-family: inherit;
-  box-shadow: 0 4px 12px rgba(31,56,100,.3);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(31,56,100,.35); }
-.btn-secondary {
-  width: 100%; padding: 10px;
-  background: transparent; color: var(--gray-600);
-  border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
-  font-size: 13px; cursor: pointer; font-family: inherit;
-  transition: all .2s; margin-top: 10px;
-}
-.btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
-
-.disclaimer-box {
-  margin-top: 16px; padding: 12px 14px;
-  background: var(--blue-light); border-radius: var(--radius-sm);
-  font-size: 12px; color: var(--navy); line-height: 1.6;
-  border-left: 3px solid var(--blue);
-}
-
-/* ════════════════════════════════════════════
-   STUDENT CHAT INTERFACE
-════════════════════════════════════════════ */
-#student-chat-screen { background: var(--gray-100); }
-
-.chat-layout {
-  display: flex; flex: 1; overflow: hidden;
-}
-
-/* sidebar */
-.chat-sidebar {
-  width: 260px; background: white;
-  border-right: 1px solid var(--gray-200);
-  display: flex; flex-direction: column;
-  flex-shrink: 0;
-}
-.sidebar-student {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid var(--gray-100);
-}
-.student-avatar {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 18px; font-weight: 700; margin-bottom: 10px;
-}
-.sidebar-student .name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
-.sidebar-student .course-tag {
-  display: inline-block; margin-top: 4px;
-  padding: 2px 10px; background: var(--blue-light); color: var(--blue);
-  border-radius: 20px; font-size: 11px; font-weight: 600;
-}
-.sidebar-student .section-tag {
-  display: inline-block; margin-top: 4px; margin-left: 4px;
-  padding: 2px 10px; background: var(--gray-100); color: var(--gray-600);
-  border-radius: 20px; font-size: 11px;
-}
-
-.sidebar-modes { padding: 12px 10px; flex: 1; }
-.sidebar-modes p { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .6px; padding: 0 6px; margin-bottom: 8px; }
-.mode-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 12px; border-radius: var(--radius-sm);
-  cursor: pointer; transition: all .15s;
-  border: none; background: none; width: 100%; text-align: left;
-  font-family: inherit;
-}
-.mode-item:hover { background: var(--gray-100); }
-.mode-item.active { background: var(--blue-light); }
-.mode-item .mode-dot {
-  width: 32px; height: 32px; border-radius: var(--radius-xs);
-  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
-}
-.mode-item.learn   .mode-dot { background: var(--blue-light); }
-.mode-item.practice .mode-dot { background: var(--orange-light); }
-.mode-item.check    .mode-dot { background: var(--green-light); }
-.mode-item.active.learn   .mode-dot { background: rgba(59,130,246,.2); }
-.mode-item .mode-info strong { display: block; font-size: 13px; font-weight: 600; color: var(--gray-800); }
-.mode-item .mode-info span   { font-size: 11px; color: var(--gray-400); }
-.mode-item.active .mode-info strong { color: var(--blue); }
-
-.sidebar-bottom {
-  padding: 12px 10px;
-  border-top: 1px solid var(--gray-100);
-}
-.end-session-btn {
-  width: 100%; padding: 10px; border-radius: var(--radius-sm);
-  background: none; border: 1.5px solid var(--gray-200);
-  color: var(--gray-400); font-size: 13px; cursor: pointer;
-  font-family: inherit; transition: all .2s;
-}
-.end-session-btn:hover { border-color: #FCA5A5; color: #EF4444; background: #FEF2F2; }
-
-/* chat main */
-.chat-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
-.mode-banner {
-  padding: 12px 20px;
-  font-size: 13px; font-weight: 500;
-  display: flex; align-items: center; gap: 8px;
-  border-bottom: 1px solid var(--gray-200);
-}
-.mode-banner.learn    { background: var(--blue-light); color: var(--navy); }
-.mode-banner.practice { background: var(--orange-light); color: var(--orange); }
-.mode-banner.check    { background: var(--green-light); color: var(--green); }
-
-#messages {
-  flex: 1; overflow-y: auto; padding: 24px 20px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-
-.msg { display: flex; gap: 10px; animation: fadein .2s ease; }
-@keyframes fadein { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
-.msg.user { flex-direction: row-reverse; }
-
-.msg-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0; margin-top: 2px;
-}
-.msg.user .msg-avatar { background: var(--navy); color: white; font-weight: 700; font-size: 13px; }
-.msg.ai   .msg-avatar { background: var(--gold-light); font-size: 18px; }
-
-.bubble {
-  max-width: 75%; padding: 13px 16px;
-  font-size: 14px; line-height: 1.7;
-}
-.msg.user  .bubble {
-  background: var(--navy); color: white;
-  border-radius: 18px 4px 18px 18px;
-  box-shadow: var(--shadow-sm);
-}
-.msg.ai .bubble {
-  background: white; color: var(--gray-800);
-  border-radius: 4px 18px 18px 18px;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--gray-200);
-}
-.msg.ai.practice .bubble { border-left: 3px solid var(--orange); }
-.msg.ai.check    .bubble { border-left: 3px solid var(--green); }
-.msg.ai.learn    .bubble { border-left: 3px solid var(--blue); }
-
-.typing-indicator { display: flex; gap: 5px; padding: 5px 2px; }
-.typing-indicator span {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--gray-400);
-  animation: bounce .9s infinite;
-}
-.typing-indicator span:nth-child(2){ animation-delay:.18s }
-.typing-indicator span:nth-child(3){ animation-delay:.36s }
-@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-
-/* quick prompts */
-.quick-chips {
-  padding: 10px 20px 14px;
-  display: flex; flex-wrap: wrap; gap: 7px;
-  background: white; border-top: 1px dashed var(--gray-200);
-}
+.composer { background: var(--surface); border-top: 1px solid var(--line); padding: 12px 24px 16px; flex-shrink: 0; }
+.composer-in { max-width: 820px; margin: 0 auto; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
 .chip {
-  padding: 6px 14px; border-radius: 20px;
-  background: var(--gray-100); border: 1px solid var(--gray-200);
-  font-size: 12px; color: var(--gray-600); cursor: pointer;
-  font-family: inherit; transition: all .15s;
+  flex-shrink: 0; min-height: 36px; padding: 6px 14px; border-radius: var(--r-pill);
+  border: 0; background: var(--surface-2); color: var(--ink-2); font-size: var(--fs-sm);
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
 }
-.chip:hover { background: var(--blue-light); border-color: var(--blue); color: var(--navy); }
-
-/* input area */
-.chat-input-area {
-  background: white; border-top: 1px solid var(--gray-200);
-  padding: 16px 20px;
-  display: flex; gap: 10px; align-items: flex-end;
-}
+@media (hover: hover) and (pointer: fine) { .chip:hover { background: var(--brand-soft); color: var(--brand); } }
+.input-row { display: flex; gap: 10px; align-items: flex-end; }
 #user-input {
-  flex: 1; resize: none;
-  border: 1.5px solid var(--gray-200); border-radius: 12px;
-  padding: 11px 16px; font-size: 14px; font-family: inherit;
-  max-height: 130px; line-height: 1.5; background: var(--gray-50);
-  transition: all .2s; color: var(--gray-800);
+  flex: 1; resize: none; min-height: 48px; max-height: 160px; padding: 12px 16px;
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--surface);
+  font-size: var(--fs-md); line-height: 1.45;
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
 }
-#user-input:focus {
-  outline: none; border-color: var(--blue); background: white;
-  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
-}
-#user-input::placeholder { color: var(--gray-400); }
-#send-btn {
-  padding: 11px 20px;
-  background: var(--navy); color: white;
-  border: none; border-radius: 12px;
-  font-size: 20px; cursor: pointer;
-  transition: all .2s; flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-}
-#send-btn:hover { background: var(--navy-light); transform: scale(1.03); }
-#send-btn:disabled { background: var(--gray-400); transform: none; cursor: not-allowed; }
+#user-input:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px rgba(43,102,201,.18); }
+#send-btn { width: 48px; min-height: 48px; padding: 0; border-radius: var(--r); }
+#send-btn svg { width: 20px; height: 20px; }
 
-/* ════════════════════════════════════════════
-   FACULTY PORTAL
-════════════════════════════════════════════ */
-#faculty-screen { background: var(--gray-50); }
+/* ── Portal pages (faculty / admin) ─────────────────────────────────────── */
+.page { flex: 1; width: 100%; max-width: 1040px; margin: 0 auto; padding: 40px 24px 64px; }
+.page h1 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
+.page .lede { margin-top: 8px; color: var(--ink-2); max-width: 70ch; }
+.page h2 { font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.01em; }
+.block { margin-top: 40px; }
+.block-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.block-head .spacer { flex: 1; }
+.controls { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+.controls .field { margin: 0; }
+.controls .field select { min-width: 140px; }
+.status { font-size: var(--fs-sm); color: var(--muted); min-height: 1.4em; }
+.status.bad { color: var(--bad); }
+.status.ok { color: var(--ok); }
 
-.portal-layout {
-  flex: 1; display: flex; flex-direction: column;
-  max-width: 900px; width: 100%; margin: 0 auto; padding: 28px 24px;
+.audit-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+.audit-item { background: var(--surface); border-radius: var(--r); padding: 20px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+.audit-item .meta { font-size: var(--fs-xs); color: var(--muted); margin-bottom: 6px; }
+.audit-item .q { font-weight: 600; margin-bottom: 10px; }
+.audit-item .a { font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.6; max-height: 220px; overflow-y: auto; background: var(--ground); border-radius: var(--r-sm); padding: 12px 14px; white-space: pre-wrap; }
+.rate { display: flex; flex-direction: column; gap: 10px; }
+.rate fieldset { border: 0; }
+.rate legend { font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2); margin-bottom: 6px; }
+.rate-opts { display: flex; flex-direction: column; gap: 6px; }
+.rate-opts label {
+  display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 8px 12px;
+  border-radius: var(--r-sm); background: var(--ground); font-size: var(--fs-sm); cursor: pointer;
+  transition: background-color var(--t-fast) ease;
 }
+.rate-opts input { accent-color: var(--brand); width: 16px; height: 16px; }
+.rate-opts label:has(input[value="accurate"]:checked)   { background: var(--ok-soft);  color: var(--ok); font-weight: 600; }
+.rate-opts label:has(input[value="inaccurate"]:checked) { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+.rate-opts label:has(input[value="outofscope"]:checked) { background: var(--warn-soft); color: var(--warn); font-weight: 600; }
+.rate textarea { width: 100%; min-height: 64px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); font-size: var(--fs-sm); resize: vertical; }
+.rate textarea:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px rgba(43,102,201,.18); }
+.empty { background: var(--surface); border-radius: var(--r); padding: 28px; color: var(--ink-2); }
+.empty strong { display: block; color: var(--ink); margin-bottom: 4px; }
+.submit-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 20px; }
 
-.portal-welcome {
-  background: linear-gradient(135deg, var(--green) 0%, #047857 100%);
-  border-radius: var(--radius); padding: 28px 32px; margin-bottom: 24px; color: white;
-  display: flex; align-items: center; gap: 20px;
-}
-.portal-welcome .welcome-icon { font-size: 48px; }
-.portal-welcome h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.portal-welcome p  { opacity: .8; font-size: 14px; }
+.duties { list-style: none; display: grid; gap: 10px; max-width: 75ch; }
+.duties li { padding-left: 18px; position: relative; color: var(--ink-2); }
+.duties li::before { content: ""; position: absolute; left: 0; top: .65em; width: 6px; height: 6px; border-radius: 50%; background: var(--brand); }
 
-.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-.info-card {
-  background: white; border-radius: var(--radius); padding: 20px 22px;
-  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
-}
-.info-card .card-icon { font-size: 28px; margin-bottom: 10px; }
-.info-card h3 { font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; }
-.info-card .card-value { font-size: 20px; font-weight: 700; color: var(--gray-800); }
-.info-card .card-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.table-wrap { background: var(--surface); border-radius: var(--r); overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+table.data th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 12px 16px; background: var(--surface-2); white-space: nowrap; }
+table.data td { padding: 12px 16px; border-top: 1px solid var(--surface-2); }
+table.data td.n, table.data th.n { text-align: right; font-variant-numeric: tabular-nums; }
+table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 
-.section-card {
-  background: white; border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); margin-bottom: 20px;
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.plain-list { list-style: none; background: var(--surface); border-radius: var(--r); }
+.plain-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 14px 18px; }
+.plain-list li + li { border-top: 1px solid var(--surface-2); }
+.plain-list .t { font-weight: 500; }
+.plain-list .d { font-size: var(--fs-sm); color: var(--muted); }
+.tag { font-size: var(--fs-xs); font-weight: 600; padding: 3px 10px; border-radius: var(--r-pill); white-space: nowrap; }
+.tag.done { background: var(--ok-soft); color: var(--ok); }
+.tag.now  { background: var(--brand-soft); color: var(--brand); }
+.tag.next { background: var(--surface-2); color: var(--ink-2); }
+.tag.wait { background: var(--warn-soft); color: var(--warn); }
+.links { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.links a {
+  display: block; padding: 14px 18px; border-radius: var(--r); background: var(--surface); text-decoration: none; color: var(--ink);
+  transition: background-color var(--t-fast) ease;
 }
-.section-card h3 { font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
-.section-card .section-desc { font-size: 13px; color: var(--gray-400); margin-bottom: 20px; }
+.links a strong { display: block; font-weight: 600; }
+.links a span { font-size: var(--fs-sm); color: var(--muted); }
+@media (hover: hover) and (pointer: fine) { .links a:hover { background: var(--brand-soft); } }
 
-.audit-week {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
-}
-.audit-week label { font-size: 13px; font-weight: 600; color: var(--gray-600); min-width: 80px; }
-.week-select {
-  padding: 8px 14px; border: 1.5px solid var(--gray-200);
-  border-radius: var(--radius-xs); font-size: 13px; font-family: inherit;
-  background: var(--gray-50);
-}
-.week-select:focus { outline: none; border-color: var(--green); }
-
-.audit-table { width: 100%; border-collapse: collapse; }
-.audit-table th {
-  background: var(--gray-50); padding: 10px 14px;
-  text-align: left; font-size: 12px; font-weight: 600;
-  color: var(--gray-600); text-transform: uppercase; letter-spacing: .5px;
-  border-bottom: 2px solid var(--gray-200);
-}
-.audit-table td {
-  padding: 12px 14px; border-bottom: 1px solid var(--gray-100);
-  font-size: 13px; vertical-align: top;
-}
-.audit-table tr:hover td { background: var(--gray-50); }
-.accuracy-select {
-  padding: 5px 10px; border: 1.5px solid var(--gray-200);
-  border-radius: var(--radius-xs); font-size: 12px;
-  font-family: inherit; background: white;
-}
-.accuracy-select:focus { outline: none; border-color: var(--green); }
-.accuracy-select.accurate { border-color: var(--green); color: var(--green); background: var(--green-light); }
-.accuracy-select.inaccurate { border-color: #EF4444; color: #EF4444; background: #FEF2F2; }
-
-.audit-notes {
-  width: 100%; padding: 8px 12px;
-  border: 1.5px solid var(--gray-200); border-radius: var(--radius-xs);
-  font-size: 12px; font-family: inherit; resize: vertical; min-height: 44px;
-}
-.audit-notes:focus { outline: none; border-color: var(--green); }
-
-.submit-audit-btn {
-  padding: 12px 28px;
-  background: var(--green); color: white;
-  border: none; border-radius: var(--radius-sm);
-  font-size: 14px; font-weight: 600; cursor: pointer;
-  font-family: inherit; transition: all .2s;
-  box-shadow: 0 4px 12px rgba(5,150,105,.25);
-}
-.submit-audit-btn:hover { background: #047857; transform: translateY(-1px); }
-
-.faculty-login-form {
-  background: white; border-radius: var(--radius); padding: 32px;
-  box-shadow: var(--shadow-lg); max-width: 420px; width: 100%;
-}
-
-/* ════════════════════════════════════════════
-   ADMIN DASHBOARD
-════════════════════════════════════════════ */
-#admin-screen { background: var(--gray-50); }
-
-.admin-layout {
-  flex: 1; display: flex; flex-direction: column;
-  max-width: 960px; width: 100%; margin: 0 auto; padding: 28px 24px;
-}
-
-.admin-welcome {
-  background: linear-gradient(135deg, var(--purple) 0%, #5B21B6 100%);
-  border-radius: var(--radius); padding: 28px 32px; margin-bottom: 24px; color: white;
-  display: flex; align-items: center; gap: 20px;
-}
-.admin-welcome .welcome-icon { font-size: 48px; }
-.admin-welcome h2 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.admin-welcome p  { opacity: .8; font-size: 14px; }
-
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.stat-card {
-  background: white; border-radius: var(--radius); padding: 18px 20px;
-  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); text-align: center;
-}
-.stat-card .stat-icon { font-size: 26px; margin-bottom: 8px; }
-.stat-card .stat-num { font-size: 26px; font-weight: 700; color: var(--gray-800); }
-.stat-card .stat-label { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
-
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-
-.admin-card {
-  background: white; border-radius: var(--radius); padding: 22px;
-  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
-}
-.admin-card h3 { font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-
-.course-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0; border-bottom: 1px solid var(--gray-100);
-}
-.course-row:last-child { border-bottom: none; }
-.course-row .course-info strong { display: block; font-size: 13px; font-weight: 600; }
-.course-row .course-info span   { font-size: 12px; color: var(--gray-400); }
-.status-badge {
-  padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
-}
-.status-badge.active  { background: var(--green-light); color: var(--green); }
-.status-badge.pending { background: var(--orange-light); color: var(--orange); }
-.status-badge.ready   { background: var(--blue-light); color: var(--blue); }
-
-.timeline-item {
-  display: flex; gap: 12px; padding: 10px 0;
-  border-bottom: 1px solid var(--gray-100);
-}
-.timeline-item:last-child { border-bottom: none; }
-.timeline-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  margin-top: 5px; flex-shrink: 0;
-}
-.timeline-dot.done { background: var(--green); }
-.timeline-dot.now  { background: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
-.timeline-dot.soon { background: var(--gray-300); }
-.timeline-item .t-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
-.timeline-item .t-date  { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
-
-.action-btn {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 12px 14px; border-radius: var(--radius-sm);
-  border: 1.5px solid var(--gray-200); background: var(--gray-50);
-  cursor: pointer; transition: all .2s; text-decoration: none;
-  font-family: inherit; margin-bottom: 8px; color: var(--gray-700); font-size: 13px;
-}
-.action-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple-light); }
-.action-btn .ab-icon { font-size: 18px; }
-.action-btn .ab-text strong { display: block; font-weight: 600; font-size: 13px; }
-.action-btn .ab-text span   { font-size: 11px; color: var(--gray-400); }
-.action-btn .ab-arrow { margin-left: auto; color: var(--gray-400); }
-
-.admin-login-form {
-  background: white; border-radius: var(--radius); padding: 32px;
-  box-shadow: var(--shadow-lg); max-width: 380px; width: 100%;
-}
-
-/* ════════════════════════════════════════════
-   SHARED LOGIN WRAPPERS
-════════════════════════════════════════════ */
-.portal-login-screen {
-  flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px;
-}
-.portal-login-screen.faculty-bg {
-  background: linear-gradient(160deg, #ECFDF5 0%, #F9FAFB 60%, #EFF6FF 100%);
-}
-.portal-login-screen.admin-bg {
-  background: linear-gradient(160deg, #F5F3FF 0%, #F9FAFB 60%, #FFF7ED 100%);
-}
-
-/* ════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════ */
+/* ── Toast ──────────────────────────────────────────────────────────────── */
 #toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: var(--gray-800); color: white;
-  padding: 12px 20px; border-radius: 10px; font-size: 13px;
-  opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 999;
-  box-shadow: var(--shadow);
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 8px);
+  max-width: calc(100% - 32px); background: var(--ink); color: #fff;
+  padding: 12px 18px; border-radius: var(--r-sm); font-size: var(--fs-sm);
+  box-shadow: 0 8px 24px rgba(20,33,61,.25);
+  opacity: 0; pointer-events: none; z-index: 50;
+  transition: opacity var(--t) var(--ease-out), transform var(--t) var(--ease-out);
 }
-#toast.show { opacity: 1; }
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-/* scrollbar */
-#messages::-webkit-scrollbar { width: 4px; }
-#messages::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 2px; }
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+.thread::-webkit-scrollbar, .audit-item .a::-webkit-scrollbar { width: 8px; }
+.thread::-webkit-scrollbar-thumb, .audit-item .a::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 
-/* responsive */
-@media (max-width: 640px) {
-  .chat-sidebar { display: none; }
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-  .two-col { grid-template-columns: 1fr; }
-  .cards-grid { grid-template-columns: 1fr; }
-  .form-row { grid-template-columns: 1fr; }
+/* ── Small screens ──────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .bar { padding: 8px 16px; gap: 10px; }
+  .bar .who, .bar .ctx.hide-sm { display: none; }
+  .modebar, .composer { padding-left: 16px; padding-right: 16px; }
+  .modebar-in { gap: 8px; }
+  .seg { width: 100%; }
+  .seg button { flex: 1; padding: 6px 8px; }
+  .thread { padding: 16px; }
+  .msg.ai .body { padding: 12px 14px; }
+  .entry { padding-top: 40px; }
+  .page { padding: 28px 16px 48px; }
+  .audit-item { grid-template-columns: 1fr; }
+  .split { grid-template-columns: 1fr; gap: 32px; }
+  .links { grid-template-columns: 1fr; }
+  .two { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; scroll-behavior: auto !important; }
+  .btn:active, .bar-btn:active, .chip:active, .role-row:active, .seg button:active { transform: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════════
-     ROLE SELECTION
-════════════════════════════════════════════ -->
+<!-- ═══ ROLE PICKER ═══════════════════════════════════════════════════════ -->
 <div id="role-screen" class="screen active">
-  <div class="role-card">
-    <div class="brand">
-      <div class="brand-icon">🏥</div>
-      <h1>UoB Nursing AI Companion</h1>
-      <p class="subtitle">University of Bahrain — Department of Nursing</p>
-    </div>
-    <h2>Who are you?</h2>
-    <div class="role-buttons">
-      <button class="role-btn student" onclick="showScreen('student-login-screen')">
-        <div class="role-icon">🎓</div>
-        <div class="role-text">
-          <strong>Student</strong>
-          <span>Access your AI study companion</span>
-        </div>
-        <span class="arrow">›</span>
+  <header class="bar"><span class="wordmark"><b>UoB</b> Nursing AI Companion</span></header>
+  <main class="entry">
+    <h1>Your nursing study companion</h1>
+    <p class="lede">Ask questions, practise, and check your understanding in NUR125, NUR225 and NUR312. Part of research project 25-2024, University of Bahrain Department of Nursing.</p>
+    <div class="roles" role="list">
+      <button class="role-row" role="listitem" onclick="showScreen('student-login-screen')">
+        <div><strong>I'm a student</strong><span>Start a study session for your course</span></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <button class="role-btn faculty" onclick="showFacultyLogin()">
-        <div class="role-icon">👩‍🏫</div>
-        <div class="role-text">
-          <strong>Faculty</strong>
-          <span>Fidelity audit and course management</span>
-        </div>
-        <span class="arrow">›</span>
+      <button class="role-row" role="listitem" onclick="showScreen('faculty-login-screen')">
+        <div><strong>I'm a course instructor</strong><span>Weekly fidelity audit</span></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </button>
-      <button class="role-btn admin" onclick="showAdminLogin()">
-        <div class="role-icon">⚙️</div>
-        <div class="role-text">
-          <strong>Administrator</strong>
-          <span>Study dashboard and oversight</span>
-        </div>
-        <span class="arrow">›</span>
+      <button class="role-row" role="listitem" onclick="showScreen('admin-login-screen')">
+        <div><strong>Principal investigator</strong><span>Study overview and usage</span></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </button>
     </div>
-  </div>
+    <p class="entry-foot">Questions about the study? Contact the principal investigator, Marwan Altheeb, at <a href="mailto:maltheeb@uob.edu.bh">maltheeb@uob.edu.bh</a>.</p>
+  </main>
 </div>
 
-<!-- ════════════════════════════════════════════
-     STUDENT LOGIN
-════════════════════════════════════════════ -->
+<!-- ═══ STUDENT SIGN-IN ═══════════════════════════════════════════════════ -->
 <div id="student-login-screen" class="screen">
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#EFF6FF 0%,#F9FAFB 60%,#F0FDF4 100%);padding:24px;">
-    <div class="login-panel">
-      <div class="login-panel-header">
-        <div class="icon">🎓</div>
-        <h2>Student Sign In</h2>
-        <p>Enter your details to start your study session</p>
-      </div>
-      <div class="login-panel-body">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Student ID</label>
-            <input type="text" id="s-id" placeholder="e.g. 20220001">
-          </div>
-          <div class="form-group">
-            <label>Section</label>
-            <input type="text" id="s-section" placeholder="e.g. Section 1">
-          </div>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
+    <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
+  </header>
+  <main class="form-wrap">
+    <h1>Start a study session</h1>
+    <p class="lede">Use the details you gave when you joined the study.</p>
+    <form class="panel" id="student-form" novalidate onsubmit="event.preventDefault(); startStudentSession();">
+      <div class="two">
+        <div class="field" id="fld-s-id">
+          <label for="s-id">Student ID</label>
+          <input id="s-id" inputmode="numeric" autocomplete="off" placeholder="e.g. 20220001">
+          <p class="err">Enter your student ID.</p>
         </div>
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" id="s-name" placeholder="Your full name">
-        </div>
-        <div class="form-group">
-          <label>Course</label>
-          <select id="s-course">
-            <option value="">— Select your course —</option>
-            <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
-            <option value="NUR225">NUR225 — Adult Health Nursing I</option>
-            <option value="NUR312">NUR312 — Nursing Research and Evidence-Based Practice</option>
-          </select>
-        </div>
-        <button class="btn-primary" onclick="startStudentSession()">Start Study Session →</button>
-        <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
-        <div class="disclaimer-box">
-          ℹ️ This companion is restricted to approved course materials. Your interactions are logged for research purposes as described in your consent form.
+        <div class="field" id="fld-s-section">
+          <label for="s-section">Section</label>
+          <input id="s-section" autocomplete="off" placeholder="e.g. 1">
+          <p class="err">Enter your section.</p>
         </div>
       </div>
-    </div>
-  </div>
+      <div class="field" id="fld-s-name">
+        <label for="s-name">Full name</label>
+        <input id="s-name" autocomplete="name" placeholder="As registered at UoB">
+        <p class="err">Enter your full name.</p>
+      </div>
+      <div class="field" id="fld-s-course">
+        <label for="s-course">Course</label>
+        <select id="s-course">
+          <option value="">Choose your course</option>
+          <option value="NUR125">NUR125 · Fundamentals of Nursing I</option>
+          <option value="NUR225">NUR225 · Adult Health Nursing I</option>
+          <option value="NUR312">NUR312 · Nursing Research and Evidence-Based Practice</option>
+        </select>
+        <p class="err">Choose your course.</p>
+      </div>
+      <div class="actions"><button class="btn btn-primary btn-block" type="submit">Start session</button></div>
+      <p class="note">The companion answers within your course's approved topics. Your messages are recorded for research, as explained in your consent form.</p>
+    </form>
+  </main>
 </div>
 
-<!-- ════════════════════════════════════════════
-     STUDENT CHAT
-════════════════════════════════════════════ -->
+<!-- ═══ STUDENT CHAT ══════════════════════════════════════════════════════ -->
 <div id="student-chat-screen" class="screen">
-  <div class="app-header">
-    <div class="logo">🏥</div>
-    <div class="header-text">
-      <h1>UoB Nursing AI Companion</h1>
-      <p>University of Bahrain — Department of Nursing</p>
-    </div>
-    <div class="header-right">
-      <span class="header-badge student" id="chat-course-badge"></span>
-      <span class="status-pill"><span class="status-dot"></span> Live</span>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Companion</span>
+    <span class="ctx" id="chat-course"></span>
+    <span class="spacer"></span>
+    <span class="who" id="chat-who"></span>
+    <button class="bar-btn" onclick="endSession()">End session</button>
+  </header>
+  <div class="modebar">
+    <div class="modebar-in">
+      <div class="seg" role="tablist" aria-label="Study mode">
+        <button role="tab" id="mode-learn" aria-selected="true" onclick="setMode('learn')">Learn</button>
+        <button role="tab" id="mode-practice" aria-selected="false" onclick="setMode('practice')">Practice</button>
+        <button role="tab" id="mode-check" aria-selected="false" onclick="setMode('check')">Check</button>
+      </div>
+      <p id="mode-desc" aria-live="polite"></p>
     </div>
   </div>
-  <div class="chat-layout">
-    <!-- sidebar -->
-    <div class="chat-sidebar">
-      <div class="sidebar-student">
-        <div class="student-avatar" id="s-avatar-letter">S</div>
-        <div class="name" id="s-display-name">Student</div>
-        <span class="course-tag" id="s-course-tag">Course</span>
-        <span class="section-tag" id="s-section-tag">Section</span>
-      </div>
-      <div class="sidebar-modes">
-        <p>Study Modes</p>
-        <button class="mode-item learn active" id="mode-learn" onclick="setMode('learn')">
-          <div class="mode-dot">📖</div>
-          <div class="mode-info"><strong>Learn</strong><span>Explain concepts</span></div>
+  <div class="thread" id="thread"><div class="thread-in" id="messages" aria-live="polite"></div></div>
+  <div class="composer">
+    <div class="composer-in">
+      <div class="chips" id="quick-chips" aria-label="Suggested questions"></div>
+      <div class="input-row">
+        <label for="user-input" class="visually-hidden">Your message</label>
+        <textarea id="user-input" rows="1" placeholder="Ask a question about your course" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button id="send-btn" class="btn btn-primary" onclick="sendMessage()" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
         </button>
-        <button class="mode-item practice" id="mode-practice" onclick="setMode('practice')">
-          <div class="mode-dot">✏️</div>
-          <div class="mode-info"><strong>Practice</strong><span>Q&A with feedback</span></div>
-        </button>
-        <button class="mode-item check" id="mode-check" onclick="setMode('check')">
-          <div class="mode-dot">✅</div>
-          <div class="mode-info"><strong>Check</strong><span>Knowledge diagnostic</span></div>
-        </button>
-      </div>
-      <div class="sidebar-bottom">
-        <button class="end-session-btn" onclick="endSession()">End Session</button>
-      </div>
-    </div>
-    <!-- chat -->
-    <div class="chat-main">
-      <div class="mode-banner learn" id="mode-banner">
-        <span id="mode-banner-icon">📖</span>
-        <span id="mode-banner-text">Learn Mode — Ask me to explain any concept from your course</span>
-      </div>
-      <div id="messages"></div>
-      <div class="quick-chips" id="quick-chips"></div>
-      <div class="chat-input-area">
-        <textarea id="user-input" rows="1" placeholder="Ask a question or type a message…"
-          onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button id="send-btn" onclick="sendMessage()">➤</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     FACULTY LOGIN
-════════════════════════════════════════════ -->
+<!-- ═══ FACULTY SIGN-IN ═══════════════════════════════════════════════════ -->
 <div id="faculty-login-screen" class="screen">
-  <div class="portal-login-screen faculty-bg">
-    <div class="faculty-login-form">
-      <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-size:44px;margin-bottom:12px;">👩‍🏫</div>
-        <h2 style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:4px;">Faculty Portal</h2>
-        <p style="font-size:13px;color:var(--gray-400);">Sign in to access the fidelity audit dashboard</p>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
+    <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
+  </header>
+  <main class="form-wrap">
+    <h1>Instructor sign-in</h1>
+    <p class="lede">For the weekly fidelity audit. The password comes from the principal investigator.</p>
+    <form class="panel" novalidate onsubmit="event.preventDefault(); loginFaculty();">
+      <div class="field" id="fld-f-name">
+        <label for="f-name">Your name</label>
+        <input id="f-name" autocomplete="name" placeholder="e.g. Dr. Hala Sanad">
+        <p class="err">Enter your name.</p>
       </div>
-      <div class="form-group">
-        <label>Your Name</label>
-        <input type="text" id="f-name" placeholder="Dr. / Mr. / Ms. ...">
-      </div>
-      <div class="form-group">
-        <label>Assigned Course</label>
+      <div class="field" id="fld-f-course">
+        <label for="f-course">Course you audit</label>
         <select id="f-course">
-          <option value="">— Select your course —</option>
-          <option value="NUR125">NUR125 — Fundamentals of Nursing I</option>
-          <option value="NUR225">NUR225 — Adult Health Nursing I</option>
-          <option value="NUR312">NUR312 — Nursing Research and Evidence-Based Practice</option>
+          <option value="">Choose a course</option>
+          <option value="NUR125">NUR125 · Fundamentals of Nursing I</option>
+          <option value="NUR225">NUR225 · Adult Health Nursing I</option>
+          <option value="NUR312">NUR312 · Nursing Research and Evidence-Based Practice</option>
         </select>
+        <p class="err">Choose a course.</p>
       </div>
-      <div class="form-group">
-        <label>Access Password</label>
-        <input type="password" id="f-pass" placeholder="Provided by the PI">
+      <div class="field" id="fld-f-pass">
+        <label for="f-pass">Password</label>
+        <input id="f-pass" type="password" autocomplete="current-password">
+        <p class="err">Enter the password.</p>
       </div>
-      <button class="btn-primary" style="background:linear-gradient(135deg,var(--green),#047857);box-shadow:0 4px 12px rgba(5,150,105,.3);" onclick="loginFaculty()">Access Faculty Portal →</button>
-      <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
-    </div>
-  </div>
+      <div class="actions"><button class="btn btn-primary btn-block" type="submit" id="f-submit">Sign in</button></div>
+      <p class="form-msg" id="f-msg" aria-live="polite"></p>
+    </form>
+  </main>
 </div>
 
-<!-- ════════════════════════════════════════════
-     FACULTY DASHBOARD
-════════════════════════════════════════════ -->
+<!-- ═══ FACULTY AUDIT ═════════════════════════════════════════════════════ -->
 <div id="faculty-screen" class="screen">
-  <div class="app-header">
-    <div class="logo">🏥</div>
-    <div class="header-text">
-      <h1>Faculty Portal</h1>
-      <p>UoB Nursing AI Companion Study — Project 25-2024</p>
-    </div>
-    <div class="header-right">
-      <span class="header-badge faculty" id="f-course-badge"></span>
-      <span class="header-badge faculty" id="f-name-badge"></span>
-      <button class="back-btn" onclick="showScreen('role-screen')">Sign Out</button>
-    </div>
-  </div>
-  <div class="portal-layout">
-    <div class="portal-welcome">
-      <div class="welcome-icon">👩‍🏫</div>
-      <div>
-        <h2 id="f-welcome-name">Welcome</h2>
-        <p>Weekly Fidelity Audit Dashboard — Review AI responses for accuracy and scope compliance</p>
-      </div>
-    </div>
-    <div class="cards-grid">
-      <div class="info-card">
-        <div class="card-icon">📋</div>
-        <h3>Study Period</h3>
-        <div class="card-value">Weeks 1 – 7</div>
-        <div class="card-sub">Semester 2, Feb – Apr 2027</div>
-      </div>
-      <div class="info-card">
-        <div class="card-icon">🕐</div>
-        <h3>Audit Frequency</h3>
-        <div class="card-value">Weekly</div>
-        <div class="card-sub">~15–20 minutes per week</div>
-      </div>
-    </div>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Faculty</span>
+    <span class="ctx" id="f-course-badge"></span>
+    <span class="spacer"></span>
+    <span class="who" id="f-name-badge"></span>
+    <button class="bar-btn" onclick="signOut()">Sign out</button>
+  </header>
+  <main class="page">
+    <h1>Weekly fidelity audit</h1>
+    <p class="lede">Rate 10 companion answers drawn at random from your course's last 7 days of student use. Student names and IDs are never shown. It takes about 15–20 minutes.</p>
 
-    <div class="section-card">
-      <h3>Weekly Fidelity Audit</h3>
-      <p class="section-desc">Review the 10 sample AI responses below. For each, mark whether the response was accurate and within scope, then add notes for any issues. Submit at the end.</p>
-
-      <div class="audit-week">
-        <label>Study Week:</label>
-        <select class="week-select" id="audit-week">
-          <option>Week 1</option><option>Week 2</option><option>Week 3</option>
-          <option>Week 4</option><option>Week 5</option><option>Week 6</option><option>Week 7</option>
+    <div class="controls">
+      <div class="field">
+        <label for="audit-week">Study week</label>
+        <select id="audit-week">
+          <option>Week 1</option><option>Week 2</option><option>Week 3</option><option>Week 4</option>
+          <option>Week 5</option><option>Week 6</option><option>Week 7</option>
         </select>
       </div>
+      <button class="btn btn-ghost" id="draw-btn" onclick="loadAuditSample()">Draw a new sample</button>
+    </div>
+    <p class="status" id="sample-status" aria-live="polite" style="margin-top:12px"></p>
 
-      <table class="audit-table">
-        <thead>
-          <tr>
-            <th style="width:40px;">#</th>
-            <th>Student Question</th>
-            <th>AI Response (excerpt)</th>
-            <th style="width:130px;">Accuracy</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody id="audit-rows">
-          <!-- Populated by JS -->
-        </tbody>
-      </table>
+    <div class="audit-list" id="audit-list"></div>
 
-      <div style="margin-top:20px;display:flex;align-items:center;gap:14px;">
-        <button class="submit-audit-btn" onclick="submitAudit()">Submit Audit Report</button>
-        <span style="font-size:12px;color:var(--gray-400);">Results are sent to the research team automatically</span>
-      </div>
+    <div class="submit-row" id="submit-row" hidden>
+      <button class="btn btn-primary" id="submit-audit" onclick="submitAudit()">Submit audit</button>
+      <p class="status" id="submit-status" aria-live="polite"></p>
     </div>
 
-    <div class="section-card">
-      <h3>📌 Instructions</h3>
-      <p class="section-desc">Your responsibilities during the study period:</p>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
-          <span style="font-size:13px;">Each week, you will receive 10 randomly selected AI interaction samples from your course via this portal.</span>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
-          <span style="font-size:13px;">Mark each response as <strong>Accurate & In-Scope</strong>, <strong>Inaccurate</strong>, or <strong>Out of Scope</strong>.</span>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <span style="color:var(--green);font-size:18px;flex-shrink:0;">✓</span>
-          <span style="font-size:13px;">Add notes for any issues. The PI will correct problems within 48 hours.</span>
-        </div>
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <span style="color:var(--orange);font-size:18px;flex-shrink:0;">!</span>
-          <span style="font-size:13px;">For urgent issues, contact the PI directly: <strong>maltheeb@uob.edu.bh</strong></span>
-        </div>
-      </div>
-    </div>
-  </div>
+    <section class="block">
+      <h2 style="margin-bottom:14px">Your role during weeks 1–7</h2>
+      <ul class="duties">
+        <li>Each week, open this page and rate the 10 answers drawn for your course.</li>
+        <li>Mark each one Accurate and in scope, Inaccurate, or Out of scope. Add a note for anything that needs fixing.</li>
+        <li>The principal investigator corrects reported problems within 48 hours.</li>
+        <li>For anything urgent, email <a href="mailto:maltheeb@uob.edu.bh">maltheeb@uob.edu.bh</a> directly.</li>
+      </ul>
+    </section>
+  </main>
 </div>
 
-<!-- ════════════════════════════════════════════
-     ADMIN LOGIN
-════════════════════════════════════════════ -->
+<!-- ═══ ADMIN SIGN-IN ═════════════════════════════════════════════════════ -->
 <div id="admin-login-screen" class="screen">
-  <div class="portal-login-screen admin-bg">
-    <div class="admin-login-form">
-      <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-size:44px;margin-bottom:12px;">⚙️</div>
-        <h2 style="font-size:20px;font-weight:700;color:var(--gray-800);margin-bottom:4px;">Admin Dashboard</h2>
-        <p style="font-size:13px;color:var(--gray-400);">Principal Investigator access only</p>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
+    <button class="bar-btn" onclick="showScreen('role-screen')">Back</button>
+  </header>
+  <main class="form-wrap">
+    <h1>Principal investigator</h1>
+    <p class="lede">Sign in to see study usage.</p>
+    <form class="panel" novalidate onsubmit="event.preventDefault(); loginAdmin();">
+      <div class="field" id="fld-a-pass">
+        <label for="a-pass">Password</label>
+        <input id="a-pass" type="password" autocomplete="current-password">
+        <p class="err">Enter the password.</p>
       </div>
-      <div class="form-group">
-        <label>Admin Password</label>
-        <input type="password" id="a-pass" placeholder="Enter admin password">
-      </div>
-      <button class="btn-primary" style="background:linear-gradient(135deg,var(--purple),#5B21B6);box-shadow:0 4px 12px rgba(124,58,237,.3);" onclick="loginAdmin()">Access Dashboard →</button>
-      <button class="btn-secondary" onclick="showScreen('role-screen')">← Back</button>
-    </div>
-  </div>
+      <div class="actions"><button class="btn btn-primary btn-block" type="submit" id="a-submit">Sign in</button></div>
+      <p class="form-msg" id="a-msg" aria-live="polite"></p>
+    </form>
+  </main>
 </div>
 
-<!-- ════════════════════════════════════════════
-     ADMIN DASHBOARD
-════════════════════════════════════════════ -->
+<!-- ═══ ADMIN OVERVIEW ════════════════════════════════════════════════════ -->
 <div id="admin-screen" class="screen">
-  <div class="app-header">
-    <div class="logo">🏥</div>
-    <div class="header-text">
-      <h1>Admin Dashboard</h1>
-      <p>UoB Nursing AI Companion Study — Project 25-2024</p>
-    </div>
-    <div class="header-right">
-      <span class="header-badge admin">Principal Investigator</span>
-      <button class="back-btn" onclick="showScreen('role-screen')">Sign Out</button>
-    </div>
-  </div>
-  <div class="admin-layout">
-    <div class="admin-welcome">
-      <div class="welcome-icon">📊</div>
-      <div>
-        <h2>Study Overview — Project 25-2024</h2>
-        <p>Impact of a Customized AI Companion on Nursing Students' Motivation for Learning and Self-Directed Learning</p>
+  <header class="bar">
+    <span class="wordmark"><b>UoB</b> Study admin</span>
+    <span class="ctx hide-sm">Project 25-2024</span>
+    <span class="spacer"></span>
+    <button class="bar-btn" onclick="signOut()">Sign out</button>
+  </header>
+  <main class="page">
+    <h1>Study overview</h1>
+    <p class="lede">Impact of a Customized AI Companion on Nursing Students' Motivation for Learning and Self-Directed Learning. Weeks 1–7, February to April 2027.</p>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>Usage by course</h2><span class="spacer"></span>
+        <button class="btn btn-ghost" id="stats-btn" onclick="loadStats()">Refresh</button>
       </div>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Course</th><th class="n">Students</th><th class="n">Sessions</th><th class="n">Messages</th><th class="n">Last 7 days</th><th class="n">Errors</th><th>Last activity</th></tr></thead>
+          <tbody id="stats-body"><tr><td colspan="7">Loading…</td></tr></tbody>
+          <tfoot id="stats-foot"></tfoot>
+        </table>
+      </div>
+      <p class="status" id="stats-status" aria-live="polite" style="margin-top:10px"></p>
+    </section>
+
+    <div class="split block">
+      <section>
+        <h2 style="margin-bottom:14px">Course materials</h2>
+        <ul class="plain-list">
+          <li><div><div class="t">NUR125 · Fundamentals of Nursing I</div><div class="d">Level 1 · 6 sections</div></div><span class="tag wait">Pending</span></li>
+          <li><div><div class="t">NUR225 · Adult Health Nursing I</div><div class="d">Level 2 · 6 sections</div></div><span class="tag wait">Pending</span></li>
+          <li><div><div class="t">NUR312 · Research and EBP</div><div class="d">Level 3 · 6 sections</div></div><span class="tag wait">Pending</span></li>
+        </ul>
+      </section>
+      <section>
+        <h2 style="margin-bottom:14px">Timeline</h2>
+        <ul class="plain-list">
+          <li><div><div class="t">Ethics application</div><div class="d">Submitted</div></div><span class="tag done">Done</span></li>
+          <li><div><div class="t">Companion platform</div><div class="d">Nov 2026</div></div><span class="tag done">Done</span></li>
+          <li><div><div class="t">Instructor materials</div><div class="d">Nov 2026</div></div><span class="tag now">In progress</span></li>
+          <li><div><div class="t">Expert review and sign-off</div><div class="d">Jan 2027</div></div><span class="tag next">Planned</span></li>
+          <li><div><div class="t">Data collection, T1 to T2</div><div class="d">Feb – Apr 2027</div></div><span class="tag next">Planned</span></li>
+          <li><div><div class="t">Analysis and write-up</div><div class="d">May – Aug 2027</div></div><span class="tag next">Planned</span></li>
+        </ul>
+      </section>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">📚</div>
-        <div class="stat-num">3</div>
-        <div class="stat-label">Courses</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-num">18</div>
-        <div class="stat-label">Sections</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🧪</div>
-        <div class="stat-num">7</div>
-        <div class="stat-label">Study Weeks</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-num">Feb 2027</div>
-        <div class="stat-label">Start Date</div>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="admin-card">
-        <h3>📚 Course Status</h3>
-        <div class="course-row">
-          <div class="course-info">
-            <strong>NUR125 — Fundamentals of Nursing I</strong>
-            <span>Level 1 · 6 sections · ~30 students each</span>
-          </div>
-          <span class="status-badge pending">Materials Pending</span>
-        </div>
-        <div class="course-row">
-          <div class="course-info">
-            <strong>NUR225 — Adult Health Nursing I</strong>
-            <span>Level 2 · 6 sections · ~30 students each</span>
-          </div>
-          <span class="status-badge pending">Materials Pending</span>
-        </div>
-        <div class="course-row">
-          <div class="course-info">
-            <strong>NUR312 — Nursing Research & EBP</strong>
-            <span>Level 3 · 6 sections · ~30 students each</span>
-          </div>
-          <span class="status-badge pending">Materials Pending</span>
-        </div>
-      </div>
-
-      <div class="admin-card">
-        <h3>📅 Study Timeline</h3>
-        <div class="timeline-item">
-          <div class="timeline-dot done"></div>
-          <div><div class="t-title">Ethics Application Submitted</div><div class="t-date">Completed</div></div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot done"></div>
-          <div><div class="t-title">AI Companion Platform Built</div><div class="t-date">Completed — Nov 2026</div></div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot now"></div>
-          <div><div class="t-title">Instructor Materials Collection</div><div class="t-date">In Progress — Nov 2026</div></div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot soon"></div>
-          <div><div class="t-title">Expert Review & Sign-Off</div><div class="t-date">Planned — Jan 2027</div></div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot soon"></div>
-          <div><div class="t-title">Data Collection (T1 → T2)</div><div class="t-date">Feb – Apr 2027</div></div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot soon"></div>
-          <div><div class="t-title">Analysis & Write-Up</div><div class="t-date">May – Aug 2027</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="admin-card">
-      <h3>🔗 Quick Actions</h3>
-      <a class="action-btn" href="https://script.google.com/macros/s/AKfycbxjFzPBL_Svg_ODJYLY05Z0GAQbm8jhDfatNJEaKxRxv5OOTHRKzGtB589xGOt3KHGI/exec" target="_blank">
-        <span class="ab-icon">📊</span>
-        <div class="ab-text"><strong>Open Interaction Log</strong><span>Google Sheets — live student usage data</span></div>
-        <span class="ab-arrow">›</span>
-      </a>
-      <a class="action-btn" href="https://github.com/uobstudyai/uob-nursing-companion" target="_blank">
-        <span class="ab-icon">💻</span>
-        <div class="ab-text"><strong>GitHub Repository</strong><span>Update index.html with course materials</span></div>
-        <span class="ab-arrow">›</span>
-      </a>
-      <a class="action-btn" href="https://dash.cloudflare.com" target="_blank">
-        <span class="ab-icon">☁️</span>
-        <div class="ab-text"><strong>Cloudflare Workers</strong><span>Monitor API proxy usage and costs</span></div>
-        <span class="ab-arrow">›</span>
-      </a>
-      <a class="action-btn" href="https://platform.openai.com/usage" target="_blank">
-        <span class="ab-icon">🤖</span>
-        <div class="ab-text"><strong>OpenAI Usage Dashboard</strong><span>Monitor API spend and token usage</span></div>
-        <span class="ab-arrow">›</span>
-      </a>
-    </div>
-  </div>
+    <section class="block">
+      <h2 style="margin-bottom:14px">Tools</h2>
+      <ul class="links">
+        <li><a href="https://docs.google.com/spreadsheets/" target="_blank" rel="noopener"><strong>Interaction log</strong><span>Google Sheets: Interactions and Audits tabs</span></a></li>
+        <li><a href="https://github.com/uobstudyai/uob-nursing-companion" target="_blank" rel="noopener"><strong>Website code</strong><span>GitHub repository</span></a></li>
+        <li><a href="https://dash.cloudflare.com" target="_blank" rel="noopener"><strong>Cloudflare Worker</strong><span>Secrets and request logs</span></a></li>
+        <li><a href="https://platform.openai.com/usage" target="_blank" rel="noopener"><strong>OpenAI usage</strong><span>Spend and limits</span></a></li>
+      </ul>
+    </section>
+  </main>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ── CONFIGURATION ──────────────────────────────────────────────────────────
+// All secrets (OpenAI key, Sheets URL, logging token, faculty and admin
+// passwords) live in the Cloudflare Worker. Nothing secret belongs in this page.
 const CONFIG = {
-  PROXY_URL: "https://uob-companion.uobstudyai.workers.dev",
+  API: "https://uob-companion.uobstudyai.workers.dev",
   MODEL: "gpt-4o-mini",
-  // Logging goes through the Worker's /log route. The Google Sheets URL and
-  // its password are stored in Cloudflare, never in this public page.
-  LOG_URL: "https://uob-companion.uobstudyai.workers.dev/log",
   MAX_HISTORY: 20,
-  FACULTY_PASSWORD: "faculty2027",
-  ADMIN_PASSWORD: "admin2027",
+  LOG_ANSWER_CHARS: 6000,
 };
 
 // ── COURSE INFO ────────────────────────────────────────────────────────────
@@ -1308,6 +843,7 @@ const MODE_PROMPTS = {
   check:    c => SYSTEM_PROMPTS[c]?.check    || "You are a nursing study-check companion. Run a 5-question diagnostic and summarise gaps.",
 };
 
+
 // ── STATE ──────────────────────────────────────────────────────────────────
 let state = {
   student: { id:"", name:"", course:"", section:"" },
@@ -1315,73 +851,127 @@ let state = {
   history: [],
   sessionStart: null,
   messageCount: 0,
+  busy: false,
 };
+let portal = { role: null, password: "", name: "", course: "", items: [] };
 
-// ── SCREEN NAVIGATION ──────────────────────────────────────────────────────
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
 }
-function showFacultyLogin() { showScreen('faculty-login-screen'); }
-function showAdminLogin()   { showScreen('admin-login-screen'); }
+function signOut() {
+  portal = { role: null, password: "", name: "", course: "", items: [] };
+  document.getElementById('f-pass').value = '';
+  document.getElementById('a-pass').value = '';
+  showScreen('role-screen');
+}
+
+// ── FORM HELPERS ───────────────────────────────────────────────────────────
+function requireFields(ids) {
+  let first = null;
+  ids.forEach(([fieldId, inputId]) => {
+    const el = document.getElementById(inputId);
+    const ok = el.value.trim() !== '';
+    document.getElementById(fieldId).classList.toggle('invalid', !ok);
+    el.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    if (!ok && !first) first = el;
+  });
+  if (first) first.focus();
+  return !first;
+}
+
+async function api(path, payload) {
+  const res = await fetch(CONFIG.API + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify(payload),
+  });
+  let data = {};
+  try { data = await res.json(); } catch (e) {}
+  return { ok: res.ok, status: res.status, data };
+}
+
+function friendlyError(status) {
+  if (status === 0)   return "Can't reach the companion. Check your internet connection and try again.";
+  if (status === 401) return "That password wasn't accepted. Check it with the principal investigator.";
+  if (status === 403) return "The companion only works from the official study link. Open it from Blackboard and try again.";
+  if (status === 413) return "This conversation has grown too long. Switch mode or start a new session to continue.";
+  if (status === 429) return "The companion is busy right now. Wait a minute and try again.";
+  return "Something went wrong on our side. Try again in a moment. If it keeps happening, tell your instructor.";
+}
 
 // ── STUDENT SESSION ────────────────────────────────────────────────────────
 function startStudentSession() {
+  const ok = requireFields([['fld-s-id','s-id'],['fld-s-section','s-section'],['fld-s-name','s-name'],['fld-s-course','s-course']]);
+  if (!ok) return;
   const id      = document.getElementById('s-id').value.trim();
   const name    = document.getElementById('s-name').value.trim();
   const course  = document.getElementById('s-course').value;
   const section = document.getElementById('s-section').value.trim();
-  if (!id || !name || !course || !section) { showToast('Please fill in all fields.'); return; }
 
   state.student = { id, name, course, section };
   state.sessionStart = new Date().toISOString();
-  state.mode = 'learn'; state.history = []; state.messageCount = 0;
+  state.history = []; state.messageCount = 0;
 
-  const initial = name.charAt(0).toUpperCase();
-  document.getElementById('s-avatar-letter').textContent = initial;
-  document.getElementById('s-display-name').textContent  = name;
-  document.getElementById('s-course-tag').textContent    = course;
-  document.getElementById('s-section-tag').textContent   = section;
-  document.getElementById('chat-course-badge').textContent = course;
+  document.getElementById('chat-course').textContent = course + ' · ' + COURSE_INFO[course].name;
+  document.getElementById('chat-who').textContent = name;
 
   showScreen('student-chat-screen');
   logEvent('session_start', '', '');
   setMode('learn');
+  document.getElementById('user-input').focus();
 }
 
-// ── MODE ───────────────────────────────────────────────────────────────────
+// ── MODES ──────────────────────────────────────────────────────────────────
 const MODE_META = {
-  learn:    { icon:'📖', text:'Learn Mode — Ask me to explain any concept from your course', cls:'learn',
-    chips:['Explain the nursing process','What is infection control?','How do I take vital signs?','Explain patient documentation'] },
-  practice: { icon:'✏️', text:'Practice Mode — I\'ll quiz you and give detailed feedback', cls:'practice',
-    chips:['Give me a practice question','Test me on a case scenario','Multiple choice please','Quiz me on today\'s topic'] },
-  check:    { icon:'✅', text:'Check Your Understanding — 5-question diagnostic', cls:'check',
-    chips:['Run a knowledge check','Test what I know about...','Check my understanding of...','What are my weak areas?'] },
+  learn:    { desc: 'Ask me to explain any concept from your course.',
+    chips: ['Explain the nursing process', 'What is infection control?', 'How do I take vital signs?', 'Explain patient documentation'] },
+  practice: { desc: "I'll ask you questions and give feedback on each answer.",
+    chips: ['Give me a practice question', 'Test me on a case scenario', 'Multiple choice, please', "Quiz me on today's topic"] },
+  check:    { desc: 'A 5-question check that shows what to review.',
+    chips: ['Run a knowledge check', 'Check my understanding of a topic', 'What are my weak areas?'] },
 };
 
 function setMode(m) {
   state.mode = m; state.history = [];
   ['learn','practice','check'].forEach(x => {
-    document.getElementById('mode-'+x).classList.toggle('active', x===m);
+    const b = document.getElementById('mode-' + x);
+    b.setAttribute('aria-selected', x === m ? 'true' : 'false');
+    b.tabIndex = x === m ? 0 : -1;
   });
-  const meta = MODE_META[m];
-  const banner = document.getElementById('mode-banner');
-  banner.className = 'mode-banner ' + meta.cls;
-  document.getElementById('mode-banner-icon').textContent = meta.icon;
-  document.getElementById('mode-banner-text').textContent = meta.text;
-  document.getElementById('quick-chips').innerHTML = meta.chips.map(c =>
-    `<button class="chip" onclick="useChip('${c}')">${c}</button>`).join('');
+  document.getElementById('mode-desc').textContent = MODE_META[m].desc;
+  const chips = document.getElementById('quick-chips');
+  chips.innerHTML = '';
+  MODE_META[m].chips.forEach(text => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.textContent = text;
+    b.addEventListener('click', () => useChip(text));
+    chips.appendChild(b);
+  });
   document.getElementById('messages').innerHTML = '';
   addWelcome();
 }
 
+// Arrow keys move between mode tabs
+document.addEventListener('keydown', e => {
+  if (!e.target.closest || !e.target.closest('.seg')) return;
+  const order = ['learn','practice','check'];
+  const i = order.indexOf(state.mode);
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    const next = order[(i + (e.key === 'ArrowRight' ? 1 : 2)) % 3];
+    setMode(next); document.getElementById('mode-' + next).focus(); e.preventDefault();
+  }
+});
+
 function addWelcome() {
-  const c = state.student.course;
+  const c = COURSE_INFO[state.student.course].name;
   const first = state.student.name.split(' ')[0];
   const msgs = {
-    learn: `Hello ${first}! 👋\n\nI'm your AI study companion for **${COURSE_INFO[c].name}**. I'm here to help you understand — not just memorise.\n\nWhat would you like to explore today?`,
-    practice: `Ready to practise! 💪\n\nI'll give you questions from **${COURSE_INFO[c].name}** and give you detailed feedback on each answer.\n\nWhich topic would you like to practise, or shall I choose one?`,
-    check: `Let's check your understanding! ✅\n\nI'll run a 5-question diagnostic for **${COURSE_INFO[c].name}**.\n\nWhat topic have you been studying, or would you like me to choose?`,
+    learn:    `Hello ${first}. I'm your study companion for **${c}**.\n\nAsk me about any concept from the course and I'll explain it step by step. What would you like to explore?`,
+    practice: `Let's practise **${c}**.\n\nI'll ask one question at a time and give you feedback on each answer. Pick a topic, or ask me to choose one.`,
+    check:    `Let's check your understanding of **${c}**.\n\nI'll ask 5 questions, then tell you what you know well and what to review. Which topic have you been studying?`,
   };
   addAIMessage(msgs[state.mode]);
 }
@@ -1393,162 +983,250 @@ function useChip(text) {
 
 // ── SEND MESSAGE ───────────────────────────────────────────────────────────
 async function sendMessage() {
+  if (state.busy) return;
   const input = document.getElementById('user-input');
   const text  = input.value.trim();
   if (!text) return;
-  if (CONFIG.PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL_HERE') {
-    showToast('⚠️ Proxy not configured.'); return;
-  }
-  input.value = ''; input.style.height = 'auto';
+  input.value = ''; autoResize(input);
+  state.busy = true;
   document.getElementById('send-btn').disabled = true;
   addUserMessage(text);
   const tid = addTyping();
 
   const messages = [
-    { role:'system', content: MODE_PROMPTS[state.mode](state.student.course) },
+    { role: 'system', content: MODE_PROMPTS[state.mode](state.student.course) },
     ...state.history.slice(-CONFIG.MAX_HISTORY),
-    { role:'user', content: text },
+    { role: 'user', content: text },
   ];
 
+  let status = 0;
   try {
-    const res = await fetch(CONFIG.PROXY_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:CONFIG.MODEL, messages, max_tokens:800, temperature:0.5 }),
+    const res = await fetch(CONFIG.API + '/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: CONFIG.MODEL, messages, max_tokens: 800, temperature: 0.5 }),
     });
-    if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e.error?.message||`HTTP ${res.status}`); }
+    status = res.status;
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data  = await res.json();
     const reply = data.choices[0].message.content;
     removeTyping(tid);
     addAIMessage(reply);
-    state.history.push({role:'user',content:text},{role:'assistant',content:reply});
+    state.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
     state.messageCount++;
     logEvent('message', text, reply);
-  } catch(e) {
+  } catch (e) {
     removeTyping(tid);
-    addAIMessage(`⚠️ Error: ${e.message}\n\nPlease try again.`);
-    logEvent('error', text, e.message);
+    addAIMessage(friendlyError(status), true);
+    logEvent('error', text, (e && e.message) || 'network error');
   }
 
+  state.busy = false;
   document.getElementById('send-btn').disabled = false;
-  document.getElementById('user-input').focus();
+  input.focus();
 }
 
 // ── MESSAGES ───────────────────────────────────────────────────────────────
 function addUserMessage(text) {
   const d = document.createElement('div');
   d.className = 'msg user';
-  const initial = (state.student.name||'S').charAt(0).toUpperCase();
-  d.innerHTML = `<div class="msg-avatar">${initial}</div><div class="bubble">${esc(text)}</div>`;
+  d.innerHTML = `<span class="visually-hidden">You said:</span><div class="body">${esc(text)}</div>`;
   appendMsg(d);
 }
-function addAIMessage(text) {
+function addAIMessage(text, isError) {
   const d = document.createElement('div');
-  d.className = 'msg ai ' + state.mode;
-  d.innerHTML = `<div class="msg-avatar">🤖</div><div class="bubble">${fmt(esc(text))}</div>`;
+  d.className = 'msg ai' + (isError ? ' err' : '');
+  d.innerHTML = `<span class="who-label">Companion</span><div class="body">${isError ? esc(text) : fmt(esc(text))}</div>`;
   appendMsg(d);
 }
 function addTyping() {
-  const id = 'typ-'+Date.now(), d = document.createElement('div');
+  const id = 'typ-' + Date.now(), d = document.createElement('div');
   d.className = 'msg ai'; d.id = id;
-  d.innerHTML = `<div class="msg-avatar">🤖</div><div class="bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+  d.innerHTML = `<span class="who-label">Companion</span><div class="body"><span class="typing" aria-label="Companion is writing"><i></i><i></i><i></i></span></div>`;
   appendMsg(d); return id;
 }
-function removeTyping(id) { const el=document.getElementById(id); if(el) el.remove(); }
+function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
 function appendMsg(el) {
-  const box = document.getElementById('messages');
-  box.appendChild(el); box.scrollTop = box.scrollHeight;
+  document.getElementById('messages').appendChild(el);
+  const t = document.getElementById('thread'); t.scrollTop = t.scrollHeight;
 }
-function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+// Light Markdown: paragraphs, bullet and numbered lists, bold, italics, code, headings.
+function inline(t) {
+  return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+          .replace(/(^|[^*])\*(?!\s)(.+?)\*/g,'$1<em>$2</em>')
+          .replace(/`([^`]+)`/g,'<code>$1</code>');
+}
 function fmt(t) {
-  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-          .replace(/\*(.*?)\*/g,'<em>$1</em>')
-          .replace(/`(.*?)`/g,'<code>$1</code>')
-          .replace(/^#{1,3}\s(.+)$/gm,'<strong>$1</strong>')
-          .replace(/\n/g,'<br>');
+  const lines = t.split('\n');
+  let html = '', list = null, para = [];
+  const flushPara = () => { if (para.length) { html += '<p>' + inline(para.join('<br>')) + '</p>'; para = []; } };
+  const flushList = () => { if (list) { html += `</${list}>`; list = null; } };
+  lines.forEach(raw => {
+    const line = raw.trim();
+    let m;
+    if (!line) { flushPara(); flushList(); return; }
+    if ((m = line.match(/^#{1,4}\s+(.+)$/))) { flushPara(); flushList(); html += '<p><strong>' + inline(m[1]) + '</strong></p>'; return; }
+    if ((m = line.match(/^[-*•]\s+(.+)$/))) { flushPara(); if (list !== 'ul') { flushList(); html += '<ul>'; list = 'ul'; } html += '<li>' + inline(m[1]) + '</li>'; return; }
+    if ((m = line.match(/^\d+[.)]\s+(.+)$/))) { flushPara(); if (list !== 'ol') { flushList(); html += '<ol>'; list = 'ol'; } html += '<li>' + inline(m[1]) + '</li>'; return; }
+    flushList(); para.push(line);
+  });
+  flushPara(); flushList();
+  return html;
 }
 
 // ── INPUT ──────────────────────────────────────────────────────────────────
-function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
-function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 160) + 'px'; }
 
 // ── END SESSION ────────────────────────────────────────────────────────────
 function endSession() {
-  if(!confirm('End this study session?')) return;
-  logEvent('session_end','',`${state.messageCount} messages`);
-  setTimeout(()=>{ showScreen('role-screen'); document.getElementById('messages').innerHTML=''; state.history=[];state.messageCount=0; showToast('Session ended. Well done! 📚'); },300);
+  if (!confirm('End this study session?')) return;
+  logEvent('session_end', '', `${state.messageCount} messages`);
+  document.getElementById('messages').innerHTML = '';
+  state.history = []; state.messageCount = 0;
+  showScreen('role-screen');
+  showToast('Session ended. Your progress has been recorded.');
 }
 
-// ── FACULTY LOGIN ──────────────────────────────────────────────────────────
-function loginFaculty() {
+// ── FACULTY ────────────────────────────────────────────────────────────────
+async function loginFaculty() {
+  const ok = requireFields([['fld-f-name','f-name'],['fld-f-course','f-course'],['fld-f-pass','f-pass']]);
+  if (!ok) return;
   const name   = document.getElementById('f-name').value.trim();
   const course = document.getElementById('f-course').value;
   const pass   = document.getElementById('f-pass').value;
-  if(!name||!course) { showToast('Please fill in all fields.'); return; }
-  if(pass !== CONFIG.FACULTY_PASSWORD) { showToast('Incorrect password. Please contact the PI.'); return; }
-  document.getElementById('f-course-badge').textContent = course;
-  document.getElementById('f-name-badge').textContent   = name;
-  document.getElementById('f-welcome-name').textContent = `Welcome, ${name}`;
-  buildAuditTable();
+  const btn = document.getElementById('f-submit'), msg = document.getElementById('f-msg');
+  btn.disabled = true; btn.textContent = 'Checking…'; msg.textContent = '';
+  let r;
+  try { r = await api('/auth', { role: 'faculty', password: pass }); }
+  catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if (!r.ok) { msg.textContent = friendlyError(r.status); return; }
+
+  portal = { role: 'faculty', password: pass, name, course, items: [] };
+  document.getElementById('f-course-badge').textContent = course + ' · ' + COURSE_INFO[course].name;
+  document.getElementById('f-name-badge').textContent = name;
   showScreen('faculty-screen');
+  loadAuditSample();
 }
 
-function buildAuditTable() {
-  const rows = document.getElementById('audit-rows');
-  rows.innerHTML = '';
-  const samples = [
-    ['What is the nursing process?','The nursing process is a systematic approach consisting of five steps: Assessment, Diagnosis, Planning, Implementation, and Evaluation...'],
-    ['How do I measure blood pressure correctly?','To measure blood pressure accurately: position the patient seated with their arm at heart level, apply the cuff 2–3 cm above the antecubital fossa...'],
-    ['What is standard precautions?','Standard precautions are infection control measures applied to all patients regardless of their diagnosis, including hand hygiene, PPE use...'],
-    ['Explain documentation principles','Accurate nursing documentation follows the FACT principle: Factual, Accurate, Complete, and Timely. Always record objectively...'],
-    ['What is a nursing diagnosis?','A nursing diagnosis identifies a patient\'s response to actual or potential health problems, distinct from a medical diagnosis...'],
-    ['How to prevent pressure ulcers?','Pressure ulcer prevention includes repositioning every 2 hours, skin assessment, moisture management, and nutritional support...'],
-    ['Explain vital signs normal ranges','Normal vital sign ranges for adults: BP 90–120/60–80 mmHg, HR 60–100 bpm, RR 12–20/min, Temp 36.1–37.2°C, SpO2 ≥95%...'],
-    ['What is the medication rights?','The 10 Rights of medication administration include: right patient, right drug, right dose, right route, right time, right documentation...'],
-    ['Explain patient handover (SBAR)','SBAR is a structured communication tool: Situation, Background, Assessment, Recommendation. Used during patient handover...'],
-    ['What is the difference between asepsis and sterile technique?','Surgical asepsis (sterile technique) involves complete elimination of microorganisms. Medical asepsis reduces their number...'],
-  ];
-  samples.forEach(([q,a],i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="color:var(--gray-400);font-weight:600;">${i+1}</td>
-      <td style="font-size:12px;">${q}</td>
-      <td style="font-size:12px;color:var(--gray-600);">${a.substring(0,90)}…</td>
-      <td>
-        <select class="accuracy-select" id="acc-${i}" onchange="styleAccuracy(this)">
-          <option value="">— Rate —</option>
-          <option value="accurate">✓ Accurate</option>
-          <option value="inaccurate">✗ Inaccurate</option>
-          <option value="outofscope">⚠ Out of Scope</option>
-        </select>
-      </td>
-      <td><textarea class="audit-notes" id="note-${i}" placeholder="Notes…" rows="2"></textarea></td>`;
-    rows.appendChild(tr);
-  });
-}
+async function loadAuditSample() {
+  const status = document.getElementById('sample-status');
+  const list = document.getElementById('audit-list');
+  const btn = document.getElementById('draw-btn');
+  document.getElementById('submit-row').hidden = true;
+  document.getElementById('submit-status').textContent = '';
+  status.className = 'status'; status.textContent = 'Drawing a random sample…';
+  btn.disabled = true; list.innerHTML = '';
+  let r;
+  try { r = await api('/audit-sample', { password: portal.password, course: portal.course }); }
+  catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false;
+  if (!r.ok) { status.className = 'status bad'; status.textContent = friendlyError(r.status); return; }
 
-function styleAccuracy(sel) {
-  sel.className = 'accuracy-select ' + (sel.value==='accurate'?'accurate':sel.value?'inaccurate':'');
-}
-
-function submitAudit() {
-  const week   = document.getElementById('audit-week').value;
-  const course = document.getElementById('f-course-badge').textContent;
-  const name   = document.getElementById('f-name-badge').textContent;
-  const results = [];
-  for(let i=0;i<10;i++) {
-    results.push({ q:i+1, rating:document.getElementById('acc-'+i)?.value||'', note:document.getElementById('note-'+i)?.value||'' });
+  const items = r.data.items || [];
+  portal.items = items;
+  if (!items.length) {
+    status.textContent = '';
+    list.innerHTML = `<div class="empty"><strong>No student answers in the last 7 days</strong>Once students in ${esc(portal.course)} use the companion, a random sample of their answers will appear here.</div>`;
+    return;
   }
-  const payload = { timestamp:new Date().toISOString(), auditor:name, course, week, type:'fidelity_audit', results:JSON.stringify(results) };
-  fetch(CONFIG.LOG_URL, { method:'POST', keepalive:true, headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) }).catch(()=>{});
-  showToast('Audit submitted successfully. Thank you!');
+  status.textContent = `${items.length} answers drawn at random from ${r.data.poolSize} in ${portal.course} over the last ${r.data.days} days.`;
+  items.forEach((it, i) => {
+    const el = document.createElement('article');
+    el.className = 'audit-item';
+    el.innerHTML = `
+      <div>
+        <p class="meta">Answer ${i + 1} of ${items.length} · ${esc(it.mode || '')} mode · ${esc(it.when || '')}</p>
+        <p class="q">${esc(it.question)}</p>
+        <div class="a" tabindex="0" aria-label="Companion answer ${i + 1}">${esc(it.answer)}</div>
+      </div>
+      <div class="rate">
+        <fieldset>
+          <legend>Your rating</legend>
+          <div class="rate-opts">
+            <label><input type="radio" name="rate-${i}" value="accurate"> Accurate and in scope</label>
+            <label><input type="radio" name="rate-${i}" value="inaccurate"> Inaccurate</label>
+            <label><input type="radio" name="rate-${i}" value="outofscope"> Out of scope</label>
+          </div>
+        </fieldset>
+        <label class="visually-hidden" for="note-${i}">Note for answer ${i + 1}</label>
+        <textarea id="note-${i}" placeholder="Note (optional): what is wrong or missing?"></textarea>
+      </div>`;
+    list.appendChild(el);
+  });
+  document.getElementById('submit-row').hidden = false;
 }
 
-// ── ADMIN LOGIN ────────────────────────────────────────────────────────────
-function loginAdmin() {
+async function submitAudit() {
+  const st = document.getElementById('submit-status');
+  const items = portal.items;
+  const results = items.map((it, i) => {
+    const sel = document.querySelector(`input[name="rate-${i}"]:checked`);
+    return { n: i + 1, when: it.when, mode: it.mode, question: it.question.substring(0, 300),
+             answer_excerpt: it.answer.substring(0, 300), rating: sel ? sel.value : '',
+             note: document.getElementById('note-' + i).value.trim() };
+  });
+  const missing = results.filter(r => !r.rating).length;
+  if (missing) {
+    st.className = 'status bad';
+    st.textContent = `Rate all answers before submitting. ${missing} still need a rating.`;
+    return;
+  }
+  const btn = document.getElementById('submit-audit');
+  btn.disabled = true; btn.textContent = 'Submitting…'; st.className = 'status'; st.textContent = '';
+  let r;
+  try {
+    r = await api('/log', {
+      type: 'fidelity_audit', password: portal.password, timestamp: new Date().toISOString(),
+      auditor: portal.name, course: portal.course, week: document.getElementById('audit-week').value,
+      results: JSON.stringify(results),
+    });
+  } catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false; btn.textContent = 'Submit audit';
+  if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); return; }
+  st.className = 'status ok';
+  st.textContent = 'Audit submitted. Thank you.';
+  showToast('Audit submitted. Thank you.');
+}
+
+// ── ADMIN ──────────────────────────────────────────────────────────────────
+async function loginAdmin() {
+  if (!requireFields([['fld-a-pass','a-pass']])) return;
   const pass = document.getElementById('a-pass').value;
-  if(pass !== CONFIG.ADMIN_PASSWORD) { showToast('Incorrect admin password.'); return; }
+  const btn = document.getElementById('a-submit'), msg = document.getElementById('a-msg');
+  btn.disabled = true; btn.textContent = 'Checking…'; msg.textContent = '';
+  let r;
+  try { r = await api('/auth', { role: 'admin', password: pass }); }
+  catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if (!r.ok) { msg.textContent = friendlyError(r.status); return; }
+  portal = { role: 'admin', password: pass, name: '', course: '', items: [] };
   showScreen('admin-screen');
+  loadStats();
+}
+
+async function loadStats() {
+  const body = document.getElementById('stats-body'), foot = document.getElementById('stats-foot');
+  const st = document.getElementById('stats-status'), btn = document.getElementById('stats-btn');
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Loading…';
+  let r;
+  try { r = await api('/admin-stats', { password: portal.password }); }
+  catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false;
+  if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); body.innerHTML = '<tr><td colspan="7">No data</td></tr>'; foot.innerHTML = ''; return; }
+  const rows = r.data.courses || [];
+  const sum = k => rows.reduce((a, x) => a + (Number(x[k]) || 0), 0);
+  body.innerHTML = rows.map(x => `<tr>
+      <td>${esc(x.course)}</td><td class="n">${x.students}</td><td class="n">${x.sessions}</td>
+      <td class="n">${x.messages}</td><td class="n">${x.messages7d}</td><td class="n">${x.errors}</td>
+      <td>${esc(x.last || 'None yet')}</td></tr>`).join('');
+  foot.innerHTML = `<tr><td>All courses</td><td class="n">${sum('students')}</td><td class="n">${sum('sessions')}</td>
+      <td class="n">${sum('messages')}</td><td class="n">${sum('messages7d')}</td><td class="n">${sum('errors')}</td><td></td></tr>`;
+  st.textContent = 'Updated ' + (r.data.generated || 'just now') + ', Bahrain time.';
 }
 
 // ── LOGGING ────────────────────────────────────────────────────────────────
@@ -1558,17 +1236,20 @@ function logEvent(type, userMsg, aiMsg) {
     studentId: state.student.id, studentName: state.student.name,
     course: state.student.course, section: state.student.section,
     mode: state.mode, eventType: type,
-    userMessage: userMsg, aiResponse: (aiMsg||'').substring(0,500),
+    userMessage: userMsg, aiResponse: (aiMsg || '').substring(0, CONFIG.LOG_ANSWER_CHARS),
     sessionStart: state.sessionStart, messageCount: state.messageCount,
   };
-  fetch(CONFIG.LOG_URL, { method:'POST', keepalive:true, headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) }).catch(()=>{});
+  fetch(CONFIG.API + '/log', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) }).catch(() => {});
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────
+let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3500);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 </script>
 </body>
+</html>
