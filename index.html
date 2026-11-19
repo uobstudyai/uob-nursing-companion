@@ -453,6 +453,111 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
   .topic-head { gap: 6px; }
 }
 
+/* ── v7: practice styles, quiz options, voice, class checks ───────────────── */
+.style-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 68ch; animation: rise var(--t) var(--ease-out); }
+.style-card {
+  display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 14px 16px; min-height: 96px;
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--surface);
+  transition: border-color var(--t-fast) ease, background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.style-card strong { font-weight: 600; color: var(--brand); }
+.style-card span { font-size: var(--fs-sm); color: var(--muted); line-height: 1.45; }
+@media (hover: hover) and (pointer: fine) { .style-card:hover { border-color: var(--brand); background: var(--brand-soft); } }
+.style-card:active { transform: scale(0.98); }
+
+.opt-row { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.opt-row button {
+  display: flex; align-items: flex-start; gap: 12px; text-align: left; width: 100%; min-height: 44px; padding: 10px 14px;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--ground); font-size: var(--fs-md); line-height: 1.45;
+  transition: border-color var(--t-fast) ease, background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.opt-row button b { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--brand); font-size: var(--fs-sm); border: 1px solid var(--line); }
+@media (hover: hover) and (pointer: fine) { .opt-row button:not([disabled]):hover { border-color: var(--brand); background: var(--brand-soft); } }
+.opt-row button:active:not([disabled]) { transform: scale(0.99); }
+.opt-row button[disabled] { cursor: default; opacity: .75; }
+.opt-row button.chosen { border-color: var(--brand); background: var(--brand-soft); opacity: 1; }
+.opt-row button.chosen b { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+.msg-tools { margin-top: 4px; }
+.msg-tool {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 10px 4px 8px; border: 0; border-radius: var(--r-pill);
+  background: transparent; color: var(--muted); font-size: var(--fs-xs); font-weight: 500;
+  transition: background-color var(--t-fast) ease, color var(--t-fast) ease;
+}
+.msg-tool svg { width: 16px; height: 16px; }
+.msg-tool[aria-pressed="true"] { color: var(--brand); background: var(--brand-soft); }
+@media (hover: hover) and (pointer: fine) { .msg-tool:hover { color: var(--brand); background: var(--brand-soft); } }
+
+#mic-btn { width: 48px; min-height: 48px; padding: 0; border-radius: var(--r); }
+#mic-btn svg { width: 20px; height: 20px; }
+#mic-btn.live { background: var(--bad); color: #fff; animation: micpulse 1.4s ease-in-out infinite; }
+@keyframes micpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(163,39,31,.35); } 50% { box-shadow: 0 0 0 6px rgba(163,39,31,0); } }
+@media (prefers-reduced-motion: reduce) { #mic-btn.live { animation: none; } }
+
+.check-call {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 20px; padding: 16px 18px;
+  background: var(--surface); border-radius: var(--r); border-left: 4px solid var(--gold);
+}
+.check-call div { flex: 1; min-width: 220px; }
+.check-call strong { display: block; font-weight: 600; }
+.check-call span { display: block; font-size: var(--fs-sm); color: var(--muted); margin-top: 2px; }
+
+.checkview { flex: 1; overflow-y: auto; }
+.checkview-in { max-width: 760px; margin: 0 auto; padding: 28px 24px 64px; }
+.check-card { background: var(--surface); border-radius: var(--r); padding: 24px; }
+.check-card h2, .check-head h2 { font-size: var(--fs-lg); font-weight: 600; line-height: 1.25; }
+.check-card p { margin-top: 10px; color: var(--ink-2); }
+.check-card .muted, .muted { color: var(--muted); font-size: var(--fs-sm); }
+.eyebrow { font-size: var(--fs-xs); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.actions-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.check-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.check-clock { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--brand); background: var(--brand-soft); padding: 6px 12px; border-radius: var(--r-pill); font-size: var(--fs-sm); }
+.check-clock.late { color: var(--bad); background: var(--bad-soft); }
+.mc { display: flex; flex-direction: column; gap: 8px; }
+.mc label { position: relative; cursor: pointer; }
+.mc input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.mc span {
+  display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; min-height: 44px; border-radius: var(--r-sm);
+  background: var(--ground); line-height: 1.45; border: 1px solid transparent;
+  transition: background-color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.mc span b { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--surface); color: var(--brand); font-size: var(--fs-sm); border: 1px solid var(--line); }
+.mc input:checked + span { background: var(--brand-soft); border-color: var(--brand); }
+.mc input:checked + span b { background: var(--brand); color: #fff; border-color: var(--brand); }
+.mc input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+.review { background: var(--surface); border-radius: var(--r); padding: 16px 18px; margin-bottom: 10px; border-left: 4px solid var(--ok); }
+.review.wrong { border-left-color: var(--bad); }
+.review .rq { font-weight: 500; }
+.review .rq .n { color: var(--muted); margin-right: 8px; font-variant-numeric: tabular-nums; }
+.review .ra { margin-top: 8px; font-size: var(--fs-sm); }
+.review.right .ra { color: var(--ok); font-weight: 600; }
+.review.wrong .ra { color: var(--bad); }
+.review.wrong .ra b { color: var(--ok); font-weight: 600; }
+.review .rw { margin-top: 8px; font-size: var(--fs-sm); color: var(--ink-2); }
+.review .src { color: var(--muted); }
+@media (max-width: 760px) {
+  .style-pick { grid-template-columns: 1fr; }
+  .style-card { min-height: 0; }
+  .checkview-in { padding: 20px 16px 48px; }
+  .check-card { padding: 20px; }
+  #mic-btn, #send-btn { width: 44px; min-height: 44px; }
+}
+.pill { display: inline-block; padding: 2px 10px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--ink-2); font-size: var(--fs-xs); font-weight: 600; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.btn-sm { min-height: 34px; padding: 4px 12px; font-size: var(--fs-sm); }
+.qpct { display: inline-block; margin: 2px 8px 2px 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.qpct.low { color: var(--bad); font-weight: 600; }
+#survey-banner-short { display: none; }
+@media (max-width: 760px) {
+  #survey-banner-text { display: none; }
+  #survey-banner-short { display: block; min-width: 0; }
+  .banner { padding: 8px 16px; }
+  .banner-in { flex-wrap: nowrap; gap: 10px; }
+  .banner .btn { min-height: 36px; white-space: nowrap; }
+}
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -523,7 +628,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
   <section class="panel-view active" id="view-companion">
     <div class="banner" id="survey-banner" hidden>
       <div class="banner-in">
-        <p id="survey-banner-text"></p>
+        <p id="survey-banner-text"></p><p id="survey-banner-short"></p>
         <button class="btn" onclick="showTab('survey')">Go to questionnaire</button>
       </div>
     </div>
@@ -551,12 +656,14 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
         </div>
       </div>
       <div class="thread" id="thread"><div class="thread-in" id="messages" aria-live="polite"></div></div>
-      <div class="composer">
+      <div class="checkview" id="check-view" hidden><div class="checkview-in" id="check-root" aria-live="polite"></div></div>
+      <div class="composer" id="composer">
         <div class="composer-in">
           <div class="chips" id="quick-chips" aria-label="Suggested questions"></div>
           <div class="input-row">
             <label for="user-input" class="visually-hidden">Your message</label>
             <textarea id="user-input" rows="1" placeholder="Ask a question about your course" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <button id="mic-btn" class="btn btn-ghost" type="button" onclick="toggleMic()" aria-label="Speak instead of typing" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/></svg></button>
             <button id="send-btn" class="btn btn-primary" onclick="sendMessage()" aria-label="Send message">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
             </button>
@@ -910,7 +1017,8 @@ const FIDELITY = [
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let me = null;   // { token, code, course, section, group, companionOpen, wave, waveDone }
-let state = { mode: "learn", topic: null, history: [], sessionStart: null, messageCount: 0, busy: false, modelVersion: "" };
+let state = { mode: "learn", topic: null, style: null, input: "typed", history: [], sessionStart: null, messageCount: 0, busy: false, modelVersion: "" };
+let check = null;   // the class check being taken: { id, topic, title, closes, items, answers, started }
 const COURSE_OUTLINE = {"NUR312": {"units": [{"title": "Foundations of nursing research", "topics": [{"id": "1", "title": "Introduction to nursing research", "blurb": "Definitions, sources of knowledge, purposes and goals of research, and the nurse's role.", "lectures": ["1"], "chapters": [["NB", 1]], "chips": ["What is nursing research?", "What are the sources of nursing knowledge?", "What roles can nurses play in research?"]}, {"id": "2", "title": "Ethical issues in nursing research", "blurb": "Ethical principles, informed consent, participants' rights and ethics committees.", "lectures": ["2"], "chapters": [["NB", 4]], "chips": ["What are the elements of informed consent?", "What is the role of an ethics committee (IRB)?", "Explain anonymity versus confidentiality"]}, {"id": "3a", "title": "Overview of quantitative research", "blurb": "Characteristics of quantitative research and the steps of the quantitative research process.", "lectures": ["3a"], "chapters": [["NB", 5]], "chips": ["What are the steps in quantitative research?", "What makes research quantitative?", "What are study variables and assumptions?"]}, {"id": "3b", "title": "Overview of qualitative research", "blurb": "Characteristics of qualitative research and how it differs from quantitative research.", "lectures": ["3b"], "chapters": [["NB", 5], ["NB", 11], ["PB", 25]], "chips": ["How does qualitative research differ from quantitative?", "How are qualitative data collected?", "What are the types of qualitative research?"]}, {"id": "10", "title": "Evidence-based practice", "blurb": "Defining EBP, PICO questions, sources of evidence and barriers to using it.", "lectures": ["10"], "chapters": [["NB", 2], ["NB", 3], ["PB", 2]], "chips": ["How do I write a PICO question?", "Research utilization versus EBP", "What are the barriers to EBP?"]}]}, {"title": "Planning a study", "topics": [{"id": "4a", "title": "The research problem", "blurb": "Sources of research problems, problem and purpose statements, and research questions.", "lectures": ["4a"], "chapters": [["NB", 6]], "chips": ["Where do research problems come from?", "Problem statement versus purpose statement", "What makes a good research question?"]}, {"id": "4b", "title": "Hypotheses and research questions", "blurb": "Types of hypotheses, their purposes, and how to write a testable hypothesis.", "lectures": ["4b"], "chapters": [["NB", 9], ["NB", 6]], "chips": ["Directional versus non-directional hypotheses", "What is a null hypothesis?", "What makes a hypothesis testable?"]}, {"id": "5", "title": "Review of the literature", "blurb": "Purposes of the literature review, primary and secondary sources, and search strategies.", "lectures": ["5"], "chapters": [["NB", 7], ["PB", 5]], "chips": ["Primary versus secondary sources", "How do I search databases for literature?", "How do I critique a literature review?"]}, {"id": "6", "title": "Theory and nursing research", "blurb": "Theory terminology, nursing conceptual models, and theoretical versus conceptual frameworks.", "lectures": ["6"], "chapters": [["NB", 8]], "chips": ["Theoretical versus conceptual framework", "What are concepts, constructs and propositions?", "Deductive versus inductive reasoning"]}]}, {"title": "Designing a study", "topics": [{"id": "7", "title": "Research design", "blurb": "Experimental, quasi-experimental and non-experimental designs, qualitative designs, and validity.", "lectures": ["7"], "chapters": [["NB", 10], ["NB", 11], ["PB", 10]], "chips": ["True versus quasi-experimental designs", "What are threats to internal validity?", "Compare phenomenology, grounded theory and ethnography"]}, {"id": "7a", "title": "Population, sample and sampling", "blurb": "Target and accessible populations, probability and non-probability sampling, and sample size.", "lectures": ["7a"], "chapters": [["NB", 12]], "chips": ["Probability versus non-probability sampling", "Target versus accessible population", "What is sampling bias?"]}, {"id": "8", "title": "Measurement and data collection", "blurb": "Levels of measurement, the data collection process, and reliability and validity of instruments.", "lectures": ["8"], "chapters": [["NB", 13], ["PB", 14]], "chips": ["Explain the four levels of measurement", "Reliability versus validity", "How do I choose a data collection instrument?"]}, {"id": "8a", "title": "Data collection methods", "blurb": "Questionnaires, interviews, observation and other data collection methods.", "lectures": ["8a"], "chapters": [["NB", 14]], "chips": ["How do I write good questionnaire items?", "Questionnaires versus interviews", "What affects response rates?"]}]}, {"title": "Analysing and using findings", "topics": [{"id": "9", "title": "Data analysis", "blurb": "Descriptive and inferential statistics and choosing the right statistical test.", "lectures": ["9"], "chapters": [["NB", 15], ["NB", 16]], "chips": ["Descriptive versus inferential statistics", "When do I use a chi-square test?", "What is the level of significance?"]}, {"id": "12a", "title": "Presenting and discussing findings", "blurb": "Presenting results, the discussion section, and statistical versus clinical significance.", "lectures": ["12a"], "chapters": [["NB", 17]], "chips": ["Statistical versus clinical significance", "What goes in the discussion section?", "Conclusions, implications and recommendations"]}, {"id": "13", "title": "Communicating and using research", "blurb": "Research reports, posters and publications, and barriers to using research.", "lectures": ["13"], "chapters": [["NB", 18]], "chips": ["How is a research report organized?", "How do I prepare a research poster?", "What are the barriers to using research?"]}]}, {"title": "Course assessments", "topics": [{"id": "PROP", "title": "Research proposal project", "blurb": "What each section of the group proposal and presentation requires, and feedback on your own drafts.", "lectures": [], "docs": ["template", "rubric", "presrubric"], "chapters": [["PB", 31], ["NB", 6], ["NB", 7]], "chips": ["What does each proposal section require?", "How is the proposal graded?", "Give feedback on my draft research question"]}, {"id": "CRIT", "title": "Critiquing a research article", "blurb": "How to critique each part of a published research article.", "lectures": [], "chapters": [["NB", 20]], "chips": ["How do I critique a research article?", "What should I check in the methods section?", "How do I critique the sample?"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR312 topic. Use this when your question spans several topics."}}};
 let survey = { pages: [], page: 0, answers: {} };
 
@@ -988,11 +1096,23 @@ async function signIn() {
 
 function signOut() {
   if (me && me.companionOpen && state.messageCount >= 0) logEvent('session_end', '', `${state.messageCount} messages`);
-  me = null; state.topic = null; state.history = []; state.messageCount = 0;
+  stopSpeaking(); if (listening) stopMic();
+  me = null; check = null; state.topic = null; state.style = null; state.history = []; state.messageCount = 0;
   document.getElementById('topic-head').hidden = true;
   document.getElementById('messages').innerHTML = '';
   showScreen('welcome-screen');
 }
+
+async function refreshStatus() {
+  if (!me) return;
+  const r = await safeApi('/student-status', { token: me.token });
+  if (!r.ok) return;
+  Object.assign(me, r.data);
+  applyAccess();
+  if (!document.getElementById('outline').hidden) showOutline();
+  if (state.mode === 'check' && !check) renderCheckHome();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshStatus(); });
 
 function applyAccess() {
   document.getElementById('companion-locked').hidden = me.companionOpen;
@@ -1004,6 +1124,7 @@ function applyAccess() {
   document.getElementById('survey-banner-text').textContent =
     (me.wave === 'T1' ? 'The start-of-study questionnaire is open.' : 'The end-of-study questionnaire is open.') +
     ' It takes about ' + (me.wave === 'T1' ? '20' : '15') + ' minutes. Please complete it.';
+  document.getElementById('survey-banner-short').textContent = 'Questionnaire open · about ' + (me.wave === 'T1' ? '20' : '15') + ' min';
 }
 
 function showTab(t) {
@@ -1035,35 +1156,44 @@ function showOutline() {
   const row = (t, label) => `<li><button type="button" class="topic-row" onclick="openTopic('${t.id}')">
       <span class="tnum">${esc(label)}</span><span class="ttext"><strong>${esc(t.title)}</strong><span>${esc(t.blurb)}</span></span>${chev}</button></li>`;
   const name = COURSE_INFO[me.course] ? COURSE_INFO[me.course].name : me.course;
+  const live = me.check && !me.check.done;
   root.innerHTML = `<h2>${esc(me.course)} ${esc(name)}</h2>
-    <p class="lede">Choose a topic. You can then learn it, practise it, or check your understanding.</p>` +
+    <p class="lede">Choose a topic. You can then learn it with explanations, or practise it with scenarios, flawed studies and quick quizzes.</p>` +
+    (live ? `<div class="check-call"><div><strong>Class check open: ${esc(me.check.title)}</strong>
+      <span>Your instructor opened it for your section. It closes at ${esc(clock(me.check.closes))}. It does not count towards your grade.</span></div>
+      <button class="btn btn-primary" type="button" onclick="openTopic('${esc(me.check.topic)}', 'check')">Start the check</button></div>` : '') +
     o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
       u.topics.map(t => row(t, /^\d/.test(t.id) ? 'Lecture ' + t.id : '')).join('') + `</ul></section>`).join('') +
     (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : '');
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
 }
-function openTopic(id) {
+function openTopic(id, startMode) {
   const t = topicInfo(id); if (!t) return;
   state.topic = id;
   document.getElementById('topic-head').hidden = false;
   document.getElementById('topic-title').textContent = (/^\d/.test(id) ? 'Lecture ' + id + ' · ' : '') + t.title;
   showChat();
-  setMode('learn');
-  document.getElementById('user-input').focus();
+  setMode(startMode || 'learn');
+  if (!startMode) document.getElementById('user-input').focus();
 }
 
 // ── MODES & CHAT ───────────────────────────────────────────────────────────
 const MODE_META = {
   learn:    { desc: 'Ask me to explain any concept from your course.',
     chips: ['Explain the nursing process', 'What is infection control?', 'How do I take vital signs?', 'Explain patient documentation'] },
-  practice: { desc: "I'll ask you questions and give feedback on each answer.",
+  practice: { desc: 'Choose a practice style: a clinical scenario, a flawed study to critique, or a quick quiz.',
     chips: ['Give me a practice question', 'Test me on a case scenario', 'Multiple choice, please', "Quiz me on today's topic"] },
-  check:    { desc: 'A 5-question check that shows what to review.',
+  check:    { desc: 'Class checks open when your instructor starts one in class. They do not count towards your grade.',
     chips: ['Run a knowledge check', 'Check my understanding of a topic', 'What are my weak areas?'] },
 };
 function setMode(m) {
-  state.mode = m; state.history = [];
+  state.mode = m; state.history = []; state.style = null;
+  stopSpeaking();
+  const isCheck = m === 'check';
+  document.getElementById('thread').hidden = isCheck;
+  document.getElementById('composer').hidden = isCheck;
+  document.getElementById('check-view').hidden = !isCheck;
   ['learn','practice','check'].forEach(x => {
     const b = document.getElementById('mode-' + x);
     b.setAttribute('aria-selected', x === m ? 'true' : 'false'); b.tabIndex = x === m ? 0 : -1;
@@ -1071,17 +1201,63 @@ function setMode(m) {
   document.getElementById('mode-desc').textContent = MODE_META[m].desc;
   const chips = document.getElementById('quick-chips'); chips.innerHTML = '';
   const t = state.topic ? topicInfo(state.topic) : null;
-  const chipList = !t ? MODE_META[m].chips
-    : m === 'learn' ? (t.chips || ['Give me an overview of this topic'])
-    : m === 'practice' ? ['Give me a practice question on this topic', 'Test me with a short scenario', 'Multiple choice, please']
-    : ['Run a 5-question check on this topic', 'What should I review in this topic?'];
-  chipList.forEach(text => {
+  const chipList = m === 'learn' ? (t && t.chips ? [...t.chips, 'Explain it with a clinical example'] : MODE_META.learn.chips) : [];
+  setChips(chipList);
+  document.getElementById('messages').innerHTML = '';
+  if (isCheck) { renderCheckHome(); return; }
+  if (m === 'practice') { addStylePicker(); return; }
+  addWelcome();
+}
+function setChips(list) {
+  const chips = document.getElementById('quick-chips'); chips.innerHTML = '';
+  list.forEach(text => {
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = text;
-    b.addEventListener('click', () => { document.getElementById('user-input').value = text; sendMessage(); });
+    b.addEventListener('click', () => {
+      if (text === 'Change practice style') { setMode('practice'); return; }
+      document.getElementById('user-input').value = text; sendMessage();
+    });
     chips.appendChild(b);
   });
+}
+
+// ── PRACTICE STYLES ────────────────────────────────────────────────────────
+const NO_REAL_STUDIES = ' Every scenario, study and dataset you write must be clearly fictional: never name real studies, authors, journals, DOIs or statistics.';
+const PRACTICE_STYLES = {
+  scenario: {
+    label: 'Clinical scenario', blurb: 'A short ward or community situation. You apply the topic step by step.',
+    chips: ['Next question', 'Give me a hint', 'New scenario', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for example: identify the variables, choose a design or sampling method, spot the ethical issue, write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, a model answer, and the slide it comes from. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
+  },
+  flaw: {
+    label: 'Spot the flaw', blurb: 'A short made-up study excerpt with a mistake in it. Find it, explain it, fix it.',
+    chips: ['Give me a hint', 'Show me another excerpt', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: SPOT THE FLAW. Write a short excerpt (4 to 6 sentences) from a made-up research report on the chosen topic. Start it with the label "Fictional study excerpt:". Build in ONE deliberate methodological flaw of the kind this topic\'s slides teach students to recognise (for example: a convenience sample described as random, a "directional" hypothesis with no direction, a leading or double-barrelled questionnaire item, a design called experimental with no random assignment, a statistically significant result described as clinically important without justification). Ask the student to find the flaw, explain why it is a problem, and suggest a fix. Do not reveal the flaw before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback with the slide citation, then offer another excerpt.' + NO_REAL_STUDIES,
+  },
+  mcq: {
+    label: 'Quick quiz', blurb: 'Multiple-choice questions one at a time. Tap your answer and get instant feedback.',
+    chips: ['Next question', 'Harder, please', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: QUICK QUIZ. Ask ONE multiple-choice question at a time on the chosen topic, with exactly four options. Put each option on its own line, exactly in this format: "A) ...", "B) ...", "C) ...", "D) ...". After the options write only: "Choose A, B, C or D." Vary the position of the correct answer. When the student answers, say if it is correct, explain the correct answer, say in one short line why each wrong option is wrong, and cite the slide. Then ask the next question. After every 5 questions, give a one-line tally of correct answers.' + NO_REAL_STUDIES,
+  },
+};
+function addStylePicker() {
+  const t = state.topic ? topicInfo(state.topic) : null;
+  const what = t && t.id !== 'ALL' ? `**${t.title}**` : 'this course';
+  addAIMessage(`How would you like to practise ${what}?`);
+  const d = document.createElement('div'); d.className = 'style-pick';
+  d.innerHTML = Object.entries(PRACTICE_STYLES).map(([k, v]) =>
+    `<button type="button" class="style-card" onclick="pickStyle('${k}')"><strong>${esc(v.label)}</strong><span>${esc(v.blurb)}</span></button>`).join('');
+  appendMsg(d);
+}
+function pickStyle(k) {
+  if (state.busy) return;
+  state.style = k; state.history = [];
   document.getElementById('messages').innerHTML = '';
-  addWelcome();
+  setChips(PRACTICE_STYLES[k].chips);
+  document.getElementById('user-input').value = 'Start';
+  sendMessage();
+}
+function styleNote() {
+  return state.mode === 'practice' && state.style ? '\n\n' + PRACTICE_STYLES[state.style].prompt : '';
 }
 document.addEventListener('keydown', e => {
   if (!e.target.closest || !e.target.closest('.seg')) return;
@@ -1123,11 +1299,15 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
   input.value = ''; autoResize(input);
+  if (listening) stopMic();
+  const inputMethod = state.input; state.input = 'typed';
+  if (state.mode === 'practice' && !state.style) state.style = 'mcq';   // typed straight into the picker
+  document.querySelectorAll('.opt-row button').forEach(b => b.disabled = true);
   state.busy = true; document.getElementById('send-btn').disabled = true;
   addUserMessage(text);
   const tid = addTyping();
   const messages = [
-    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) + topicNote() },
+    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) + topicNote() + styleNote() },
     ...state.history.slice(-CONFIG.MAX_HISTORY),
     { role: 'user', content: text },
   ];
@@ -1149,11 +1329,11 @@ async function sendMessage() {
     addAIMessage(reply);
     state.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
     state.messageCount++;
-    logEvent('message', text, reply, refusal);
+    logEvent('message', text, reply, refusal, inputMethod);
   } catch (e) {
     removeTyping(tid);
     addAIMessage(friendlyError(status, data), true);
-    logEvent('error', text, (e && e.message) || 'network error');
+    logEvent('error', text, (e && e.message) || 'network error', '', inputMethod);
   }
   state.busy = false; document.getElementById('send-btn').disabled = false; input.focus();
 }
@@ -1166,10 +1346,82 @@ function addUserMessage(text) {
   const d = document.createElement('div'); d.className = 'msg user';
   d.innerHTML = `<span class="visually-hidden">You said:</span><div class="body">${esc(text)}</div>`; appendMsg(d);
 }
+const OPT_RE = /^\**\(?([A-D])[).:]\**\s+(.+)$/;
+function splitOptions(text) {
+  const lines = text.split('\n'), opts = [], keep = [];
+  lines.forEach(l => { const m = l.trim().match(OPT_RE); if (m) opts.push([m[1], m[2].replace(/\*\*/g, '')]); else keep.push(l); });
+  const ok = opts.length >= 3 && opts.length <= 5 && opts.map(o => o[0]).join('') === 'ABCDE'.slice(0, opts.length);
+  return ok ? { text: keep.join('\n').replace(/\n{3,}/g, '\n\n').trim(), opts } : { text, opts: null };
+}
 function addAIMessage(text, isError) {
   const d = document.createElement('div'); d.className = 'msg ai' + (isError ? ' err' : '');
-  d.innerHTML = `<span class="who-label">Companion</span><div class="body">${isError ? esc(text) : fmt(esc(text))}</div>`; appendMsg(d);
+  const { text: body, opts } = isError ? { text, opts: null } : splitOptions(text);
+  d.innerHTML = `<span class="who-label">Companion</span><div class="body">${isError ? esc(body) : fmt(esc(body))}${
+    opts ? `<div class="opt-row" role="group" aria-label="Answer options">${opts.map(([k, v]) =>
+      `<button type="button" data-k="${k}"><b>${k}</b><span>${inline(esc(v))}</span></button>`).join('')}</div>` : ''}</div>`;
+  if (opts) d.querySelectorAll('.opt-row button').forEach(b => b.addEventListener('click', () => {
+    if (state.busy) return;
+    b.classList.add('chosen');
+    document.getElementById('user-input').value = b.dataset.k + ') ' + b.querySelector('span').textContent;
+    sendMessage();
+  }));
+  if (!isError && TTS) {
+    const tool = document.createElement('div'); tool.className = 'msg-tools';
+    tool.innerHTML = `<button type="button" class="msg-tool" aria-pressed="false">${SPEAKER}<span>Listen</span></button>`;
+    tool.firstChild.addEventListener('click', e => speak(e.currentTarget, d.querySelector('.body')));
+    d.appendChild(tool);
+  }
+  appendMsg(d);
 }
+
+// ── VOICE: read aloud (speech synthesis) and speak instead of typing (speech recognition)
+const TTS = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+const SPEAKER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+let speakingBtn = null;
+function stopSpeaking() {
+  if (TTS) window.speechSynthesis.cancel();
+  if (speakingBtn) { speakingBtn.setAttribute('aria-pressed', 'false'); speakingBtn.querySelector('span').textContent = 'Listen'; speakingBtn = null; }
+}
+function speak(btn, bodyEl) {
+  if (speakingBtn === btn) { stopSpeaking(); return; }
+  stopSpeaking();
+  const clone = bodyEl.cloneNode(true);
+  clone.querySelectorAll('.opt-row b').forEach(b => b.textContent = b.textContent + '. ');
+  const text = clone.innerText.replace(/\(([^()]*(slide|Ch\.)[^()]*)\)/g, '').replace(/\s+/g, ' ').trim();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-GB'; u.rate = 1;
+  const v = window.speechSynthesis.getVoices().find(x => /^en(-|_)/i.test(x.lang));
+  if (v) u.voice = v;
+  u.onend = u.onerror = () => { if (speakingBtn === btn) stopSpeaking(); };
+  speakingBtn = btn; btn.setAttribute('aria-pressed', 'true'); btn.querySelector('span').textContent = 'Stop';
+  window.speechSynthesis.speak(u);
+  logEvent('read_aloud', '', '', '', '');
+}
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, listening = false, micBase = '';
+function toggleMic() { listening ? stopMic() : startMic(); }
+function startMic() {
+  if (!SR || state.busy) return;
+  stopSpeaking();
+  const input = document.getElementById('user-input');
+  micBase = input.value.trim() ? input.value.trim() + ' ' : '';
+  rec = new SR(); rec.lang = 'en-US'; rec.interimResults = true; rec.continuous = false;
+  rec.onresult = e => {
+    let t = ''; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    input.value = micBase + t; autoResize(input); state.input = 'voice';
+  };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') showToast('Microphone access is blocked. Allow it in your browser settings, or type instead.');
+    else if (e.error === 'no-speech') showToast("I didn't hear anything. Tap the microphone and try again.");
+    else if (e.error !== 'aborted') showToast("Voice input isn't working right now. Please type instead.");
+  };
+  rec.onend = () => { listening = false; const b = document.getElementById('mic-btn'); b.setAttribute('aria-pressed', 'false'); b.classList.remove('live'); input.focus(); };
+  try { rec.start(); } catch (e) { return; }
+  listening = true;
+  const b = document.getElementById('mic-btn'); b.setAttribute('aria-pressed', 'true'); b.classList.add('live');
+}
+function stopMic() { if (rec) try { rec.stop(); } catch (e) {} }
+if (SR) document.getElementById('mic-btn').hidden = false;
 function addTyping() {
   const id = 'typ-' + Date.now(), d = document.createElement('div'); d.className = 'msg ai'; d.id = id;
   d.innerHTML = `<span class="who-label">Companion</span><div class="body"><span class="typing" aria-label="Companion is writing"><i></i><i></i><i></i></span></div>`;
@@ -1197,11 +1449,117 @@ function fmt(t) {
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 160) + 'px'; }
 
-function logEvent(type, userMsg, aiMsg, refusal) {
+// ── CLASS CHECK ────────────────────────────────────────────────────────────
+function clock(ms) { return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+let checkTimer = null;
+function renderCheckHome() {
+  const root = document.getElementById('check-root');
+  clearInterval(checkTimer);
+  const c = me.check;
+  if (me.group !== 'A') { root.innerHTML = `<div class="check-card"><h2>Class checks</h2><p>Class checks are not part of the study for your section.</p></div>`; return; }
+  if (!c) {
+    root.innerHTML = `<div class="check-card"><h2>No class check is open</h2>
+      <p>Your instructor opens a short check at the end of some classes. When one is open for your section, it appears here and at the top of the course outline.</p>
+      <p class="muted">Checks do not count towards your grade. Use <b>Practice</b> to test yourself any time.</p>
+      <div class="actions-row"><button class="btn btn-ghost" type="button" onclick="refreshStatus()">Check again</button>
+      <button class="btn btn-primary" type="button" onclick="setMode('practice')">Go to Practice</button></div></div>`;
+    return;
+  }
+  if (c.done) {
+    root.innerHTML = `<div class="check-card"><h2>You've completed this check</h2><p>${esc(c.title)}. Thank you. You can review the topic in Learn or Practice.</p></div>`;
+    return;
+  }
+  const other = state.topic && state.topic !== c.topic;
+  root.innerHTML = `<div class="check-card"><p class="eyebrow">Class check · closes at ${esc(clock(c.closes))}</p>
+    <h2>${esc(c.title)}</h2>
+    <p>5 multiple-choice questions on this lecture. Answer on your own, without notes or the companion. You'll see your score and explanations straight after.</p>
+    <p class="muted">This does not count towards your grade. Your answers are saved with your research code only.</p>
+    ${other ? `<p class="muted">This check is on a different topic from the one you have open.</p>` : ''}
+    <div class="actions-row"><button class="btn btn-primary" type="button" id="check-start" onclick="startCheck()">Start the check</button></div>
+    <p class="survey-msg" id="check-msg"></p></div>`;
+}
+async function startCheck() {
+  const btn = document.getElementById('check-start'); btn.disabled = true; btn.textContent = 'Loading…';
+  const r = await safeApi('/check-start', { token: me.token });
+  if (!r.ok) {
+    btn.disabled = false; btn.textContent = 'Start the check';
+    const e = r.data.error;
+    document.getElementById('check-msg').textContent =
+      e === 'closed' ? 'This check has closed.' : e === 'done' ? "You've already completed this check." : friendlyError(r.status, r.data);
+    if (e === 'closed' || e === 'done') refreshStatus();
+    return;
+  }
+  check = { ...r.data, answers: r.data.items.map(() => -1), started: Date.now() };
+  logEvent('check_start', check.id, '', '', '');
+  renderCheckForm();
+}
+function renderCheckForm() {
+  const root = document.getElementById('check-root');
+  root.innerHTML = `<div class="check-head"><div><p class="eyebrow">Class check</p><h2>${esc(check.title)}</h2></div>
+      <p class="check-clock" id="check-clock" aria-live="off"></p></div>` +
+    check.items.map((q, i) => `<fieldset class="q" id="cq-${i}"><legend><span class="n">${i + 1}.</span>${esc(q.q)}</legend>
+      <div class="mc">${q.o.map((o, j) => `<label><input type="radio" name="cq${i}" value="${j}" onchange="check.answers[${i}]=${j}; document.getElementById('cq-${i}').classList.remove('missing')"><span><b>${'ABCD'[j]}</b>${esc(o)}</span></label>`).join('')}</div></fieldset>`).join('') +
+    `<div class="survey-nav"><span class="muted" id="check-left"></span><button class="btn btn-primary" type="button" id="check-submit" onclick="submitCheck()">Submit answers</button></div>
+     <p class="survey-msg" id="check-msg"></p>`;
+  document.getElementById('check-view').scrollTop = 0;
+  const tick = () => {
+    const left = Math.max(0, check.closes - Date.now()), m = Math.floor(left / 60000), sec = Math.floor(left / 1000) % 60;
+    const el = document.getElementById('check-clock'); if (!el) { clearInterval(checkTimer); return; }
+    el.textContent = left > 0 ? `${m}:${String(sec).padStart(2, '0')} left` : 'Time is up: submit now';
+    el.classList.toggle('late', left < 60000);
+  };
+  clearInterval(checkTimer); tick(); checkTimer = setInterval(tick, 1000);
+}
+async function submitCheck() {
+  const missing = check.answers.map((a, i) => a < 0 ? i : -1).filter(i => i >= 0);
+  const msg = document.getElementById('check-msg');
+  if (missing.length && !submitCheck.warned) {
+    missing.forEach(i => document.getElementById('cq-' + i).classList.add('missing'));
+    msg.textContent = `${missing.length} question${missing.length > 1 ? 's are' : ' is'} unanswered. Answer ${missing.length > 1 ? 'them' : 'it'}, or press Submit again to submit anyway.`;
+    submitCheck.warned = true; return;
+  }
+  submitCheck.warned = false;
+  const btn = document.getElementById('check-submit'); btn.disabled = true; btn.textContent = 'Submitting…';
+  const r = await safeApi('/check-submit', { token: me.token, checkId: check.id, topic: check.topic, answers: check.answers,
+    seconds: Math.round((Date.now() - check.started) / 1000) });
+  if (!r.ok) {
+    btn.disabled = false; btn.textContent = 'Submit answers';
+    const e = r.data.error;
+    msg.textContent = e === 'closed' ? 'Sorry, this check closed before your answers arrived.' : e === 'done' ? 'You have already submitted this check.' : friendlyError(r.status, r.data);
+    return;
+  }
+  clearInterval(checkTimer);
+  logEvent('check_submit', check.id, r.data.score + '/' + r.data.total, '', '');
+  me.check = { ...me.check, done: true };
+  renderCheckResult(r.data);
+}
+function renderCheckResult(res) {
+  const root = document.getElementById('check-root');
+  const wrong = res.review.filter(x => x.chosen !== x.a);
+  root.innerHTML = `<div class="check-head"><div><p class="eyebrow">Class check · ${esc(check.title)}</p>
+      <h2>You scored ${res.score} out of ${res.total}</h2></div></div>` +
+    res.review.map((x, i) => `<div class="review ${x.chosen === x.a ? 'right' : 'wrong'}">
+      <p class="rq"><span class="n">${i + 1}.</span>${esc(x.q)}</p>
+      <p class="ra">${x.chosen === x.a ? 'Correct' : x.chosen < 0 ? 'Not answered' : 'Your answer: ' + 'ABCD'[x.chosen] + ') ' + esc(x.o[x.chosen])}${x.chosen === x.a ? '' : `<br><b>Correct answer: ${'ABCD'[x.a]}) ${esc(x.o[x.a])}</b>`}</p>
+      <p class="rw">${esc(x.why)} <span class="src">(${esc(x.src)})</span></p></div>`).join('') +
+    `<div class="actions-row">${wrong.length ? `<button class="btn btn-primary" type="button" id="discuss-btn">Go over my mistakes with the companion</button>` : ''}
+      <button class="btn btn-ghost" type="button" onclick="showOutline()">Back to the course outline</button></div>`;
+  document.getElementById('check-view').scrollTop = 0;
+  if (wrong.length) document.getElementById('discuss-btn').addEventListener('click', () => {
+    const lines = wrong.map((x, i) => `${i + 1}. "${x.q}" I answered ${x.chosen < 0 ? 'nothing' : '"' + x.o[x.chosen] + '"'}; the correct answer is "${x.o[x.a]}" (${x.src}).`).join('\n');
+    const topic = check.topic; check = null;
+    if (state.topic !== topic) openTopic(topic); else setMode('learn');
+    document.getElementById('user-input').value = `I just took the class check and got these wrong:\n${lines}\nHelp me understand where my thinking went wrong, one question at a time.`;
+    sendMessage();
+  });
+}
+
+function logEvent(type, userMsg, aiMsg, refusal, input) {
   if (!me) return;
   const payload = {
     token: me.token, timestamp: new Date().toISOString(),
-    course: me.course, section: me.section, mode: state.mode + (state.topic ? ':' + state.topic : ''), eventType: type,
+    course: me.course, section: me.section, eventType: type, input: input || '',
+    mode: state.mode + (state.style && state.mode === 'practice' ? '-' + state.style : '') + (state.topic ? ':' + state.topic : ''),
     userMessage: userMsg, aiResponse: (aiMsg || '').substring(0, CONFIG.LOG_ANSWER_CHARS),
     sessionStart: state.sessionStart, messageCount: state.messageCount,
     model: state.modelVersion, refusal: refusal || '',
