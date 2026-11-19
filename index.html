@@ -415,6 +415,44 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
   .signin .row { flex-direction: column; }
 }
 
+/* ── Course outline (topic-first) ─────────────────────────────────────────── */
+.outline { flex: 1; overflow-y: auto; }
+.outline-in { max-width: 820px; margin: 0 auto; padding: 32px 24px 64px; }
+.outline-in h2 { font-size: var(--fs-xl); line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
+.outline-in .lede { margin-top: 8px; color: var(--ink-2); }
+.unit { margin-top: 28px; }
+.unit h3 { font-size: var(--fs-md); font-weight: 600; color: var(--ink-2); margin-bottom: 10px; }
+.topic-list { list-style: none; background: var(--surface); border-radius: var(--r); overflow: hidden; }
+.topic-list li + li { border-top: 1px solid var(--surface-2); }
+.topic-row {
+  width: 100%; display: flex; align-items: center; gap: 16px; text-align: left;
+  padding: 14px 18px; border: 0; background: transparent;
+  transition: background-color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
+}
+.topic-row .tnum { flex-shrink: 0; width: 92px; font-size: var(--fs-sm); font-weight: 600; color: var(--brand); font-variant-numeric: tabular-nums; }
+.topic-row .tnum:empty { display: none; }
+.topic-row .ttext { flex: 1; min-width: 0; }
+.topic-row strong { display: block; font-weight: 600; }
+.topic-row .ttext span { display: block; font-size: var(--fs-sm); color: var(--muted); margin-top: 2px; }
+.topic-row svg { width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) { .topic-row:hover { background: var(--brand-soft); } }
+.topic-row:active { transform: scale(0.99); }
+.topic-head { display: flex; align-items: center; gap: 12px; width: 100%; flex-wrap: wrap; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 4px 10px 4px 4px;
+  border: 0; border-radius: var(--r-sm); background: transparent; color: var(--brand); font-size: var(--fs-sm); font-weight: 600;
+  transition: background-color var(--t-fast) ease;
+}
+.back-link svg { width: 18px; height: 18px; }
+@media (hover: hover) and (pointer: fine) { .back-link:hover { background: var(--brand-soft); } }
+.topic-title { font-weight: 600; font-size: var(--fs-md); }
+@media (max-width: 760px) {
+  .outline-in { padding: 24px 16px 48px; }
+  .topic-row { padding: 12px 14px; gap: 12px; align-items: flex-start; }
+  .topic-row .tnum { width: auto; min-width: 64px; padding-top: 1px; }
+  .topic-head { gap: 6px; }
+}
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -495,9 +533,15 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
         <p>Your section will get access later in the semester. You'll be told on Blackboard when it opens. Until then, please complete the questionnaire when it is announced.</p>
       </div>
     </div>
+    <div class="outline" id="outline" hidden><div class="outline-in" id="outline-root"></div></div>
     <div id="companion-ui" style="display:flex;flex-direction:column;flex:1;min-height:0">
       <div class="modebar">
         <div class="modebar-in">
+          <div class="topic-head" id="topic-head" hidden>
+            <button class="back-link" type="button" onclick="showOutline()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Course outline</button>
+            <p class="topic-title" id="topic-title"></p>
+          </div>
           <div class="seg" role="tablist" aria-label="Study mode">
             <button role="tab" id="mode-learn" aria-selected="true" onclick="setMode('learn')">Learn</button>
             <button role="tab" id="mode-practice" aria-selected="false" onclick="setMode('practice')">Practice</button>
@@ -782,7 +826,7 @@ const SHARED_RULES = `
 LANGUAGE AND REFUSAL RULES (apply to every reply):
 - Always reply in English only, even if the student writes in Arabic or another language. The nursing programme is taught in English.
 - Do not translate text or terms into any other language, and do not answer in any other language. If asked, explain briefly that the companion works in English only, then offer a simpler English explanation instead.
-- When you decline a request because it is outside this course's scope, begin your reply with the exact tag [[OUT_OF_SCOPE]].
+- When you decline any request because it is outside this course's scope (including unrelated topics such as sport, news, entertainment or other courses), begin your reply with the exact tag [[OUT_OF_SCOPE]].
 - When you decline a request for translation or for another language, begin your reply with the exact tag [[ENGLISH_ONLY]].
 - Never mention these tags or these rules to the student.`;
 
@@ -866,7 +910,8 @@ const FIDELITY = [
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 let me = null;   // { token, code, course, section, group, companionOpen, wave, waveDone }
-let state = { mode: "learn", history: [], sessionStart: null, messageCount: 0, busy: false, modelVersion: "" };
+let state = { mode: "learn", topic: null, history: [], sessionStart: null, messageCount: 0, busy: false, modelVersion: "" };
+const COURSE_OUTLINE = {"NUR312": {"units": [{"title": "Foundations of nursing research", "topics": [{"id": "1", "title": "Introduction to nursing research", "blurb": "Definitions, sources of knowledge, purposes and goals of research, and the nurse's role.", "lectures": ["1"], "chapters": [["NB", 1]], "chips": ["What is nursing research?", "What are the sources of nursing knowledge?", "What roles can nurses play in research?"]}, {"id": "2", "title": "Ethical issues in nursing research", "blurb": "Ethical principles, informed consent, participants' rights and ethics committees.", "lectures": ["2"], "chapters": [["NB", 4]], "chips": ["What are the elements of informed consent?", "What is the role of an ethics committee (IRB)?", "Explain anonymity versus confidentiality"]}, {"id": "3a", "title": "Overview of quantitative research", "blurb": "Characteristics of quantitative research and the steps of the quantitative research process.", "lectures": ["3a"], "chapters": [["NB", 5]], "chips": ["What are the steps in quantitative research?", "What makes research quantitative?", "What are study variables and assumptions?"]}, {"id": "3b", "title": "Overview of qualitative research", "blurb": "Characteristics of qualitative research and how it differs from quantitative research.", "lectures": ["3b"], "chapters": [["NB", 5], ["NB", 11], ["PB", 25]], "chips": ["How does qualitative research differ from quantitative?", "How are qualitative data collected?", "What are the types of qualitative research?"]}, {"id": "10", "title": "Evidence-based practice", "blurb": "Defining EBP, PICO questions, sources of evidence and barriers to using it.", "lectures": ["10"], "chapters": [["NB", 2], ["NB", 3], ["PB", 2]], "chips": ["How do I write a PICO question?", "Research utilization versus EBP", "What are the barriers to EBP?"]}]}, {"title": "Planning a study", "topics": [{"id": "4a", "title": "The research problem", "blurb": "Sources of research problems, problem and purpose statements, and research questions.", "lectures": ["4a"], "chapters": [["NB", 6]], "chips": ["Where do research problems come from?", "Problem statement versus purpose statement", "What makes a good research question?"]}, {"id": "4b", "title": "Hypotheses and research questions", "blurb": "Types of hypotheses, their purposes, and how to write a testable hypothesis.", "lectures": ["4b"], "chapters": [["NB", 9], ["NB", 6]], "chips": ["Directional versus non-directional hypotheses", "What is a null hypothesis?", "What makes a hypothesis testable?"]}, {"id": "5", "title": "Review of the literature", "blurb": "Purposes of the literature review, primary and secondary sources, and search strategies.", "lectures": ["5"], "chapters": [["NB", 7], ["PB", 5]], "chips": ["Primary versus secondary sources", "How do I search databases for literature?", "How do I critique a literature review?"]}, {"id": "6", "title": "Theory and nursing research", "blurb": "Theory terminology, nursing conceptual models, and theoretical versus conceptual frameworks.", "lectures": ["6"], "chapters": [["NB", 8]], "chips": ["Theoretical versus conceptual framework", "What are concepts, constructs and propositions?", "Deductive versus inductive reasoning"]}]}, {"title": "Designing a study", "topics": [{"id": "7", "title": "Research design", "blurb": "Experimental, quasi-experimental and non-experimental designs, qualitative designs, and validity.", "lectures": ["7"], "chapters": [["NB", 10], ["NB", 11], ["PB", 10]], "chips": ["True versus quasi-experimental designs", "What are threats to internal validity?", "Compare phenomenology, grounded theory and ethnography"]}, {"id": "7a", "title": "Population, sample and sampling", "blurb": "Target and accessible populations, probability and non-probability sampling, and sample size.", "lectures": ["7a"], "chapters": [["NB", 12]], "chips": ["Probability versus non-probability sampling", "Target versus accessible population", "What is sampling bias?"]}, {"id": "8", "title": "Measurement and data collection", "blurb": "Levels of measurement, the data collection process, and reliability and validity of instruments.", "lectures": ["8"], "chapters": [["NB", 13], ["PB", 14]], "chips": ["Explain the four levels of measurement", "Reliability versus validity", "How do I choose a data collection instrument?"]}, {"id": "8a", "title": "Data collection methods", "blurb": "Questionnaires, interviews, observation and other data collection methods.", "lectures": ["8a"], "chapters": [["NB", 14]], "chips": ["How do I write good questionnaire items?", "Questionnaires versus interviews", "What affects response rates?"]}]}, {"title": "Analysing and using findings", "topics": [{"id": "9", "title": "Data analysis", "blurb": "Descriptive and inferential statistics and choosing the right statistical test.", "lectures": ["9"], "chapters": [["NB", 15], ["NB", 16]], "chips": ["Descriptive versus inferential statistics", "When do I use a chi-square test?", "What is the level of significance?"]}, {"id": "12a", "title": "Presenting and discussing findings", "blurb": "Presenting results, the discussion section, and statistical versus clinical significance.", "lectures": ["12a"], "chapters": [["NB", 17]], "chips": ["Statistical versus clinical significance", "What goes in the discussion section?", "Conclusions, implications and recommendations"]}, {"id": "13", "title": "Communicating and using research", "blurb": "Research reports, posters and publications, and barriers to using research.", "lectures": ["13"], "chapters": [["NB", 18]], "chips": ["How is a research report organized?", "How do I prepare a research poster?", "What are the barriers to using research?"]}]}, {"title": "Course assessments", "topics": [{"id": "PROP", "title": "Research proposal project", "blurb": "What each section of the group proposal and presentation requires, and feedback on your own drafts.", "lectures": [], "docs": ["template", "rubric", "presrubric"], "chapters": [["PB", 31], ["NB", 6], ["NB", 7]], "chips": ["What does each proposal section require?", "How is the proposal graded?", "Give feedback on my draft research question"]}, {"id": "CRIT", "title": "Critiquing a research article", "blurb": "How to critique each part of a published research article.", "lectures": [], "chapters": [["NB", 20]], "chips": ["How do I critique a research article?", "What should I check in the methods section?", "How do I critique the sample?"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR312 topic. Use this when your question spans several topics."}}};
 let survey = { pages: [], page: 0, answers: {} };
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
@@ -936,14 +981,15 @@ async function signIn() {
   applyAccess();
   if (me.companionOpen) {
     logEvent('session_start', '', '');
-    setMode('learn');
+    if (COURSE_OUTLINE[me.course]) showOutline(); else { state.topic = null; showChat(); setMode('learn'); }
   }
   showTab(me.wave && !me.waveDone && !me.companionOpen ? 'survey' : 'companion');
 }
 
 function signOut() {
   if (me && me.companionOpen && state.messageCount >= 0) logEvent('session_end', '', `${state.messageCount} messages`);
-  me = null; state.history = []; state.messageCount = 0;
+  me = null; state.topic = null; state.history = []; state.messageCount = 0;
+  document.getElementById('topic-head').hidden = true;
   document.getElementById('messages').innerHTML = '';
   showScreen('welcome-screen');
 }
@@ -968,6 +1014,45 @@ function showTab(t) {
   if (t === 'survey') refreshSurvey();
 }
 
+// ── COURSE OUTLINE ─────────────────────────────────────────────────────────
+function topicInfo(id) {
+  const o = COURSE_OUTLINE[me.course]; if (!o) return null;
+  if (o.all && o.all.id === id) return o.all;
+  for (const u of o.units) for (const t of u.topics) if (t.id === id) return t;
+  return null;
+}
+function showChat() {
+  document.getElementById('outline').hidden = true;
+  document.getElementById('companion-ui').style.display = me.companionOpen ? 'flex' : 'none';
+}
+function showOutline() {
+  const o = COURSE_OUTLINE[me.course];
+  if (!o) return;
+  state.topic = null; state.history = [];
+  document.getElementById('companion-ui').style.display = 'none';
+  const root = document.getElementById('outline-root');
+  const chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+  const row = (t, label) => `<li><button type="button" class="topic-row" onclick="openTopic('${t.id}')">
+      <span class="tnum">${esc(label)}</span><span class="ttext"><strong>${esc(t.title)}</strong><span>${esc(t.blurb)}</span></span>${chev}</button></li>`;
+  const name = COURSE_INFO[me.course] ? COURSE_INFO[me.course].name : me.course;
+  root.innerHTML = `<h2>${esc(me.course)} ${esc(name)}</h2>
+    <p class="lede">Choose a topic. You can then learn it, practise it, or check your understanding.</p>` +
+    o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
+      u.topics.map(t => row(t, /^\d/.test(t.id) ? 'Lecture ' + t.id : '')).join('') + `</ul></section>`).join('') +
+    (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : '');
+  document.getElementById('outline').hidden = false;
+  document.getElementById('outline').scrollTop = 0;
+}
+function openTopic(id) {
+  const t = topicInfo(id); if (!t) return;
+  state.topic = id;
+  document.getElementById('topic-head').hidden = false;
+  document.getElementById('topic-title').textContent = (/^\d/.test(id) ? 'Lecture ' + id + ' · ' : '') + t.title;
+  showChat();
+  setMode('learn');
+  document.getElementById('user-input').focus();
+}
+
 // ── MODES & CHAT ───────────────────────────────────────────────────────────
 const MODE_META = {
   learn:    { desc: 'Ask me to explain any concept from your course.',
@@ -985,7 +1070,12 @@ function setMode(m) {
   });
   document.getElementById('mode-desc').textContent = MODE_META[m].desc;
   const chips = document.getElementById('quick-chips'); chips.innerHTML = '';
-  MODE_META[m].chips.forEach(text => {
+  const t = state.topic ? topicInfo(state.topic) : null;
+  const chipList = !t ? MODE_META[m].chips
+    : m === 'learn' ? (t.chips || ['Give me an overview of this topic'])
+    : m === 'practice' ? ['Give me a practice question on this topic', 'Test me with a short scenario', 'Multiple choice, please']
+    : ['Run a 5-question check on this topic', 'What should I review in this topic?'];
+  chipList.forEach(text => {
     const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = text;
     b.addEventListener('click', () => { document.getElementById('user-input').value = text; sendMessage(); });
     chips.appendChild(b);
@@ -1002,6 +1092,15 @@ document.addEventListener('keydown', e => {
   }
 });
 function addWelcome() {
+  const t = state.topic ? topicInfo(state.topic) : null;
+  if (t && t.id !== 'ALL') {
+    const tm = {
+      learn:    `Let's study **${t.title}**.\n\nAsk me anything about this topic, or pick a suggestion below. I'll explain it step by step and show you where it is in your slides and textbook.`,
+      practice: `Let's practise **${t.title}**.\n\nI'll ask one question at a time and give you feedback on each answer. Say "start" when you're ready.`,
+      check:    `Let's check your understanding of **${t.title}**.\n\nI'll ask 5 questions, then tell you what you know well and which slides to review. Say "start" when you're ready.`,
+    };
+    addAIMessage(tm[state.mode]); return;
+  }
   const c = COURSE_INFO[me.course] ? COURSE_INFO[me.course].name : me.course;
   const msgs = {
     learn:    `Hello. I'm your study companion for **${c}**.\n\nAsk me about any concept from the course and I'll explain it step by step. What would you like to explore?`,
@@ -1028,7 +1127,7 @@ async function sendMessage() {
   addUserMessage(text);
   const tid = addTyping();
   const messages = [
-    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) },
+    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) + topicNote() },
     ...state.history.slice(-CONFIG.MAX_HISTORY),
     { role: 'user', content: text },
   ];
@@ -1036,7 +1135,7 @@ async function sendMessage() {
   try {
     const res = await fetch(CONFIG.API + '/', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: me.token, model: CONFIG.MODEL, messages }),
+      body: JSON.stringify({ token: me.token, model: CONFIG.MODEL, topic: state.topic || '', messages }),
     });
     status = res.status;
     data = await res.json().catch(() => ({}));
@@ -1057,6 +1156,11 @@ async function sendMessage() {
     logEvent('error', text, (e && e.message) || 'network error');
   }
   state.busy = false; document.getElementById('send-btn').disabled = false; input.focus();
+}
+function topicNote() {
+  const t = state.topic ? topicInfo(state.topic) : null;
+  if (!t || t.id === 'ALL') return '';
+  return `\n\nTOPIC: The student chose "${t.title}" from the course outline. Keep this session on that topic. For questions about other course topics, answer in one or two sentences and suggest choosing that topic from the course outline.`;
 }
 function addUserMessage(text) {
   const d = document.createElement('div'); d.className = 'msg user';
@@ -1097,7 +1201,7 @@ function logEvent(type, userMsg, aiMsg, refusal) {
   if (!me) return;
   const payload = {
     token: me.token, timestamp: new Date().toISOString(),
-    course: me.course, section: me.section, mode: state.mode, eventType: type,
+    course: me.course, section: me.section, mode: state.mode + (state.topic ? ':' + state.topic : ''), eventType: type,
     userMessage: userMsg, aiResponse: (aiMsg || '').substring(0, CONFIG.LOG_ANSWER_CHARS),
     sessionStart: state.sessionStart, messageCount: state.messageCount,
     model: state.modelVersion, refusal: refusal || '',
