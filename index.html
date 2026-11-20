@@ -699,178 +699,124 @@ const CONFIG = {
 // ── COURSE INFO ────────────────────────────────────────────────────────────
 const COURSE_INFO = {
   NUR125: { name:"Fundamentals of Nursing I", level:"first-year undergraduate nursing students",
-    scope:"fundamental nursing concepts including vital signs, infection control, patient safety, basic nursing procedures, patient communication, documentation, and the nursing process." },
+    scope:"asepsis and infection prevention, activity and skin integrity, hygiene and sleep, nutrition and fluid balance, elimination, vital signs, and the nursing care plan." },
   NUR225: { name:"Adult Health Nursing I", level:"second-year undergraduate nursing students",
-    scope:"adult health nursing including common medical-surgical conditions, pharmacology basics, nursing assessment, patient education, and clinical reasoning." },
+    scope:"common adult medical-surgical disorders of the gastrointestinal, urinary, endocrine, musculoskeletal and immune systems, and their nursing care." },
   NUR312: { name:"Nursing Research and Evidence-Based Practice", level:"third-year undergraduate nursing students",
     scope:"nursing research methodology including quantitative and qualitative designs, research ethics, literature review, evidence-based practice, data collection tools, and critical appraisal of research." },
 };
 
 // ── DETAILED SYSTEM PROMPTS (per course, per mode) ────────────────────────
-// These will be further refined once instructor materials arrive.
-// Current version uses standard undergraduate nursing curriculum scope.
+// Grounded in each course's specification and instructor materials (Nov 2026).
 
 const SYSTEM_PROMPTS = {
 
   NUR125: {
-    learn: `You are an AI learning companion for NUR125 (Fundamentals of Nursing I) at the University of Bahrain, Department of Nursing. You are supporting first-year undergraduate nursing students who are new to the profession.
+    learn: `You are the AI learning companion for NUR125 Fundamentals of Nursing I, Department of Nursing, University of Bahrain. You support first-year BSN students. The course is taught through six case studies in the skills lab, using the nursing process.
 
-COURSE SCOPE — You may only discuss topics from this list:
-- The nursing profession: history, roles, scope of practice, professional values and ethics
-- The nursing process: Assessment, Diagnosis, Planning, Implementation, Evaluation (ADPIE)
-- Health, wellness, and illness concepts; health promotion and disease prevention
-- Vital signs: blood pressure, heart rate, respiratory rate, body temperature, oxygen saturation, and pain assessment
-- Infection control: chain of infection, standard precautions, hand hygiene, PPE, aseptic technique, isolation categories
-- Patient safety: fall prevention, restraints, environmental safety, patient identification
-- Basic nursing procedures: bed bath, oral hygiene, positioning and turning, range-of-motion exercises, pressure ulcer prevention
-- Therapeutic communication: active listening, open-ended questions, empathy, barriers to communication
-- Documentation: principles of accurate documentation, SOAP notes, narrative charting, incident reports, legal considerations
-- Body mechanics and safe patient handling
-- Introduction to pharmacology: 10 rights of medication administration, oral and topical routes, basic drug terminology
-- Basic wound care: wound classification, dressing types, wound assessment
-- Fluid and electrolyte basics: dehydration, overhydration, IV fluid types (introductory level)
-- Medical terminology fundamentals
+COURSE INTENDED LEARNING OUTCOMES (course specification):
+1. Discuss fundamental nursing concepts of hygiene, fluid regulation, nutrition, elimination, activity, and vital signs.
+2. Integrate principles of asepsis, infection control, and body mechanics into nursing practice.
+3. Perform fundamental nursing skills in a simulated clinical environment using the nursing process approach.
+4. Utilize critical thinking and problem-solving skills in the care of simulated clients.
 
-YOUR TEACHING APPROACH:
-- Break down complex concepts into simple, sequential steps
-- Use clinical examples relevant to real bedside nursing
-- Connect theory to practice (e.g., "why does this matter at the bedside?")
-- Check understanding by asking the student to explain back in their own words
-- Encourage students to think critically, not just memorise facts
+COURSE TOPICS (case studies in the approved course materials):
+Case 1 Asepsis and infection prevention · Case 2 Activity, exercise and skin integrity · Case 3 Hygiene and sleep · Case 4 Nutrition and fluid balance · Case 5 Bowel and bladder elimination · Case 6 Vital signs · Care plan assignment · OSPE.
 
-STRICT BOUNDARIES:
-- Do NOT provide real patient diagnoses or clinical advice for real situations
-- Do NOT write assignments, essays, or answer take-home exam questions for students
-- Do NOT discuss topics from other courses (NUR225, NUR312) — redirect politely
-- If a question requires clinical judgment beyond a first-year scope, say so and redirect to the instructor
-- If you are uncertain about a specific detail (e.g., a UoB-specific protocol), say so and encourage verification with the textbook or instructor
+LEARN MODE — HOW TO TEACH:
+- Explain using the definitions, steps and terminology of the course materials. Do not mention lectures, tasks or slide numbers.
+- Start simply, then build up. Link each concept to the bedside: what the nurse assesses, does and why (rationale). Use a short client example.
+- For skills, give the steps in order with the key rationale and safety points, as in the course skills manual and checklists.
+- End by checking understanding with one brief question, or by suggesting a related topic.
+- Keep answers focused: usually under 250 words unless the student asks for more.
 
-TONE: Warm, encouraging, patient. Remember these are first-year students — many are encountering nursing concepts for the very first time.`,
+SAFETY AND ACADEMIC INTEGRITY:
+- This is for learning only. Do not give advice about real patients or real clinical decisions; tell the student to follow their instructor and agency policy.
+- The care plan assignment is graded group work. You may explain each part of the care plan form and rubric, and give feedback on text the student wrote, but do NOT write the care plan, nursing diagnoses, goals or interventions for their assigned case.
 
-    practice: `You are an AI practice companion for NUR125 (Fundamentals of Nursing I) at the University of Bahrain, supporting first-year nursing students.
+SCOPE:
+- Content from NUR225 (adult medical-surgical disorders) or NUR312 (research): answer in one sentence and redirect politely.
+- Questions unrelated to nursing or this course: decline briefly.
 
-YOUR ROLE IN PRACTICE MODE:
-Present practice questions and scenarios from the NUR125 curriculum. After each student response, give specific, constructive feedback. Ask one question at a time and wait for the student to answer before giving feedback or moving on.
+TONE: Warm, encouraging and patient. Many students are meeting these concepts for the first time.`,
 
-QUESTION TYPES TO USE (vary between them):
-1. Multiple choice — 4 options, one best answer
-2. Short answer — "Describe...", "Explain...", "List the steps..."
-3. Scenario-based — "A patient presents with... What would you do first?"
-4. Fill in the blank — key terminology
-5. True/False with explanation
+    practice: `You are the AI practice companion for NUR125 Fundamentals of Nursing I, Department of Nursing, University of Bahrain, supporting first-year BSN students.
 
-TOPIC POOL (choose from these):
-- Vital signs: normal ranges, measurement technique, factors affecting readings
-- Nursing process: identifying correct steps, writing SMART goals, evaluation criteria
-- Infection control: choosing correct PPE, hand hygiene moments, isolation types
-- Patient safety: fall risk assessment, correct use of call bell, side rail policy
-- Documentation: identifying correct vs incorrect documentation practices
-- Therapeutic communication: choosing appropriate nursing responses
-- Medication rights: identifying errors in medication scenarios
-- Basic procedures: correct sequence of steps for bed bath, positioning, wound dressing
+PRACTICE MODE:
+- Ask ONE question at a time, based on the approved course materials. Wait for the student's answer before giving feedback.
+- Use first-year level: simple client scenarios in the skills lab or ward, "what would you do first and why", steps of a skill in order, normal ranges and what an abnormal finding means.
+- After each answer: say what was correct, what was missing or wrong and why, and give the correct answer with the rationale. Do not mention lectures or slide numbers. Then offer the next question.
+- Never reveal the answer before the student attempts the question.
 
-FEEDBACK RULES:
-- If correct: confirm specifically what was right and why, then add one reinforcing fact
-- If partially correct: acknowledge what was right, then clarify the gap
-- If incorrect: do not simply give the answer — ask a guiding question first, then reveal the correct answer with explanation
-- Never give the answer before the student attempts
+ACADEMIC INTEGRITY: Use made-up clients only. Do not complete graded work (care plan assignment, tests, OSPE).
+SCOPE: NUR225 or NUR312 content: redirect politely. Decline unrelated requests briefly.
+TONE: Encouraging, specific and honest in feedback.`,
 
-TONE: Encouraging and specific. Treat mistakes as learning opportunities, not failures.`,
+    check: `You are the AI study-check companion for NUR125 Fundamentals of Nursing I, Department of Nursing, University of Bahrain, supporting first-year BSN students.
 
-    check: `You are an AI study-check companion for NUR125 (Fundamentals of Nursing I) at the University of Bahrain, supporting first-year nursing students.
+CHECK YOUR UNDERSTANDING MODE:
+1. Ask which case study or topic the student has been studying (or offer to choose).
+2. Run a 5-question diagnostic, one question at a time, mixing recall, skill steps and short client scenarios. Keep a silent tally.
+3. Give brief feedback after each answer (correct / partly / incorrect, with a one-line reason).
+4. After question 5, give a summary: score out of 5, strengths, gaps, and the specific topics to review.
 
-YOUR ROLE IN CHECK MODE:
-Run structured 5-question knowledge diagnostics. The goal is to help students identify what they know well and what needs more study — not to grade them.
-
-HOW TO RUN A DIAGNOSTIC:
-1. Ask the student which topic or unit they want to check, OR offer to select one
-2. Present exactly 5 questions, one at a time, from that topic
-3. After each answer, give brief feedback (correct/incorrect + one-line explanation) — do NOT elaborate yet
-4. After question 5, give a structured summary:
-   - "Strong areas: ..." (what they answered well)
-   - "Review recommended: ..." (specific gaps identified)
-   - "Suggested next step: ..." (which topic to study or which mode to use next)
-
-QUESTION DESIGN:
-- Mix difficulty: 2 recall, 2 application, 1 analysis-level
-- Use real bedside scenarios where possible
-- Questions must be from the NUR125 scope only
-
-IMPORTANT:
-- This is NOT a formal exam simulation — remind students of this
-- Be honest about gaps but keep the tone supportive
-- If the student scores 5/5, praise them and suggest moving to a harder topic or switching to Practice mode for scenario questions`
+ACADEMIC INTEGRITY: Use made-up clients only; do not complete graded work.
+SCOPE: NUR225 or NUR312 content: redirect politely. Decline unrelated requests briefly.
+TONE: Honest and supportive.`,
   },
 
   NUR225: {
-    learn: `You are an AI learning companion for NUR225 (Adult Health Nursing I) at the University of Bahrain, Department of Nursing. You are supporting second-year undergraduate nursing students with foundational clinical knowledge who are now applying nursing to adult patients with common health conditions.
+    learn: `You are the AI learning companion for NUR225 Adult Health Nursing I, Department of Nursing, University of Bahrain. You support second-year BSN students who are applying the nursing process to adults with common medical-surgical problems.
 
-COURSE SCOPE — You may only discuss topics from this list:
-- Cardiovascular system: hypertension, coronary artery disease, heart failure, myocardial infarction, arrhythmias — pathophysiology, nursing assessment, interventions, patient education
-- Respiratory system: COPD, asthma, pneumonia, tuberculosis, pleural effusion — pathophysiology, nursing care, oxygen therapy, breathing exercises
-- Neurological system: stroke (ischemic and hemorrhagic), seizure disorders, increased intracranial pressure, Parkinson disease — assessment, nursing priorities, safety
-- Musculoskeletal system: fractures, osteoporosis, arthritis, total joint replacement — cast care, mobility, fall prevention, rehabilitation principles
-- Gastrointestinal system: peptic ulcer disease, inflammatory bowel disease, cirrhosis, pancreatitis — dietary management, medication, nursing care
-- Endocrine system: type 1 and type 2 diabetes mellitus, hyperthyroidism, hypothyroidism — insulin administration, glucose monitoring, patient education
-- Nursing assessment: health history, physical examination (systems-based), focused assessment
-- Patient education: principles of adult learning, teach-back method, discharge planning
-- Clinical reasoning: priority-setting using ABCs and Maslow, recognising deterioration
-- Perioperative care: pre-operative preparation, intraoperative roles, post-operative monitoring (PACU), complications
-- Pain management: pharmacological and non-pharmacological approaches, pain scales, opioid safety
-- Pharmacology relevant to adult health: antihypertensives, diuretics, bronchodilators, anticoagulants, insulin, analgesics — mechanism, nursing considerations, patient education
+COURSE INTENDED LEARNING OUTCOMES (course specification):
+1. Analyze the pathophysiology, manifestations and diagnostic measures of common health problems affecting gastrointestinal, endocrine, urinary, immunological, and musculoskeletal systems.
+2. Examine the collaborative management of adult patients with various medical-surgical health problems.
+3. Construct comprehensive care for adult patients with common medical-surgical health problems using the nursing process approach.
 
-YOUR TEACHING APPROACH:
-- Connect pathophysiology to clinical signs and nursing actions ("because the heart is failing, you will see... therefore the nurse...")
-- Use case-based thinking to build clinical reasoning
-- Highlight priority assessments and red flags
-- Relate to conditions students may encounter in clinical placement
+COURSE TOPICS (in the approved course materials):
+Gastrointestinal: peptic ulcer, intestinal obstruction, umbilical hernia, hepatitis and cirrhosis, cholecystitis and cholelithiasis · Urinary: renal calculi, renal failure · Endocrine: diabetes mellitus, hyperthyroidism, hypothyroidism · Musculoskeletal and immune: fractures, rheumatoid arthritis, systemic lupus erythematosus.
 
-STRICT BOUNDARIES:
-- Do NOT provide advice for managing real patients or real clinical situations
-- Do NOT discuss paediatric, obstetric, psychiatric, or ICU-level content
-- Do NOT write assignments or answer exam questions
-- Redirect questions outside NUR225 scope to the relevant course or instructor
-- When unsure about a specific protocol or drug dose, direct the student to their textbook or pharmacology reference
+LEARN MODE — HOW TO TEACH:
+- Explain using the definitions and terminology of the course materials. Do not mention lectures or slide numbers.
+- For each disorder, follow the course structure as needed: definition, risk factors and causes, pathophysiology, clinical manifestations, diagnostic findings, collaborative (medical and surgical) management, nursing diagnoses and interventions, complications, and health education.
+- Link pathophysiology to manifestations and nursing care ("this happens, so the patient shows..., so the nurse...").
+- End by checking understanding with one brief question, or by suggesting a related topic.
+- Keep answers focused: usually under 250 words unless the student asks for more.
+- Medication content: explain drug classes, actions, key side effects and nursing considerations at student level. Do not give doses for real patients.
 
-TONE: Professional, clinically focused, builds on prior NUR125 knowledge.`,
+SAFETY AND ACADEMIC INTEGRITY:
+- This is for learning only. Do not give advice about real patients, real symptoms or real treatment; tell the student to consult their instructor or a clinician.
+- The concept map analysis and case-based presentation are graded group work. You may explain what a concept map or presentation needs and give feedback on text the student wrote, but do NOT produce the concept map, care plan or presentation content for their assigned case.
 
-    practice: `You are an AI practice companion for NUR225 (Adult Health Nursing I) at the University of Bahrain, supporting second-year nursing students.
+SCOPE:
+- If a course-listed disorder is not covered in the provided materials (for example gastritis, inflammatory bowel disease, appendicitis or hemorrhoids), say it is not in the course materials provided here, give at most a brief general orientation, and suggest the course textbook or the instructor.
+- NUR125 fundamentals may be used as background. NUR312 research content: redirect politely. Unrelated requests: decline briefly.
 
-YOUR ROLE IN PRACTICE MODE:
-Present clinical questions, case scenarios, and scenario-based questions from the NUR225 curriculum. These students are preparing for clinical placements — make questions as realistic as possible.
+TONE: Professional, clinically focused and encouraging.`,
 
-QUESTION TYPES TO USE:
-1. Clinical scenario — "A 68-year-old male with COPD presents with... What is your priority nursing action?"
-2. Priority-setting — "Which patient would you assess first?"
-3. Patient education — "What would you teach this patient about...?"
-4. Medication safety — "The patient is prescribed... What nursing considerations apply?"
-5. Assessment interpretation — "The patient's SpO2 is 88% and RR is 28. What does this indicate?"
-6. Multiple choice — NCLEX-style with one best answer
+    practice: `You are the AI practice companion for NUR225 Adult Health Nursing I, Department of Nursing, University of Bahrain, supporting second-year BSN students.
 
-TOPIC POOL: Cardiovascular, respiratory, neurological, musculoskeletal, gastrointestinal, endocrine conditions; perioperative care; pain management; clinical reasoning and prioritisation.
+PRACTICE MODE:
+- Ask ONE question at a time, based on the approved course materials. Wait for the student's answer before giving feedback.
+- Prefer clinical reasoning: short patient scenarios with assessment findings or lab values, priority-setting ("which finding needs action first?"), linking pathophysiology to manifestations, nursing diagnoses and interventions with rationale, complications to watch for, and patient education.
+- After each answer: say what was correct, what was missing or wrong and why, and give the correct answer with the rationale. Do not mention lectures or slide numbers. Then offer the next question.
+- Never reveal the answer before the student attempts the question.
 
-FEEDBACK RULES:
-- Always explain the clinical rationale behind the correct answer
-- If incorrect: ask one guiding question before giving the answer
-- Highlight what a nurse would actually DO in that situation
-- Connect feedback to patient outcomes ("if this is missed, the patient could...")
+ACADEMIC INTEGRITY: Use made-up patients only. Do not complete graded work (concept map, case presentation, tests).
+SCOPE: NUR312 research content: redirect politely. Decline unrelated requests briefly.
+TONE: Encouraging, specific and honest in feedback.`,
 
-TONE: Clinically serious but supportive. These students are building the foundations for real patient care.`,
+    check: `You are the AI study-check companion for NUR225 Adult Health Nursing I, Department of Nursing, University of Bahrain, supporting second-year BSN students.
 
-    check: `You are an AI study-check companion for NUR225 (Adult Health Nursing I) at the University of Bahrain, supporting second-year nursing students.
+CHECK YOUR UNDERSTANDING MODE:
+1. Ask which disorder(s) the student has been studying (or offer to choose).
+2. Run a 5-question diagnostic, one question at a time, mixing pathophysiology, manifestations, diagnostics, priority nursing care and patient education. Keep a silent tally.
+3. Give brief feedback after each answer (correct / partly / incorrect, with a one-line reason).
+4. After question 5, give a summary: score out of 5, strengths, gaps, and the specific topics to review.
 
-YOUR ROLE IN CHECK MODE:
-Run 5-question diagnostic checks to help students identify knowledge gaps before exams or clinical placement.
-
-HOW TO RUN A DIAGNOSTIC:
-1. Ask which body system or topic they want to check
-2. Present 5 questions one at a time (mix: 2 recall, 2 application, 1 clinical priority)
-3. Brief feedback after each (correct/incorrect + one line why)
-4. After question 5, give a summary: strong areas, gaps, recommended next step
-
-FOCUS: Prioritise clinical reasoning questions — not just recall of facts but "what would you do" and "why does this happen." These students need to think like nurses, not just recall facts.
-
-Remind students this is a study tool, not a formal assessment. Keep tone supportive and specific.`
+ACADEMIC INTEGRITY: Use made-up patients only; do not complete graded work.
+SCOPE: NUR312 research content: redirect politely. Decline unrelated requests briefly.
+TONE: Honest and supportive.`,
   },
 
   NUR312: {
@@ -1024,7 +970,7 @@ const FIDELITY = [
 let me = null;   // { token, code, course, section, group, companionOpen, wave, waveDone }
 let state = { mode: "learn", topic: null, style: null, input: "typed", history: [], sessionStart: null, messageCount: 0, busy: false, modelVersion: "" };
 let check = null;   // the class check being taken: { id, topic, title, closes, items, answers, started }
-const COURSE_OUTLINE = {"NUR312": {"units": [{"title": "Foundations of nursing research", "topics": [{"id": "1", "title": "Introduction to nursing research", "blurb": "Definitions, sources of knowledge, purposes and goals of research, and the nurse's role.", "lectures": ["1"], "chapters": [["NB", 1]], "chips": ["What is nursing research?", "What are the sources of nursing knowledge?", "What roles can nurses play in research?"]}, {"id": "2", "title": "Ethical issues in nursing research", "blurb": "Ethical principles, informed consent, participants' rights and ethics committees.", "lectures": ["2"], "chapters": [["NB", 4]], "chips": ["What are the elements of informed consent?", "What is the role of an ethics committee (IRB)?", "Explain anonymity versus confidentiality"]}, {"id": "3a", "title": "Overview of quantitative research", "blurb": "Characteristics of quantitative research and the steps of the quantitative research process.", "lectures": ["3a"], "chapters": [["NB", 5]], "chips": ["What are the steps in quantitative research?", "What makes research quantitative?", "What are study variables and assumptions?"]}, {"id": "3b", "title": "Overview of qualitative research", "blurb": "Characteristics of qualitative research and how it differs from quantitative research.", "lectures": ["3b"], "chapters": [["NB", 5], ["NB", 11], ["PB", 25]], "chips": ["How does qualitative research differ from quantitative?", "How are qualitative data collected?", "What are the types of qualitative research?"]}, {"id": "10", "title": "Evidence-based practice", "blurb": "Defining EBP, PICO questions, sources of evidence and barriers to using it.", "lectures": ["10"], "chapters": [["NB", 2], ["NB", 3], ["PB", 2]], "chips": ["How do I write a PICO question?", "Research utilization versus EBP", "What are the barriers to EBP?"]}]}, {"title": "Planning a study", "topics": [{"id": "4a", "title": "The research problem", "blurb": "Sources of research problems, problem and purpose statements, and research questions.", "lectures": ["4a"], "chapters": [["NB", 6]], "chips": ["Where do research problems come from?", "Problem statement versus purpose statement", "What makes a good research question?"]}, {"id": "4b", "title": "Hypotheses and research questions", "blurb": "Types of hypotheses, their purposes, and how to write a testable hypothesis.", "lectures": ["4b"], "chapters": [["NB", 9], ["NB", 6]], "chips": ["Directional versus non-directional hypotheses", "What is a null hypothesis?", "What makes a hypothesis testable?"]}, {"id": "5", "title": "Review of the literature", "blurb": "Purposes of the literature review, primary and secondary sources, and search strategies.", "lectures": ["5"], "chapters": [["NB", 7], ["PB", 5]], "chips": ["Primary versus secondary sources", "How do I search databases for literature?", "How do I critique a literature review?"]}, {"id": "6", "title": "Theory and nursing research", "blurb": "Theory terminology, nursing conceptual models, and theoretical versus conceptual frameworks.", "lectures": ["6"], "chapters": [["NB", 8]], "chips": ["Theoretical versus conceptual framework", "What are concepts, constructs and propositions?", "Deductive versus inductive reasoning"]}]}, {"title": "Designing a study", "topics": [{"id": "7", "title": "Research design", "blurb": "Experimental, quasi-experimental and non-experimental designs, qualitative designs, and validity.", "lectures": ["7"], "chapters": [["NB", 10], ["NB", 11], ["PB", 10]], "chips": ["True versus quasi-experimental designs", "What are threats to internal validity?", "Compare phenomenology, grounded theory and ethnography"]}, {"id": "7a", "title": "Population, sample and sampling", "blurb": "Target and accessible populations, probability and non-probability sampling, and sample size.", "lectures": ["7a"], "chapters": [["NB", 12]], "chips": ["Probability versus non-probability sampling", "Target versus accessible population", "What is sampling bias?"]}, {"id": "8", "title": "Measurement and data collection", "blurb": "Levels of measurement, the data collection process, and reliability and validity of instruments.", "lectures": ["8"], "chapters": [["NB", 13], ["PB", 14]], "chips": ["Explain the four levels of measurement", "Reliability versus validity", "How do I choose a data collection instrument?"]}, {"id": "8a", "title": "Data collection methods", "blurb": "Questionnaires, interviews, observation and other data collection methods.", "lectures": ["8a"], "chapters": [["NB", 14]], "chips": ["How do I write good questionnaire items?", "Questionnaires versus interviews", "What affects response rates?"]}]}, {"title": "Analysing and using findings", "topics": [{"id": "9", "title": "Data analysis", "blurb": "Descriptive and inferential statistics and choosing the right statistical test.", "lectures": ["9"], "chapters": [["NB", 15], ["NB", 16]], "chips": ["Descriptive versus inferential statistics", "When do I use a chi-square test?", "What is the level of significance?"]}, {"id": "12a", "title": "Presenting and discussing findings", "blurb": "Presenting results, the discussion section, and statistical versus clinical significance.", "lectures": ["12a"], "chapters": [["NB", 17]], "chips": ["Statistical versus clinical significance", "What goes in the discussion section?", "Conclusions, implications and recommendations"]}, {"id": "13", "title": "Communicating and using research", "blurb": "Research reports, posters and publications, and barriers to using research.", "lectures": ["13"], "chapters": [["NB", 18]], "chips": ["How is a research report organized?", "How do I prepare a research poster?", "What are the barriers to using research?"]}]}, {"title": "Course assessments", "topics": [{"id": "PROP", "title": "Research proposal project", "blurb": "What each section of the group proposal and presentation requires, and feedback on your own drafts.", "lectures": [], "docs": ["template", "rubric", "presrubric"], "chapters": [["PB", 31], ["NB", 6], ["NB", 7]], "chips": ["What does each proposal section require?", "How is the proposal graded?", "Give feedback on my draft research question"]}, {"id": "CRIT", "title": "Critiquing a research article", "blurb": "How to critique each part of a published research article.", "lectures": [], "chapters": [["NB", 20]], "chips": ["How do I critique a research article?", "What should I check in the methods section?", "How do I critique the sample?"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR312 topic. Use this when your question spans several topics."}}};
+const COURSE_OUTLINE = {"NUR312": {"units": [{"title": "Foundations of nursing research", "topics": [{"id": "1", "title": "Introduction to nursing research", "blurb": "Definitions, sources of knowledge, purposes and goals of research, and the nurse's role.", "lectures": ["1"], "chapters": [["NB", 1]], "chips": ["What is nursing research?", "What are the sources of nursing knowledge?", "What roles can nurses play in research?"]}, {"id": "2", "title": "Ethical issues in nursing research", "blurb": "Ethical principles, informed consent, participants' rights and ethics committees.", "lectures": ["2"], "chapters": [["NB", 4]], "chips": ["What are the elements of informed consent?", "What is the role of an ethics committee (IRB)?", "Explain anonymity versus confidentiality"]}, {"id": "3a", "title": "Overview of quantitative research", "blurb": "Characteristics of quantitative research and the steps of the quantitative research process.", "lectures": ["3a"], "chapters": [["NB", 5]], "chips": ["What are the steps in quantitative research?", "What makes research quantitative?", "What are study variables and assumptions?"]}, {"id": "3b", "title": "Overview of qualitative research", "blurb": "Characteristics of qualitative research and how it differs from quantitative research.", "lectures": ["3b"], "chapters": [["NB", 5], ["NB", 11], ["PB", 25]], "chips": ["How does qualitative research differ from quantitative?", "How are qualitative data collected?", "What are the types of qualitative research?"]}, {"id": "10", "title": "Evidence-based practice", "blurb": "Defining EBP, PICO questions, sources of evidence and barriers to using it.", "lectures": ["10"], "chapters": [["NB", 2], ["NB", 3], ["PB", 2]], "chips": ["How do I write a PICO question?", "Research utilization versus EBP", "What are the barriers to EBP?"]}]}, {"title": "Planning a study", "topics": [{"id": "4a", "title": "The research problem", "blurb": "Sources of research problems, problem and purpose statements, and research questions.", "lectures": ["4a"], "chapters": [["NB", 6]], "chips": ["Where do research problems come from?", "Problem statement versus purpose statement", "What makes a good research question?"]}, {"id": "4b", "title": "Hypotheses and research questions", "blurb": "Types of hypotheses, their purposes, and how to write a testable hypothesis.", "lectures": ["4b"], "chapters": [["NB", 9], ["NB", 6]], "chips": ["Directional versus non-directional hypotheses", "What is a null hypothesis?", "What makes a hypothesis testable?"]}, {"id": "5", "title": "Review of the literature", "blurb": "Purposes of the literature review, primary and secondary sources, and search strategies.", "lectures": ["5"], "chapters": [["NB", 7], ["PB", 5]], "chips": ["Primary versus secondary sources", "How do I search databases for literature?", "How do I critique a literature review?"]}, {"id": "6", "title": "Theory and nursing research", "blurb": "Theory terminology, nursing conceptual models, and theoretical versus conceptual frameworks.", "lectures": ["6"], "chapters": [["NB", 8]], "chips": ["Theoretical versus conceptual framework", "What are concepts, constructs and propositions?", "Deductive versus inductive reasoning"]}]}, {"title": "Designing a study", "topics": [{"id": "7", "title": "Research design", "blurb": "Experimental, quasi-experimental and non-experimental designs, qualitative designs, and validity.", "lectures": ["7"], "chapters": [["NB", 10], ["NB", 11], ["PB", 10]], "chips": ["True versus quasi-experimental designs", "What are threats to internal validity?", "Compare phenomenology, grounded theory and ethnography"]}, {"id": "7a", "title": "Population, sample and sampling", "blurb": "Target and accessible populations, probability and non-probability sampling, and sample size.", "lectures": ["7a"], "chapters": [["NB", 12]], "chips": ["Probability versus non-probability sampling", "Target versus accessible population", "What is sampling bias?"]}, {"id": "8", "title": "Measurement and data collection", "blurb": "Levels of measurement, the data collection process, and reliability and validity of instruments.", "lectures": ["8"], "chapters": [["NB", 13], ["PB", 14]], "chips": ["Explain the four levels of measurement", "Reliability versus validity", "How do I choose a data collection instrument?"]}, {"id": "8a", "title": "Data collection methods", "blurb": "Questionnaires, interviews, observation and other data collection methods.", "lectures": ["8a"], "chapters": [["NB", 14]], "chips": ["How do I write good questionnaire items?", "Questionnaires versus interviews", "What affects response rates?"]}]}, {"title": "Analysing and using findings", "topics": [{"id": "9", "title": "Data analysis", "blurb": "Descriptive and inferential statistics and choosing the right statistical test.", "lectures": ["9"], "chapters": [["NB", 15], ["NB", 16]], "chips": ["Descriptive versus inferential statistics", "When do I use a chi-square test?", "What is the level of significance?"]}, {"id": "12a", "title": "Presenting and discussing findings", "blurb": "Presenting results, the discussion section, and statistical versus clinical significance.", "lectures": ["12a"], "chapters": [["NB", 17]], "chips": ["Statistical versus clinical significance", "What goes in the discussion section?", "Conclusions, implications and recommendations"]}, {"id": "13", "title": "Communicating and using research", "blurb": "Research reports, posters and publications, and barriers to using research.", "lectures": ["13"], "chapters": [["NB", 18]], "chips": ["How is a research report organized?", "How do I prepare a research poster?", "What are the barriers to using research?"]}]}, {"title": "Course assessments", "topics": [{"id": "PROP", "title": "Research proposal project", "blurb": "What each section of the group proposal and presentation requires, and feedback on your own drafts.", "lectures": [], "docs": ["template", "rubric", "presrubric"], "chapters": [["PB", 31], ["NB", 6], ["NB", 7]], "chips": ["What does each proposal section require?", "How is the proposal graded?", "Give feedback on my draft research question"]}, {"id": "CRIT", "title": "Critiquing a research article", "blurb": "How to critique each part of a published research article.", "lectures": [], "chapters": [["NB", 20]], "chips": ["How do I critique a research article?", "What should I check in the methods section?", "How do I critique the sample?"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR312 topic. Use this when your question spans several topics."}}, "NUR125": {"units": [{"title": "Case 1 · Asepsis and infection prevention", "topics": [{"id": "1a", "title": "Infection and the chain of infection", "blurb": "Infection terminology, types of infection, the six links of the chain of infection and how to break them.", "docs": ["c1_intro", "c1_case", "c1_chain"], "chapters": [["KZ", 31]], "chips": ["Explain the chain of infection", "How can a nurse break each link in the chain?", "What is a healthcare-associated infection?"]}, {"id": "1b", "title": "Isolation precautions, hand hygiene and PPE", "blurb": "Standard and transmission-based precautions, hand hygiene, donning and doffing PPE, and the effects of isolation on clients.", "docs": ["c1_iso", "c1_psy", "c1_skills", "ck_hh", "ck_ppe", "c1_case"], "chapters": [["KZ", 31]], "chips": ["Standard versus transmission-based precautions", "What is the correct order for donning and doffing PPE?", "How can isolation affect a client psychologically?"]}]}, {"title": "Case 2 · Activity, exercise and skin integrity", "topics": [{"id": "2a", "title": "Mobility and body mechanics", "blurb": "Normal movement, body alignment, body mechanics and factors affecting mobility.", "docs": ["c2_case", "c2_mob"], "chapters": [["KZ", 44]], "chips": ["What are the principles of body mechanics?", "What factors affect a client's mobility?", "Explain body alignment and balance"]}, {"id": "2b", "title": "Effects of immobility", "blurb": "How immobility affects each body system and the nursing care that prevents complications.", "docs": ["c2_case", "c2_immob"], "chapters": [["KZ", 44]], "chips": ["How does immobility affect the respiratory system?", "Effects of immobility on the musculoskeletal system", "How do nurses prevent complications of bed rest?"]}, {"id": "2c", "title": "Pressure injuries and skin integrity", "blurb": "Risk factors, stages and risk assessment of pressure injuries, and how to prevent them.", "docs": ["c2_case", "c2_skin"], "chapters": [["KZ", 36]], "chips": ["What are the stages of pressure injury?", "How is the Braden scale used?", "How can nurses prevent pressure injuries?"]}]}, {"title": "Case 3 · Hygiene and sleep", "topics": [{"id": "3a", "title": "Personal hygiene care", "blurb": "Bathing, perineal care, oral and denture care, hair and foot care, including care of the unconscious client.", "docs": ["c3_case", "c3_hyg1", "c3_hyg2", "c3_hygsk", "ck_oral", "ck_bath", "ck_hair"], "chapters": [["KZ", 33]], "chips": ["How do I give oral care to an unconscious client?", "What are the steps of a bed bath?", "Why is perineal care important?"]}, {"id": "3b", "title": "Bed making", "blurb": "Unoccupied (open, closed, surgical) and occupied bed making.", "docs": ["c3_case", "c3_bedsk", "ck_ubed", "ck_obed"], "chapters": [["KZ", 33]], "chips": ["Occupied versus unoccupied bed making", "When is a surgical bed used?", "What safety points matter during occupied bed making?"]}, {"id": "3c", "title": "Sleep", "blurb": "Sleep stages and cycles, factors affecting sleep, sleep disorders and promoting rest.", "docs": ["c3_case", "c3_sleep"], "chapters": [["KZ", 45]], "chips": ["What are the stages of sleep?", "What factors affect sleep in hospital?", "How can nurses promote sleep?"]}]}, {"title": "Case 4 · Nutrition and fluid balance", "topics": [{"id": "4a", "title": "Nutritional assessment", "blurb": "Assessing nutritional status, factors affecting nutrition, and BMI.", "docs": ["c4_case", "c4_assess"], "chapters": [["KZ", 46]], "chips": ["How is nutritional status assessed?", "How do I calculate BMI?", "What factors affect a client's nutrition?"]}, {"id": "4b", "title": "Therapeutic diets and appetite", "blurb": "Types of therapeutic diet and nursing interventions that stimulate appetite.", "docs": ["c4_case", "c4_diet", "c4_appet"], "chapters": [["KZ", 46]], "chips": ["Clear liquid versus full liquid diet", "When is a soft diet used?", "How can nurses stimulate a client's appetite?"]}, {"id": "4c", "title": "Fluid balance and intake–output", "blurb": "Body fluids, maintaining and monitoring fluid balance, and recording intake and output.", "docs": ["c4_case", "c4_fluid"], "chapters": [["KZ", 51]], "chips": ["How do I measure intake and output?", "What are signs of fluid volume deficit?", "Fluid volume excess versus deficit"]}, {"id": "4d", "title": "Enteral feeding and nasogastric tubes", "blurb": "Alternative feeding methods (NGT, gastrostomy, jejunostomy, TPN), NGT insertion, feeding and removal.", "docs": ["c4_case", "c4_alt", "c4_ngtsk"], "chapters": [["KZ", 46]], "chips": ["How do I check nasogastric tube placement?", "What are the steps for an NG tube feeding?", "Enteral versus parenteral nutrition"]}]}, {"title": "Case 5 · Bowel and bladder elimination", "topics": [{"id": "5a", "title": "Urinary elimination", "blurb": "Characteristics of urine, factors affecting voiding, altered urinary elimination and its management.", "docs": ["c5_case", "c5_uri1", "c5_uri2"], "chapters": [["KZ", 47]], "chips": ["What factors affect voiding?", "Urinary retention versus incontinence", "How do nurses manage urinary retention?"]}, {"id": "5b", "title": "Fecal elimination", "blurb": "Factors affecting defecation, constipation, diarrhea, incontinence and their management.", "docs": ["c5_case", "c5_fecal"], "chapters": [["KZ", 48]], "chips": ["What factors affect defecation?", "How do nurses manage constipation?", "What are the types of enema?"]}]}, {"title": "Case 6 · Vital signs", "topics": [{"id": "6a", "title": "Body temperature and cold applications", "blurb": "Regulation of body temperature, fever, measuring temperature, and cold applications.", "docs": ["c6_case", "c6_temp1", "c6_temp2", "c6_cold", "c6_tempsk"], "chapters": [["KZ", 28]], "chips": ["What factors affect body temperature?", "Oral versus axillary versus rectal temperature", "When and how are cold applications used?"]}, {"id": "6b", "title": "Pulse and respiration", "blurb": "Pulse sites, rate, rhythm and volume; assessing respirations.", "docs": ["c6_case", "c6_pulse", "c6_resp", "c6_prsk"], "chapters": [["KZ", 28]], "chips": ["What are the peripheral pulse sites?", "What is a pulse deficit?", "How do I assess respirations accurately?"]}, {"id": "6c", "title": "Blood pressure and oxygen saturation", "blurb": "Measuring blood pressure, factors affecting it, errors to avoid, and pulse oximetry.", "docs": ["c6_case", "c6_bp", "c6_spo2", "c6_bpsk", "ck_vs"], "chapters": [["KZ", 28]], "chips": ["What causes errors in blood pressure readings?", "What are Korotkoff sounds?", "How does a pulse oximeter work?"]}]}, {"title": "Course assessments", "topics": [{"id": "CP", "title": "Care plan assignment", "blurb": "What each part of the nursing care plan requires and how it is graded.", "docs": ["cp_instr", "cp_form", "cp_rubric", "cp_ref", "c3_case"], "chapters": [["KZ", 10], ["KZ", 11], ["KZ", 12]], "chips": ["How do I write a nursing diagnosis?", "What makes a good SMART goal?", "How is the care plan graded?"]}, {"id": "OSPE", "title": "Preparing for the OSPE", "blurb": "How the OSPE works and what the skill checklists assess.", "docs": ["ospe", "ck_hh", "ck_ppe", "ck_vs", "ck_oral", "ck_bath", "ck_obed", "ck_ubed", "ck_hair"], "chapters": [["KZ", 28], ["KZ", 31], ["KZ", 33]], "chips": ["How does the OSPE work?", "What does the vital signs checklist assess?", "Quiz me on the steps of hand hygiene"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR125 topic. Use this when your question spans several cases."}}, "NUR225": {"units": [{"title": "Gastrointestinal disorders", "topics": [{"id": "1", "title": "Peptic ulcer disease", "blurb": "Causes, pathophysiology, manifestations, diagnosis, complications and nursing care of peptic ulcer.", "docs": ["pud"], "chapters": [], "chips": ["What causes peptic ulcer disease?", "Gastric versus duodenal ulcer", "What are the complications of peptic ulcer?"]}, {"id": "2", "title": "Intestinal obstruction", "blurb": "Mechanical and functional obstruction, manifestations, diagnosis and nursing management.", "docs": ["obst"], "chapters": [], "chips": ["Mechanical versus functional obstruction", "Small versus large bowel obstruction signs", "What is the nursing care for a patient with an NG tube for obstruction?"]}, {"id": "H", "title": "Umbilical hernia", "blurb": "Definition, types, causes, manifestations and management of umbilical hernia.", "docs": ["hernia"], "chapters": [], "chips": ["What is an umbilical hernia?", "What are the risk factors for umbilical hernia?", "What is a strangulated hernia?"]}, {"id": "10", "title": "Hepatitis and cirrhosis", "blurb": "Types of viral hepatitis, cirrhosis, its complications and nursing care.", "docs": ["liver"], "chapters": [], "chips": ["Compare hepatitis A, B and C", "What are the complications of cirrhosis?", "How do nurses care for a patient with ascites?"]}, {"id": "11", "title": "Cholecystitis and cholelithiasis", "blurb": "Gallstones and gallbladder inflammation: risk factors, manifestations, diagnosis and management.", "docs": ["gb"], "chapters": [], "chips": ["Cholecystitis versus cholelithiasis", "What are the risk factors for gallstones?", "What care is needed after cholecystectomy?"]}]}, {"title": "Urinary disorders", "topics": [{"id": "3", "title": "Renal calculi", "blurb": "Types of stones, risk factors, manifestations, diagnosis, treatment and prevention.", "docs": ["calc"], "chapters": [], "chips": ["What are the types of kidney stones?", "What does renal colic feel like and why?", "How can kidney stones be prevented?"]}, {"id": "4", "title": "Renal failure", "blurb": "Acute kidney injury and chronic kidney disease: causes, stages, manifestations and management.", "docs": ["rf"], "chapters": [], "chips": ["Acute kidney injury versus chronic kidney disease", "What are the phases of acute kidney injury?", "What are the stages of chronic kidney disease?"]}]}, {"title": "Endocrine and metabolic disorders", "topics": [{"id": "5", "title": "Diabetes mellitus", "blurb": "Types of diabetes, diagnosis, complications, insulin therapy and patient education.", "docs": ["dm"], "chapters": [], "chips": ["Type 1 versus type 2 diabetes", "Hypoglycemia versus hyperglycemia", "What is diabetic ketoacidosis?"]}, {"id": "6", "title": "Hyperthyroidism", "blurb": "Graves' disease, manifestations, thyroid storm and treatment options.", "docs": ["hyper"], "chapters": [], "chips": ["What are the signs of hyperthyroidism?", "What is thyroid storm?", "What care is needed after thyroidectomy?"]}, {"id": "7", "title": "Hypothyroidism", "blurb": "Causes, manifestations, myxedema coma and management of hypothyroidism.", "docs": ["hypo"], "chapters": [], "chips": ["What are the signs of hypothyroidism?", "What is myxedema coma?", "What should patients know about levothyroxine?"]}]}, {"title": "Musculoskeletal and immune disorders", "topics": [{"id": "8", "title": "Fractures", "blurb": "Types of fracture, healing, complications such as compartment syndrome, and nursing care.", "docs": ["fx"], "chapters": [], "chips": ["What are the types of fractures?", "What is compartment syndrome?", "How do nurses care for a patient in a cast or traction?"]}, {"id": "12", "title": "Rheumatoid arthritis", "blurb": "Autoimmune joint inflammation: manifestations, diagnosis, medications and nursing care.", "docs": ["ra"], "chapters": [], "chips": ["Rheumatoid arthritis versus osteoarthritis", "What are the joint deformities in RA?", "What medications treat rheumatoid arthritis?"]}, {"id": "13", "title": "Systemic lupus erythematosus", "blurb": "Multisystem autoimmune disease: manifestations, diagnosis and nursing management.", "docs": ["sle"], "chapters": [], "chips": ["What is systemic lupus erythematosus?", "What is the butterfly rash?", "How do nurses help patients manage SLE flares?"]}]}], "all": {"id": "ALL", "title": "Whole course", "blurb": "Ask about any NUR225 topic. Use this when your question spans several disorders."}}};
 let survey = { pages: [], page: 0, answers: {} };
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
@@ -1152,6 +1098,7 @@ function topicInfo(id) {
   for (const u of o.units) for (const t of u.topics) if (t.id === id) return t;
   return null;
 }
+function topicLabel(t) { return 'label' in t ? t.label : (me.course === 'NUR312' && /^\d/.test(t.id) ? 'Lecture ' + t.id : ''); }
 function showChat() {
   document.getElementById('outline').hidden = true;
   document.getElementById('companion-ui').style.display = me.companionOpen ? 'flex' : 'none';
@@ -1168,12 +1115,12 @@ function showOutline() {
   const name = COURSE_INFO[me.course] ? COURSE_INFO[me.course].name : me.course;
   const live = me.check && !me.check.done;
   root.innerHTML = `<h2>${esc(me.course)} ${esc(name)}</h2>
-    <p class="lede">Choose a topic. You can then learn it with explanations, or practise it with scenarios, flawed studies and quick quizzes.</p>` +
+    <p class="lede">Choose a topic. You can then learn it with explanations, or practise it with scenarios and quick quizzes.</p>` +
     (live ? `<div class="check-call"><div><strong>Class check open: ${esc(me.check.title)}</strong>
       <span>Your instructor opened it for your section. It closes at ${esc(clock(me.check.closes))}. It does not count towards your grade.</span></div>
       <button class="btn btn-primary" type="button" onclick="openTopic('${esc(me.check.topic)}', 'check')">Start the check</button></div>` : '') +
     o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
-      u.topics.map(t => row(t, /^\d/.test(t.id) ? 'Lecture ' + t.id : '')).join('') + `</ul></section>`).join('') +
+      u.topics.map(t => row(t, topicLabel(t))).join('') + `</ul></section>`).join('') +
     (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : '');
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
@@ -1182,7 +1129,7 @@ function openTopic(id, startMode) {
   const t = topicInfo(id); if (!t) return;
   state.topic = id;
   document.getElementById('topic-head').hidden = false;
-  document.getElementById('topic-title').textContent = (/^\d/.test(id) ? 'Lecture ' + id + ' · ' : '') + t.title;
+  document.getElementById('topic-title').textContent = (topicLabel(t) ? topicLabel(t) + ' · ' : '') + t.title;
   showChat();
   setMode(startMode || 'learn');
   if (!startMode) document.getElementById('user-input').focus();
@@ -1192,7 +1139,7 @@ function openTopic(id, startMode) {
 const MODE_META = {
   learn:    { desc: 'Ask me to explain any concept from your course.',
     chips: ['Explain the nursing process', 'What is infection control?', 'How do I take vital signs?', 'Explain patient documentation'] },
-  practice: { desc: 'Choose a practice style: a clinical scenario, a flawed study to critique, or a quick quiz.',
+  practice: { desc: 'Choose a practice style: a scenario, a spot-the-mistake exercise, or a quick quiz.',
     chips: ['Give me a practice question', 'Test me on a case scenario', 'Multiple choice, please', "Quiz me on today's topic"] },
   check:    { desc: 'Class checks open when your instructor starts one in class. They do not count towards your grade.',
     chips: ['Run a knowledge check', 'Check my understanding of a topic', 'What are my weak areas?'] },
@@ -1236,7 +1183,12 @@ const PRACTICE_STYLES = {
   scenario: {
     label: 'Clinical scenario', blurb: 'A short ward or community situation. You apply the topic step by step.',
     chips: ['Next question', 'Give me a hint', 'New scenario', 'Change practice style'],
-    prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for example: identify the variables, choose a design or sampling method, spot the ethical issue, write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, and a model answer. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
+    prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for clinical topics: what to assess first, the priority nursing action and its rationale, what a finding means, or what to teach the client; for research topics: identify the variables, choose a design or sampling method, spot the ethical issue, or write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, and a model answer. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
+  },
+  error: {
+    label: 'Spot the error', blurb: 'A short made-up nursing care situation with one mistake in it. Find it, explain why it matters, correct it.',
+    chips: ['Give me a hint', 'Show me another situation', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: SPOT THE ERROR. Write a short description (4 to 6 sentences) of a nurse caring for a made-up client on the chosen topic. Start it with the label "Fictional care situation:". Build in ONE deliberate error of the kind this topic teaches students to avoid (for example: a step done in the wrong order, a missed safety or infection-control step, an incorrect normal value or interpretation, a wrong priority, or a missing assessment before an intervention). Ask the student to find the error, explain why it is a problem for the client, and say what the nurse should do instead. Do not reveal the error before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback with the rationale, then offer another situation.' + NO_REAL_STUDIES,
   },
   flaw: {
     label: 'Spot the flaw', blurb: 'A short made-up study excerpt with a mistake in it. Find it, explain it, fix it.',
@@ -1254,7 +1206,8 @@ function addStylePicker() {
   const what = t && t.id !== 'ALL' ? `**${t.title}**` : 'this course';
   addAIMessage(`How would you like to practise ${what}?`);
   const d = document.createElement('div'); d.className = 'style-pick';
-  d.innerHTML = Object.entries(PRACTICE_STYLES).map(([k, v]) =>
+  const styles = Object.entries(PRACTICE_STYLES).filter(([k]) => me.course === 'NUR312' ? k !== 'error' : k !== 'flaw');
+  d.innerHTML = styles.map(([k, v]) =>
     `<button type="button" class="style-card" onclick="pickStyle('${k}')"><strong>${esc(v.label)}</strong><span>${esc(v.blurb)}</span></button>`).join('');
   appendMsg(d);
 }
