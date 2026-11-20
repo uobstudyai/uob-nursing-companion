@@ -571,13 +571,18 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
       <h1>Your nursing study companion</h1>
       <p class="lede">Ask questions, practise, and check your understanding in NUR125, NUR225 and NUR312. Part of research project 25-2024, University of Bahrain Department of Nursing.</p>
       <form class="signin" novalidate onsubmit="event.preventDefault(); signIn();">
-        <div class="field" id="fld-sid" style="margin:0">
-          <label for="sid">Student ID</label>
+        <div class="field" id="fld-sid">
+          <label for="sid">Username</label>
+          <input id="sid" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="e.g. T12">
+          <p class="err">Enter your username.</p>
+        </div>
+        <div class="field" id="fld-spw" style="margin-bottom:0">
+          <label for="spw">Password</label>
           <div class="row">
-            <input id="sid" inputmode="numeric" autocomplete="off" placeholder="e.g. 20220001">
-            <button class="btn btn-primary" type="submit" id="signin-btn">Continue</button>
+            <input id="spw" type="password" autocomplete="current-password">
+            <button class="btn btn-primary" type="submit" id="signin-btn">Sign in</button>
           </div>
-          <p class="err">Enter your student ID.</p>
+          <p class="err">Enter your password.</p>
         </div>
         <p class="signin-msg" id="signin-msg" aria-live="polite"></p>
       </form>
@@ -881,8 +886,8 @@ COURSE TOPICS (each has lecture slides in the approved course materials):
 Lecture 1 Introduction to nursing research · Lecture 2 Ethical issues · Lecture 3a Quantitative research overview · Lecture 3b Qualitative research overview · Lecture 4a Research problem · Lecture 4b Hypotheses and research questions · Lecture 5 Review of literature · Lecture 6 Theory and nursing research · Lecture 7 Research design · Lecture 7a Population, sample and sampling · Lecture 8 Measurement and data collection · Lecture 8a Data collection methods · Lecture 9 Data analysis · Lecture 10 Evidence-based practice · Lecture 12a Presentation and discussion of findings · Lecture 13 Communication and utilization of research.
 
 LEARN MODE — HOW TO TEACH:
-- Explain using the definitions, examples and terminology of the course slides, citing them, e.g. (Lecture 7a, slide 12).
-- Start simply, then build up. Give a short nursing example. End by checking understanding with one brief question or by suggesting a related slide to review.
+- Explain using the definitions, examples and terminology of the course materials. Do not mention lectures or slide numbers.
+- Start simply, then build up. Give a short nursing example. End by checking understanding with one brief question or by suggesting a related topic to review.
 - For statistics (Lecture 9), focus on choosing and interpreting tests, not on calculating.
 - Keep answers focused: usually under 250 words unless the student asks for more depth.
 
@@ -903,7 +908,7 @@ PRACTICE MODE:
 - Ask ONE question at a time, based on the approved course slides. Wait for the student's answer before giving feedback.
 - Vary the type: multiple choice (4 options), short answer, identify-the-design or identify-the-variable scenarios, write-a-hypothesis or PICO tasks, spot-the-ethical-issue scenarios, choose-the-statistical-test scenarios, and critique a short made-up study excerpt.
 - Match the course level: third-year BSN, using the slides' terminology.
-- After each answer: say what was correct, what was missing or wrong and why, give the correct answer, and cite the slide it comes from, e.g. (Lecture 4b, slide 11). Then offer the next question.
+- After each answer: say what was correct, what was missing or wrong and why, give the correct answer. Do not mention lectures or slide numbers. Then offer the next question.
 - If the student names a topic or lecture, stay on it until they ask to change. If they say "anything", rotate across lectures.
 - Never reveal the answer before the student attempts the question.
 
@@ -916,8 +921,8 @@ TONE: Encouraging, specific and honest in feedback.`,
 CHECK YOUR UNDERSTANDING MODE:
 1. Ask which lecture(s) or topic the student has been studying (or offer to choose).
 2. Run a 5-question diagnostic, one question at a time, mixing recall, application and short scenario items drawn from those lectures' slides. Keep a silent tally.
-3. Give brief feedback after each answer (correct / partly / incorrect, with the slide it comes from).
-4. After question 5, give a summary: score out of 5, strengths, gaps, and the specific lecture slides to review for each gap, e.g. "Review Lecture 7, slides 14–18 (quasi-experimental designs)". Then offer another check or Learn mode for the weakest area.
+3. Give brief feedback after each answer (correct / partly / incorrect, with a one-line reason).
+4. After question 5, give a summary: score out of 5, strengths, gaps, and the specific topics to review for each gap, e.g. "Review quasi-experimental designs". Then offer another check or Learn mode for the weakest area.
 
 ACADEMIC INTEGRITY: Use made-up scenarios only; do not complete graded work (proposal, presentation, article critique).
 SCOPE: Clinical nursing questions belong to NUR125/NUR225; redirect politely. Decline unrelated requests briefly.
@@ -1064,25 +1069,30 @@ function recall(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (
 
 // ── SIGN IN / OUT ──────────────────────────────────────────────────────────
 async function signIn() {
-  const input = document.getElementById('sid'), fld = document.getElementById('fld-sid');
+  const input = document.getElementById('sid'), pwIn = document.getElementById('spw');
   const msg = document.getElementById('signin-msg'), btn = document.getElementById('signin-btn');
-  const id = input.value.trim();
-  fld.classList.toggle('invalid', !id); msg.textContent = '';
+  const id = input.value.trim(), pw = pwIn.value;
+  document.getElementById('fld-sid').classList.toggle('invalid', !id);
+  document.getElementById('fld-spw').classList.toggle('invalid', !pw);
+  msg.textContent = '';
   if (!id) { input.focus(); return; }
+  if (!pw) { pwIn.focus(); return; }
   btn.disabled = true; btn.textContent = 'Checking…';
-  const r = await safeApi('/student-login', { studentId: id });
-  btn.disabled = false; btn.textContent = 'Continue';
+  const r = await safeApi('/student-login', { studentId: id, password: pw });
+  btn.disabled = false; btn.textContent = 'Sign in';
   if (!r.ok) {
     const e = r.data.error;
     msg.textContent =
-      e === 'bad_id' ? "That doesn't look like a student ID. Check it and try again." :
-      e === 'not_on_roster' ? "We couldn't find this ID in the study list. Check it, or contact the principal investigator." :
-      e === 'no_consent' ? "Your ID is on the study list, but we don't have your consent form on record. Please contact the principal investigator." :
+      e === 'bad_login' ? "That username and password don't match. Check them and try again." :
+      e === 'locked' ? "Too many attempts. Wait 15 minutes, or contact the principal investigator." :
+      e === 'not_ready' ? "Your account isn't set up yet. Please contact the principal investigator." :
+      e === 'no_consent' ? "We don't have your consent form on record yet. Please contact the principal investigator." :
       friendlyError(r.status, r.data);
+    if (e === 'bad_login') { pwIn.value = ''; pwIn.focus(); }
     return;
   }
   me = r.data;
-  input.value = '';
+  input.value = ''; pwIn.value = '';
   document.getElementById('ctx').textContent = me.course + ' · Section ' + me.section;
   state.sessionStart = new Date().toISOString(); state.messageCount = 0;
   showScreen('app-screen');
@@ -1226,17 +1236,17 @@ const PRACTICE_STYLES = {
   scenario: {
     label: 'Clinical scenario', blurb: 'A short ward or community situation. You apply the topic step by step.',
     chips: ['Next question', 'Give me a hint', 'New scenario', 'Change practice style'],
-    prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for example: identify the variables, choose a design or sampling method, spot the ethical issue, write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, a model answer, and the slide it comes from. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
+    prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for example: identify the variables, choose a design or sampling method, spot the ethical issue, write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, and a model answer. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
   },
   flaw: {
     label: 'Spot the flaw', blurb: 'A short made-up study excerpt with a mistake in it. Find it, explain it, fix it.',
     chips: ['Give me a hint', 'Show me another excerpt', 'Change practice style'],
-    prompt: 'PRACTICE STYLE: SPOT THE FLAW. Write a short excerpt (4 to 6 sentences) from a made-up research report on the chosen topic. Start it with the label "Fictional study excerpt:". Build in ONE deliberate methodological flaw of the kind this topic\'s slides teach students to recognise (for example: a convenience sample described as random, a "directional" hypothesis with no direction, a leading or double-barrelled questionnaire item, a design called experimental with no random assignment, a statistically significant result described as clinically important without justification). Ask the student to find the flaw, explain why it is a problem, and suggest a fix. Do not reveal the flaw before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback with the slide citation, then offer another excerpt.' + NO_REAL_STUDIES,
+    prompt: 'PRACTICE STYLE: SPOT THE FLAW. Write a short excerpt (4 to 6 sentences) from a made-up research report on the chosen topic. Start it with the label "Fictional study excerpt:". Build in ONE deliberate methodological flaw of the kind this topic\'s slides teach students to recognise (for example: a convenience sample described as random, a "directional" hypothesis with no direction, a leading or double-barrelled questionnaire item, a design called experimental with no random assignment, a statistically significant result described as clinically important without justification). Ask the student to find the flaw, explain why it is a problem, and suggest a fix. Do not reveal the flaw before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback, then offer another excerpt.' + NO_REAL_STUDIES,
   },
   mcq: {
     label: 'Quick quiz', blurb: 'Multiple-choice questions one at a time. Tap your answer and get instant feedback.',
     chips: ['Next question', 'Harder, please', 'Change practice style'],
-    prompt: 'PRACTICE STYLE: QUICK QUIZ. Ask ONE multiple-choice question at a time on the chosen topic, with exactly four options. Put each option on its own line, exactly in this format: "A) ...", "B) ...", "C) ...", "D) ...". After the options write only: "Choose A, B, C or D." Vary the position of the correct answer. When the student answers, say if it is correct, explain the correct answer, say in one short line why each wrong option is wrong, and cite the slide. Then ask the next question. After every 5 questions, give a one-line tally of correct answers.' + NO_REAL_STUDIES,
+    prompt: 'PRACTICE STYLE: QUICK QUIZ. Ask ONE multiple-choice question at a time on the chosen topic, with exactly four options. Put each option on its own line, exactly in this format: "A) ...", "B) ...", "C) ...", "D) ...". After the options write only: "Choose A, B, C or D." Vary the position of the correct answer. When the student answers, say if it is correct, explain the correct answer, and say in one short line why each wrong option is wrong. Then ask the next question. After every 5 questions, give a one-line tally of correct answers.' + NO_REAL_STUDIES,
   },
 };
 function addStylePicker() {
@@ -1271,9 +1281,9 @@ function addWelcome() {
   const t = state.topic ? topicInfo(state.topic) : null;
   if (t && t.id !== 'ALL') {
     const tm = {
-      learn:    `Let's study **${t.title}**.\n\nAsk me anything about this topic, or pick a suggestion below. I'll explain it step by step and show you where it is in your slides and textbook.`,
+      learn:    `Let's study **${t.title}**.\n\nAsk me anything about this topic, or pick a suggestion below. I'll explain it step by step with nursing examples.`,
       practice: `Let's practise **${t.title}**.\n\nI'll ask one question at a time and give you feedback on each answer. Say "start" when you're ready.`,
-      check:    `Let's check your understanding of **${t.title}**.\n\nI'll ask 5 questions, then tell you what you know well and which slides to review. Say "start" when you're ready.`,
+      check:    `Let's check your understanding of **${t.title}**.\n\nI'll ask 5 questions, then tell you what you know well and what to review. Say "start" when you're ready.`,
     };
     addAIMessage(tm[state.mode]); return;
   }
@@ -1355,6 +1365,7 @@ function splitOptions(text) {
 }
 function addAIMessage(text, isError) {
   const d = document.createElement('div'); d.className = 'msg ai' + (isError ? ' err' : '');
+  if (!isError) text = text.replace(/\s*\((?:Lecture|Lec\.?|slides?)\b[^()]*\bslides?\b[^()]*\)|\s*\([^()]*\bslides?\s*\d[^()]*\)/gi, '');
   const { text: body, opts } = isError ? { text, opts: null } : splitOptions(text);
   d.innerHTML = `<span class="who-label">Companion</span><div class="body">${isError ? esc(body) : fmt(esc(body))}${
     opts ? `<div class="opt-row" role="group" aria-label="Answer options">${opts.map(([k, v]) =>
@@ -1546,7 +1557,7 @@ function renderCheckResult(res) {
       <button class="btn btn-ghost" type="button" onclick="showOutline()">Back to the course outline</button></div>`;
   document.getElementById('check-view').scrollTop = 0;
   if (wrong.length) document.getElementById('discuss-btn').addEventListener('click', () => {
-    const lines = wrong.map((x, i) => `${i + 1}. "${x.q}" I answered ${x.chosen < 0 ? 'nothing' : '"' + x.o[x.chosen] + '"'}; the correct answer is "${x.o[x.a]}" (${x.src}).`).join('\n');
+    const lines = wrong.map((x, i) => `${i + 1}. "${x.q}" I answered ${x.chosen < 0 ? 'nothing' : '"' + x.o[x.chosen] + '"'}; the correct answer is "${x.o[x.a]}".`).join('\n');
     const topic = check.topic; check = null;
     if (state.topic !== topic) openTopic(topic); else setMode('learn');
     document.getElementById('user-input').value = `I just took the class check and got these wrong:\n${lines}\nHelp me understand where my thinking went wrong, one question at a time.`;
