@@ -640,6 +640,18 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .three { grid-template-columns: 1fr; } }
 
+/* v11: AI skills lessons, check-this-answer */
+.lesson p, .lesson li { line-height: 1.6; }
+.lesson ul, .lesson ol { padding-left: 1.2em; margin: 8px 0 12px; }
+.lesson li { margin-bottom: 6px; }
+label.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; margin-top: 6px; cursor: pointer; background: var(--surface); }
+label.opt input { margin-top: 3px; }
+.why { margin: 8px 0 0; font-size: var(--fs-sm); padding: 8px 10px; border-radius: 8px; }
+.why.good { background: #e8f5ec; color: #1d5b33; }
+.why.bad { background: #fdeceb; color: #8a2a22; }
+.msg-tool.verify span { font-size: var(--fs-sm); }
+.unit.skills h3 .muted { font-weight: 500; margin-left: 6px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -1316,6 +1328,113 @@ function aiWiseCard() {
     <li><b>Tell us.</b> Tap 👎 on any answer that looks wrong.</li></ul></div>
     <button type="button" class="btn btn-ghost btn-sm" onclick="try{localStorage.setItem('aiwise-'+me.code,'1')}catch(e){}; showOutline()">Got it</button></div>`;
 }
+// ── PILLAR 2: AI SKILLS MICRO-LESSONS (fixed text, same for every student) ──
+const AI_LESSONS = [
+  { id: 'L1', title: 'How AI chatbots work, and why they get things wrong', mins: 3,
+    body: `<p>A chatbot such as this companion is built on a <b>large language model</b>. It has learned patterns from a very large amount of text, and it writes an answer by predicting which words are likely to come next.</p>
+      <p>This has three consequences for you as a student nurse:</p>
+      <ul><li><b>Fluent is not the same as correct.</b> The model can write a confident, well-organised answer that is partly or completely wrong. This is often called a <i>hallucination</i>.</li>
+      <li><b>It can invent details.</b> Numbers, doses, normal values and references can look precise and still be made up.</li>
+      <li><b>It does not know what it does not know.</b> It rarely says "I am not sure" unless it is told to.</li></ul>
+      <p>This companion is given your course materials and a textbook for each question, and it cites them. That reduces errors, but it does not remove them. You stay responsible for checking.</p>`,
+    qs: [
+      { q: 'Why can a chatbot give a confident answer that is wrong?', opts: ['It generates likely-sounding text and does not check facts the way a person checks a source', 'It always copies answers from the internet', 'It is only wrong when the question is badly spelled', 'Confident answers are always correct'], ans: 0,
+        why: 'A language model predicts likely text. Sounding sure tells you nothing about accuracy.' },
+      { q: 'An AI gives you a normal value and a journal reference you have never seen. What should you do?', opts: ['Use both, because they look precise', 'Check the value in your textbook and look the reference up in the library database before using it', 'Ask the AI if it is sure and accept its reply', 'Ignore the value and keep the reference'], ans: 1,
+        why: 'Precise-looking numbers and references can be invented. Check them in a trusted source.' } ] },
+  { id: 'L2', title: 'Checking an AI answer in five steps', mins: 3,
+    body: `<ol><li><b>Did it answer my question?</b> Read the question again, then the answer.</li>
+      <li><b>Check the key facts.</b> Compare values, steps, priorities and doses with your textbook or slides. This companion gives the chapter and page: open it.</li>
+      <li><b>Look for red flags.</b> Exact numbers with no source, words like "always" or "never", advice that differs from what your instructor taught, or a source you cannot find.</li>
+      <li><b>Ask it to check itself, then check it yourself.</b> Tap <i>Check this answer</i> under any reply. The companion will mark each key point as supported or not by your materials. Treat this as a second look, not as proof.</li>
+      <li><b>When in doubt, ask a person.</b> Your instructor, clinical preceptor or a pharmacist. Never act on AI advice for a real patient without a verified source and your unit's policy.</li></ol>`,
+    qs: [
+      { q: 'The companion gives a priority nursing action that differs from your lecture slides. What is the best next step?', opts: ['Follow the companion, because AI is more up to date', 'Follow the slides and ask your instructor about the difference', 'Ignore both', 'Ask the companion the same question until it agrees with the slides'], ans: 1,
+        why: 'Your course materials and instructor come first. A difference is a reason to check, not to trust the AI.' },
+      { q: 'What does the "Check this answer" button do?', opts: ['It proves the answer is correct', 'It asks the companion to compare its answer with your course materials and flag points it cannot support', 'It sends the answer to your instructor', 'It deletes the answer'], ans: 1,
+        why: 'It is a second look by the same AI. Useful, but you still verify important points yourself.' } ] },
+  { id: 'L3', title: 'Integrity, privacy and professional responsibility', mins: 2,
+    body: `<ul><li><b>Your work is yours.</b> Use AI to understand and practise, not to write assignments, care plans or reflections that you submit. Follow your course's rules on AI use, and say when you used it if your course asks you to.</li>
+      <li><b>Protect privacy.</b> Never type real patient details: names, ID or file numbers, dates of birth, photos, or anything that could identify a person. Use made-up cases.</li>
+      <li><b>You are accountable.</b> In practice the nurse, not the software, is responsible for what is done for the patient. AI can support your thinking; it cannot replace your assessment or judgement.</li></ul>`,
+    qs: [
+      { q: 'Which of these is safe to type into an AI tool?', opts: ['"Mr Ahmed, bed 12, file number 48213, has a potassium of 6.1"', '"A made-up 60-year-old client with a potassium of 6.1: what should the nurse assess first?"', 'A photo of a patient\'s wound with their name visible', 'A screenshot of the ward handover sheet'], ans: 1,
+        why: 'Only fictional or fully de-identified information. Names, file numbers and photos identify people.' },
+      { q: 'Who is accountable if a nurse follows a wrong AI suggestion and a patient is harmed?', opts: ['The software company only', 'Nobody, because the AI made the mistake', 'The nurse remains professionally accountable for the care given', 'The patient'], ans: 2,
+        why: 'Professional accountability stays with the nurse. AI output is advice to be checked.' } ] },
+  { id: 'L4', title: 'AI in clinical practice: a helper, not an autopilot', mins: 3,
+    body: `<p>Hospitals already use AI and automated tools, for example <b>early-warning or deterioration alerts</b>, <b>medication and dose checking</b>, <b>documentation and summary drafts</b>, and <b>image analysis</b>.</p>
+      <p>The main risk is <b>automation bias</b>: trusting the tool more than the evidence in front of you. It shows in two ways:</p>
+      <ul><li><b>Acting on a wrong suggestion</b> because the system recommended it.</li>
+      <li><b>Missing a problem</b> because the system did not raise an alert.</li></ul>
+      <p>Too many alerts can also lead to <b>alert fatigue</b>, and relying on tools for everything can weaken your own skills over time.</p>
+      <p><b>A safe nurse:</b> assesses the patient, checks that the data the tool used is correct and current, compares the suggestion with policy and with their own judgement, and escalates when something does not fit.</p>
+      <p>Practise this with the <i>AI at the bedside</i> practice style (<i>AI research assistant</i> in NUR312). Some of the AI outputs you see there are deliberately wrong.</p>`,
+    qs: [
+      { q: 'An AI alert says a patient is "low risk", but you find new confusion and a respiratory rate of 28. What should you do?', opts: ['Trust the low-risk alert', 'Re-assess, act on your findings and escalate, and check the data the tool used', 'Wait for the next automatic score', 'Document the alert only'], ans: 1,
+        why: 'Your assessment wins. Missing a problem because the system stayed quiet is a form of automation bias.' },
+      { q: 'What is automation bias?', opts: ['A computer virus', 'The tendency to over-trust automated advice, even when other information shows it is wrong', 'Software that is biased against some patients', 'Using too many apps'], ans: 1,
+        why: 'Automation bias is over-reliance on automated suggestions, including failing to notice what the system misses.' } ] },
+];
+function lessonsDone() { let d = {}; try { d = JSON.parse(localStorage.getItem('lessons-' + me.code) || '{}'); } catch (e) {} return Object.assign(d, state.lessonsServer || {}); }
+function aiSkillsCard() {
+  const done = lessonsDone(), n = AI_LESSONS.filter(l => done[l.id]).length;
+  return `<section class="unit skills"><h3>AI skills for nursing <span class="muted">${n}/${AI_LESSONS.length} done</span></h3><ul class="topic-list">${
+    AI_LESSONS.map((l, i) => `<li><button type="button" class="topic-row" onclick="openLesson('${l.id}')">
+      <span class="tnum">${done[l.id] ? '✓' : i + 1}</span><span class="ttext"><strong>${esc(l.title)}</strong><span>${l.mins} min read · 2 questions</span></span></button></li>`).join('')}</ul></section>`;
+}
+function openLesson(id) {
+  const l = AI_LESSONS.find(x => x.id === id); if (!l) return;
+  const last = id === AI_LESSONS[AI_LESSONS.length - 1].id;
+  openModal(`<p class="eyebrow">AI skills · ${l.mins} min</p><h2 id="modal-title">${esc(l.title)}</h2><div class="lesson">${l.body}</div>
+    <h3>Check yourself</h3>
+    ${l.qs.map((q, i) => `<fieldset class="q compact"><legend>${esc(q.q)}</legend>${q.opts.map((o, j) =>
+      `<label class="opt"><input type="radio" name="lq${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')}<p class="why" id="lw${i}" hidden></p></fieldset>`).join('')}
+    <p class="survey-msg" id="lesson-msg"></p>
+    <div class="survey-nav"><button class="btn btn-ghost" type="button" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" type="button" id="lesson-go" onclick="markLesson('${id}')">Check my answers</button>
+      ${last ? `<button class="btn btn-ghost" type="button" onclick="closeModal(); tryBedside()">Practise judging AI output</button>` : ''}</div>`);
+  const card = document.getElementById('modal-card'); card.scrollTop = 0;
+  const h = document.getElementById('modal-title'); h.tabIndex = -1; h.focus({ preventScroll: true });
+}
+function markLesson(id) {
+  const l = AI_LESSONS.find(x => x.id === id);
+  const picks = l.qs.map((q, i) => { const x = document.querySelector(`input[name="lq${i}"]:checked`); return x ? Number(x.value) : null; });
+  if (picks.some(p => p === null)) { document.getElementById('lesson-msg').textContent = 'Answer both questions first.'; return; }
+  let score = 0;
+  l.qs.forEach((q, i) => { const ok = picks[i] === q.ans; if (ok) score++;
+    const w = document.getElementById('lw' + i); w.hidden = false; w.className = 'why ' + (ok ? 'good' : 'bad');
+    w.textContent = (ok ? 'Correct. ' : 'Not quite. The answer is: ' + q.opts[q.ans] + '. ') + q.why; });
+  document.getElementById('lesson-msg').textContent = `${score}/${l.qs.length} correct.`;
+  document.getElementById('lesson-go').hidden = true;
+  const d = lessonsDone(); d[id] = score + '/' + l.qs.length;
+  try { localStorage.setItem('lessons-' + me.code, JSON.stringify(d)); } catch (e) {}
+  logEvent('ai_lesson', l.title, '', '', '', id + '|' + score + '/' + l.qs.length);
+  if (!document.getElementById('outline').hidden) showOutline();
+}
+function tryBedside() {
+  showTab('companion');
+  const o = COURSE_OUTLINE[me.course], first = o && o.units[0] && o.units[0].topics[0];
+  if (!state.topic && first) openTopic(first.id);
+  setMode('practice'); pickStyle(me.course === 'NUR312' ? 'airesearch' : 'aitool');
+}
+
+// ── "CHECK THIS ANSWER" (verification prompt) ─────────────────────────────
+const VERIFY_RULE = '\n\nVERIFY REQUEST: The student tapped "Check this answer" for your previous reply. Re-read it against the course materials and textbook passages you were given. List each key point of that reply on its own line, marked "Supported" (give the source, e.g. the book and page), "Not found in your materials" (the student should check it with the instructor), or "Correction" (state the corrected point and the source). Be honest: if something you wrote was wrong or unsupported, say so plainly. End with one sentence reminding the student that this is a second look by the same AI, not proof, and to confirm important points in the textbook or with the instructor. Do not ask a new question.';
+function addVerify(msgEl) {
+  if (state.mode === 'check' || state.verifying || !state.history.length) return;
+  const tools = msgEl.querySelector('.msg-tools'); if (!tools) return;
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'msg-tool verify';
+  b.innerHTML = '<span>Check this answer</span>';
+  b.addEventListener('click', () => {
+    if (state.busy || b.disabled) return; b.disabled = true;
+    state.verifying = true;
+    logEvent('verify', '', msgEl.querySelector('.body').innerText.slice(0, 600), '', '', '');
+    document.getElementById('user-input').value = 'Check this answer'; sendMessage();
+  });
+  tools.prepend(b);
+}
+
 const EVAL_ITEMS = [
   ['e1', 'This session helped me learn the topic.'],
   ['e2', "The companion's answers were accurate and matched my course."],
@@ -1418,6 +1537,19 @@ async function renderLearning() {
       <button class="btn btn-ghost btn-sm" type="button" onclick="practiseMistakes('${id}')">Practise these again</button></div>`).join('')
       : '<p class="muted">No mistakes recorded yet. Use Practice to test yourself.</p>'}</section>`;
   state.mistakes = byTopic;
+  state.lessonsServer = {}; Object.entries(p.lessons || {}).forEach(([k, v]) => state.lessonsServer[k] = v);
+  const done = lessonsDone(), ai = p.ai || {};
+  const aiMsg = !ai.cases ? 'Try the ' + (me.course === 'NUR312' ? 'AI research assistant' : 'AI at the bedside') + ' practice style to train your judgement of AI suggestions.'
+    : ai.overTrust ? `You accepted a flawed AI suggestion ${ai.overTrust} time${ai.overTrust > 1 ? 's' : ''} out of ${ai.flawed}. Before accepting, check the data the AI used against the case.`
+    : ai.flawed ? `You caught every flawed AI suggestion so far (${ai.flawed}). Keep checking before you accept.` : 'No flawed AI suggestions yet. Keep practising.';
+  root.insertAdjacentHTML('beforeend', `<section class="unit"><h3>AI skills</h3>
+    <div class="stat-row">
+      <div class="stat"><b>${AI_LESSONS.filter(l => done[l.id]).length}<small>/${AI_LESSONS.length}</small></b><span>AI lessons done</span></div>
+      <div class="stat"><b>${ai.cases || 0}</b><span>AI suggestions judged${ai.cases ? ' (' + Math.round(100 * ai.right / ai.cases) + '% well)' : ''}</span></div>
+      <div class="stat"><b>${p.verifies || 0}</b><span>answers you asked to check</span></div>
+    </div>
+    <div class="check-card"><strong>Trusting AI wisely</strong><p>${esc(aiMsg)}</p>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="tryBedside()">Practise judging AI output</button></div></section>`);
 }
 function practiseMistakes(id) {
   const ms = (state.mistakes || {})[id] || [];
@@ -1460,7 +1592,7 @@ function showOutline() {
       <button class="btn btn-primary" type="button" onclick="openTopic('${esc(me.check.topic)}', 'check')">Start the check</button></div>` : '') +
     o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
       u.topics.map(t => row(t, topicLabel(t))).join('') + `</ul></section>`).join('') +
-    (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : '');
+    (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : '') + aiSkillsCard();
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
 }
@@ -1478,7 +1610,7 @@ function openTopic(id, startMode) {
 const MODE_META = {
   learn:    { desc: 'Ask me to explain any concept from your course.',
     chips: ['Explain the nursing process', 'What is infection control?', 'How do I take vital signs?', 'Explain patient documentation'] },
-  practice: { desc: 'Choose a practice style: a scenario, a spot-the-mistake exercise, or a quick quiz.',
+  practice: { desc: 'Choose a practice style: a scenario, a spot-the-mistake exercise, judging an AI suggestion, or a quick quiz.',
     chips: ['Give me a practice question', 'Test me on a case scenario', 'Multiple choice, please', "Quiz me on today's topic"] },
   check:    { desc: 'Class checks open when your instructor starts one in class. They do not count towards your grade.',
     chips: ['Run a knowledge check', 'Check my understanding of a topic', 'What are my weak areas?'] },
@@ -1534,6 +1666,16 @@ const PRACTICE_STYLES = {
     chips: ['Give me a hint', 'Show me another excerpt', 'Change practice style'],
     prompt: 'PRACTICE STYLE: SPOT THE FLAW. Write a short excerpt (4 to 6 sentences) from a made-up research report on the chosen topic. Start it with the label "Fictional study excerpt:". Build in ONE deliberate methodological flaw of the kind this topic\'s slides teach students to recognise (for example: a convenience sample described as random, a "directional" hypothesis with no direction, a leading or double-barrelled questionnaire item, a design called experimental with no random assignment, a statistically significant result described as clinically important without justification). Ask the student to find the flaw, explain why it is a problem, and suggest a fix. Do not reveal the flaw before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback, then offer another excerpt.' + NO_REAL_STUDIES,
   },
+  aitool: {
+    label: 'AI at the bedside', blurb: 'A made-up case with a suggestion from a simulated clinical AI tool. Decide: accept, modify or reject. Some are deliberately wrong.',
+    chips: ['New case', 'Give me a hint', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: AI AT THE BEDSIDE. This trains students to judge the output of clinical AI tools and to avoid automation bias. Write a short fictional case (2 to 4 sentences) on the chosen topic with the key assessment data, starting with the label "Fictional case:". Then show the output of a made-up clinical AI tool under the label "Simulated AI tool output (fictional, for practice only):" in 2 to 4 lines, written in the confident style such tools use. Choose the kind of tool that fits the topic: an early-warning or deterioration alert, a medication or dose suggestion, a care-plan or discharge-teaching draft, or a documentation summary. Never use the name of a real product or company. {TRUTH} Then ask "What would you do with this AI suggestion?" and give exactly these three options, each on its own line:\nA) Accept it as it is\nB) Modify it before acting\nC) Reject it and escalate\nThen write only: "Choose A, B or C, and tell me what you would check first." Do not reveal whether the output is correct before the student answers. After the answer, give feedback: say whether the AI output was sound or flawed, point to the case data that shows it, and explain what a safe nurse checks before acting on any AI output (the patient, the data the tool used, the policy or protocol, the prescriber or a senior colleague). Where relevant, name the risk of over-trusting automated advice. Mark as correct: B or C for a flawed output when the student identifies or reasonably suspects the problem; A for a sound output, or B if the change they propose is reasonable and safe. Then offer a new case.' + NO_REAL_STUDIES,
+  },
+  airesearch: {
+    label: 'AI research assistant', blurb: 'A simulated AI research assistant summarises or advises on a made-up study. Decide: use, revise or reject. Some outputs are deliberately wrong.',
+    chips: ['New case', 'Give me a hint', 'Change practice style'],
+    prompt: 'PRACTICE STYLE: AI RESEARCH ASSISTANT. This trains students to judge the output of AI research tools and to avoid over-trusting them. Write a short fictional research situation (2 to 4 sentences) on the chosen topic, starting with the label "Fictional situation:" (for example a student planning a study, or a made-up study\'s design and results). Then show the output of a made-up AI research assistant under the label "Simulated AI assistant output (fictional, for practice only):" in 2 to 4 lines, in the confident style such tools use: for example a summary of the study\'s findings, a suggested design, sampling method or statistical test, or a draft conclusion. Never use the name of a real product or company, and never cite real studies, authors or DOIs. {TRUTH} Then ask "What would you do with this AI output?" and give exactly these three options, each on its own line:\nA) Use it as it is\nB) Revise it before using it\nC) Reject it and check the original source\nThen write only: "Choose A, B or C, and tell me what you would check first." Do not reveal whether the output is correct before the student answers. After the answer, give feedback: say whether the AI output was sound or flawed, point to the details that show it, and explain how a careful researcher verifies AI output (read the original report, check the design and the numbers, check that conclusions match the evidence). Mark as correct: B or C for a flawed output when the student identifies or reasonably suspects the problem; A for a sound output, or B if the change they propose is reasonable. Then offer a new case.' + NO_REAL_STUDIES,
+  },
   mcq: {
     label: 'Quick quiz', blurb: 'Multiple-choice questions one at a time. Tap your answer and get instant feedback.',
     chips: ['Next question', 'Harder, please', 'Change practice style'],
@@ -1545,7 +1687,7 @@ function addStylePicker() {
   const what = t && t.id !== 'ALL' ? `**${t.title}**` : 'this course';
   addAIMessage(`How would you like to practise ${what}?`);
   const d = document.createElement('div'); d.className = 'style-pick';
-  const styles = Object.entries(PRACTICE_STYLES).filter(([k]) => me.course === 'NUR312' ? k !== 'error' : k !== 'flaw');
+  const styles = Object.entries(PRACTICE_STYLES).filter(([k]) => me.course === 'NUR312' ? !['error', 'aitool'].includes(k) : !['flaw', 'airesearch'].includes(k));
   d.innerHTML = styles.map(([k, v]) =>
     `<button type="button" class="style-card" onclick="pickStyle('${k}')"><strong>${esc(v.label)}</strong><span>${esc(v.blurb)}</span></button>`).join('');
   appendMsg(d);
@@ -1558,9 +1700,15 @@ function pickStyle(k) {
   document.getElementById('user-input').value = 'Start';
   sendMessage();
 }
+const AITOOL_FLAWED = 'In THIS case the AI output MUST contain exactly one important error that the case details reveal (for clinical tools: a wrong dose or unit, a missed allergy or contraindication, an alert that ignores a deteriorating sign, a wrong priority, or teaching that contradicts the topic; for research tools: a causal claim from a non-experimental design, a wrong statistical test or sampling description, a misreported number, or a conclusion the results do not support). Make the error discoverable from the details given, not obvious.';
+const AITOOL_SOUND = 'In THIS case the AI output MUST be correct, safe and consistent with the case details and the course materials. Do not put any error in it.';
 const RESULT_RULE = '\n\nMARKING: Whenever you give feedback on the student\'s answer to a question you asked, begin that reply with exactly one tag: [[RESULT:correct]], [[RESULT:partly]] or [[RESULT:incorrect]]. Do not use the tag in any other reply.';
 function styleNote() {
-  return state.mode === 'practice' ? (state.style ? '\n\n' + PRACTICE_STYLES[state.style].prompt : '') + RESULT_RULE : '';
+  if (state.verifying) return VERIFY_RULE;
+  if (state.mode !== 'practice') return '';
+  let s = state.style ? '\n\n' + PRACTICE_STYLES[state.style].prompt : '';
+  if (state.style === 'aitool' || state.style === 'airesearch') s = s.replace('{TRUTH}', state.aiFlawed ? AITOOL_FLAWED : AITOOL_SOUND);
+  return s + RESULT_RULE;
 }
 document.addEventListener('keydown', e => {
   if (!e.target.closest || !e.target.closest('.seg')) return;
@@ -1607,6 +1755,9 @@ async function sendMessage() {
   if (listening) stopMic();
   const inputMethod = state.input; state.input = 'typed';
   if (state.mode === 'practice' && !state.style) state.style = 'mcq';   // typed straight into the picker
+  const aiStyle = state.mode === 'practice' && (state.style === 'aitool' || state.style === 'airesearch');
+  if (aiStyle && (/^(start|new case)\b/i.test(text) || !state.history.length)) { state.aiFlawed = Math.random() < 0.5; state.aiChoice = ''; }
+  if (aiStyle) { const c = text.match(/^([ABC])\)/); if (c) state.aiChoice = { A: 'accept', B: 'modify', C: 'reject' }[c[1]]; }
   document.querySelectorAll('.opt-row button').forEach(b => b.disabled = true);
   state.busy = true; document.getElementById('send-btn').disabled = true;
   addUserMessage(text);
@@ -1635,9 +1786,11 @@ async function sendMessage() {
     state.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
     state.messageCount++;
     logEvent('message', text, reply, refusal, inputMethod);
-    if (result && state.mode === 'practice') {
+    if (result && state.mode === 'practice' && !state.verifying) {
       const lastQ = [...state.history].reverse().find((h, i) => h.role === 'assistant' && i > 1);
-      logEvent('quiz_result', lastQ ? lastQ.content.slice(0, 600) : '', '', '', '', result + '|' + (state.pendingConf || 0));
+      if (aiStyle) logEvent('ai_appraisal', lastQ ? lastQ.content.slice(0, 600) : '', '', '', '',
+        (state.aiFlawed ? 'flawed' : 'sound') + '|' + (state.aiChoice || 'text') + '|' + result + '|' + (state.pendingConf || 0));
+      else logEvent('quiz_result', lastQ ? lastQ.content.slice(0, 600) : '', '', '', '', result + '|' + (state.pendingConf || 0));
     }
     state.pendingConf = 0;
   } catch (e) {
@@ -1645,6 +1798,7 @@ async function sendMessage() {
     addAIMessage(friendlyError(status, data), true);
     logEvent('error', text, (e && e.message) || 'network error', '', inputMethod);
   }
+  state.verifying = false;
   state.busy = false; document.getElementById('send-btn').disabled = false; input.focus();
 }
 function topicNote() {
@@ -1682,7 +1836,7 @@ function addAIMessage(text, isError) {
     tool.firstChild.addEventListener('click', e => speak(e.currentTarget, d.querySelector('.body')));
     d.appendChild(tool);
   }
-  if (!isError && me && state.messageCount >= 0 && document.getElementById('messages').children.length > 0) addThumbs(d, text);
+  if (!isError && me && state.messageCount >= 0 && document.getElementById('messages').children.length > 0) { addThumbs(d, text); addVerify(d); }
   appendMsg(d);
 }
 

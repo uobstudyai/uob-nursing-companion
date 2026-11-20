@@ -641,6 +641,18 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 @media (max-width: 760px) { .three { grid-template-columns: 1fr; } }
 
+/* v11: AI skills lessons, check-this-answer */
+.lesson p, .lesson li { line-height: 1.6; }
+.lesson ul, .lesson ol { padding-left: 1.2em; margin: 8px 0 12px; }
+.lesson li { margin-bottom: 6px; }
+label.opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; margin-top: 6px; cursor: pointer; background: var(--surface); }
+label.opt input { margin-top: 3px; }
+.why { margin: 8px 0 0; font-size: var(--fs-sm); padding: 8px 10px; border-radius: 8px; }
+.why.good { background: #e8f5ec; color: #1d5b33; }
+.why.bad { background: #fdeceb; color: #8a2a22; }
+.msg-tool.verify span { font-size: var(--fs-sm); }
+.unit.skills h3 .muted { font-weight: 500; margin-left: 6px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -893,7 +905,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
       <p class="status" id="usage-status" aria-live="polite"></p>
       <div class="table-wrap" id="usage-wrap" hidden>
         <table class="data">
-          <thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th class="n">Sessions</th><th class="n">Minutes</th><th class="n">Messages</th><th class="n">Topics</th><th class="n">Practice answers</th><th class="n">% correct</th><th class="n">👍 / 👎</th><th class="n">Evaluations</th><th class="n">Checks</th><th>Last active</th></tr></thead>
+          <thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th class="n">Sessions</th><th class="n">Minutes</th><th class="n">Messages</th><th class="n">Topics</th><th class="n">Practice answers</th><th class="n">% correct</th><th class="n">👍 / 👎</th><th class="n">Evaluations</th><th class="n">Checks</th><th class="n">AI lessons</th><th class="n">Checked answers</th><th class="n">AI cases</th><th class="n">Accepted flawed AI</th><th>Last active</th></tr></thead>
           <tbody id="usage-body"></tbody>
         </table>
       </div>
@@ -1252,14 +1264,14 @@ async function loadUsage() {
   document.getElementById('usage-body').innerHTML = usageRows.length ? usageRows.map(u => `<tr><td>${esc(u.code)}</td><td>${esc(u.course)}</td>
     <td>${esc(u.section)}</td><td>${esc(u.group)}</td><td class="n">${u.sessions}</td><td class="n">${u.minutes}</td><td class="n">${u.messages}</td>
     <td class="n">${u.topics}</td><td class="n">${u.quiz}</td><td class="n">${pct(u.right, u.quiz)}</td><td class="n">${u.feedbackUp} / ${u.feedbackDown}</td>
-    <td class="n">${u.evaluations}</td><td class="n">${u.checks}</td><td>${esc((u.last || '').slice(0, 16).replace('T', ' ')) || '–'}</td></tr>`).join('')
-    : '<tr><td colspan="14">No consented participants yet.</td></tr>';
+    <td class="n">${u.evaluations}</td><td class="n">${u.checks}</td><td class="n">${u.lessons}</td><td class="n">${u.verifies}</td><td class="n">${u.aiCases}</td><td class="n">${u.aiOverTrust}</td><td>${esc((u.last || '').slice(0, 16).replace('T', ' ')) || '–'}</td></tr>`).join('')
+    : '<tr><td colspan="18">No consented participants yet.</td></tr>';
   document.getElementById('usage-wrap').hidden = false;
   document.getElementById('usage-csv').disabled = !usageRows.length;
   st.textContent = usageRows.length + ' participants.';
 }
 function downloadUsage() {
-  const cols = ['code', 'course', 'section', 'group', 'sessions', 'minutes', 'messages', 'topics', 'quiz', 'right', 'feedbackUp', 'feedbackDown', 'evaluations', 'checks', 'last'];
+  const cols = ['code', 'course', 'section', 'group', 'sessions', 'minutes', 'messages', 'topics', 'quiz', 'right', 'feedbackUp', 'feedbackDown', 'evaluations', 'checks', 'lessons', 'verifies', 'aiCases', 'aiOverTrust', 'last'];
   const csv = [cols.join(','), ...usageRows.map(u => cols.map(c => '"' + String(u[c] == null ? '' : u[c]).replace(/"/g, '""') + '"').join(','))].join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
