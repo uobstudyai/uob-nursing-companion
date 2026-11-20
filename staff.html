@@ -559,6 +559,88 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
   .banner .btn { min-height: 36px; white-space: nowrap; }
 }
 
+/* ── v10: lighter, calmer shell with the UoB logo ─────────────────────────── */
+:root { --shadow: 0 1px 2px rgba(20,33,61,.06), 0 4px 16px rgba(20,33,61,.05); --r: 14px; }
+.bar { background: var(--surface); color: var(--ink); border-bottom: 1px solid var(--line); }
+.wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--brand); }
+.wordmark .logo { display: inline-block; width: 29px; height: 34px; background: url(data:image/webp;base64,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) center / contain no-repeat; flex-shrink: 0; }
+.bar .ctx, .bar .who { color: var(--muted); }
+.bar-btn { background: var(--surface-2); color: var(--ink-2); border-color: transparent; }
+@media (hover: hover) and (pointer: fine) { .bar-btn:hover { background: var(--brand-soft); color: var(--brand); } }
+.entry-logo { height: 96px; width: auto; display: block; margin-bottom: 20px; }
+.tabs { box-shadow: none; }
+.topic-list, .check-card, .msg.ai .body, .signin, .q, .review, .style-card, .locked-card { box-shadow: var(--shadow); }
+.msg.ai .body { border: 1px solid #E6EAF0; }
+.unit h3 { display: flex; align-items: center; gap: 10px; }
+.unit h3::before { content: ""; width: 4px; height: 18px; border-radius: 2px; background: var(--gold); }
+.linklike { background: none; border: 0; padding: 0; color: var(--brand); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.privacy-note { display: flex; gap: 12px; margin-top: 18px; padding: 14px 16px; background: var(--brand-soft); border-radius: var(--r-sm); font-size: var(--fs-sm); color: var(--ink-2); max-width: 60ch; }
+.privacy-note svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--brand); margin-top: 2px; }
+
+/* modal */
+.modal { position: fixed; inset: 0; background: rgba(20,33,61,.45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; animation: fade var(--t) ease; }
+.modal[hidden] { display: none !important; }
+.modal-card { background: var(--surface); border-radius: var(--r); max-width: 640px; width: 100%; max-height: min(88vh, 900px); overflow-y: auto; padding: 24px; box-shadow: 0 20px 60px rgba(20,33,61,.3); }
+.modal-card h2 { font-size: var(--fs-lg); font-weight: 600; margin-bottom: 8px; }
+.modal-card textarea { width: 100%; margin-top: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); font: inherit; resize: vertical; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.pis h2 { font-size: var(--fs-xl); font-weight: 600; letter-spacing: -0.02em; }
+.pis h3, .modal-card h3 { font-size: var(--fs-md); font-weight: 600; margin-top: 18px; color: var(--brand); }
+.pis p, .pis ul, .modal-card p, .modal-card ul { margin-top: 6px; color: var(--ink-2); }
+.pis ul, .modal-card ul { padding-left: 1.3em; }
+.q.compact { padding: 12px 14px; margin-bottom: 8px; }
+.q.compact legend { margin-bottom: 8px; font-size: var(--fs-sm); }
+
+/* consent */
+.consent-box { margin-top: 24px; background: var(--surface); border: 2px solid var(--brand-soft); border-radius: var(--r); padding: 18px; }
+.consent-box legend { font-weight: 600; padding: 0 6px; }
+.tick { display: flex; gap: 12px; align-items: flex-start; padding: 10px 4px; cursor: pointer; }
+.tick + .tick { border-top: 1px solid var(--surface-2); }
+.tick input { width: 22px; height: 22px; margin-top: 1px; flex-shrink: 0; accent-color: var(--brand); }
+
+/* goal + AI-wise cards */
+.goal-card { background: var(--surface); border-radius: var(--r); padding: 14px 16px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.goal-card .row { display: flex; gap: 8px; margin-top: 8px; }
+.goal-card input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); font: inherit; }
+.goal-card.set { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-left: 4px solid var(--ok); }
+.goal-card.set p { flex: 1; min-width: 200px; font-weight: 500; }
+.aiwise { display: flex; gap: 16px; align-items: flex-start; background: #FBF6E9; border: 1px solid #EBDDB4; border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px; }
+.aiwise > div { flex: 1; }
+.aiwise ul { margin-top: 6px; padding-left: 1.2em; font-size: var(--fs-sm); color: var(--ink-2); }
+.aiwise li + li { margin-top: 3px; }
+
+/* confidence + feedback rows inside AI messages */
+.conf-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.conf-row span { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-2); margin-right: 4px; }
+.conf-row button { min-height: 36px; padding: 4px 12px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface); font-size: var(--fs-sm); }
+@media (hover: hover) and (pointer: fine) { .conf-row button:hover { border-color: var(--brand); background: var(--brand-soft); } }
+.msg-tools { display: flex; gap: 2px; align-items: center; }
+.msg-tool.thumb { padding: 4px 8px; font-size: 15px; }
+.msg-tool.thumb[disabled]:not([aria-pressed="true"]) { opacity: .35; }
+
+/* my learning */
+.stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 20px 0; }
+.stat { background: var(--surface); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); }
+.stat b { display: block; font-size: var(--fs-xl); font-weight: 600; color: var(--brand); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat b small { font-size: var(--fs-md); color: var(--muted); font-weight: 500; }
+.stat span { font-size: var(--fs-sm); color: var(--muted); }
+.check-card + .check-card { margin-top: 10px; }
+.check-card.warnish { border-left: 4px solid var(--gold); }
+.meter { width: 72px; height: 6px; border-radius: 3px; background: var(--surface-2); flex-shrink: 0; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--ok); border-radius: 3px; }
+.review .btn { margin-top: 8px; }
+@media (max-width: 760px) {
+  .entry-logo { height: 72px; }
+  .wordmark .logo { width: 26px; height: 30px; }
+  .stat-row { gap: 8px; }
+  .stat { padding: 12px; }
+  .stat b { font-size: var(--fs-lg); }
+  .aiwise { flex-direction: column; }
+  .modal-card { padding: 18px; }
+}
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .three { grid-template-columns: 1fr; } }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -566,7 +648,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 
 <!-- ═══ STAFF ENTRY ═══════════════════════════════════════════════════════ -->
 <div id="staff-screen" class="screen active">
-  <header class="bar"><span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="ctx">Staff</span></header>
+  <header class="bar"><span class="wordmark"><span class="logo" aria-hidden="true"></span>Nursing AI Companion</span><span class="ctx">Staff</span></header>
   <div class="hero">
     <main class="entry">
       <h1>Staff sign-in</h1>
@@ -596,7 +678,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 <!-- ═══ FACULTY SIGN-IN ═══════════════════════════════════════════════════ -->
 <div id="faculty-login-screen" class="screen">
   <header class="bar">
-    <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
+    <span class="wordmark"><span class="logo" aria-hidden="true"></span>Nursing AI Companion</span><span class="spacer"></span>
     <button class="bar-btn" onclick="showScreen('staff-screen')">Back</button>
   </header>
   <div class="hero art-left">
@@ -647,7 +729,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 <!-- ═══ FACULTY AUDIT ═════════════════════════════════════════════════════ -->
 <div id="faculty-screen" class="screen">
   <header class="bar">
-    <span class="wordmark"><b>UoB</b> Faculty</span>
+    <span class="wordmark"><span class="logo" aria-hidden="true"></span>Faculty</span>
     <span class="ctx" id="f-course-badge"></span>
     <span class="spacer"></span>
     <span class="who" id="f-name-badge"></span>
@@ -724,7 +806,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 <!-- ═══ ADMIN SIGN-IN ═════════════════════════════════════════════════════ -->
 <div id="admin-login-screen" class="screen">
   <header class="bar">
-    <span class="wordmark"><b>UoB</b> Nursing AI Companion</span><span class="spacer"></span>
+    <span class="wordmark"><span class="logo" aria-hidden="true"></span>Nursing AI Companion</span><span class="spacer"></span>
     <button class="bar-btn" onclick="showScreen('staff-screen')">Back</button>
   </header>
   <div class="hero art-left">
@@ -757,7 +839,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 <!-- ═══ ADMIN OVERVIEW ════════════════════════════════════════════════════ -->
 <div id="admin-screen" class="screen">
   <header class="bar">
-    <span class="wordmark"><b>UoB</b> Study admin</span>
+    <span class="wordmark"><span class="logo" aria-hidden="true"></span>Study admin</span>
     <span class="ctx hide-sm">Project 25-2024</span>
     <span class="spacer"></span>
     <button class="bar-btn" onclick="signOut()">Sign out</button>
@@ -769,7 +851,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
     <section class="block">
       <h2 style="margin-bottom:14px">Study controls</h2>
       <div class="panel" style="margin-top:0">
-        <div class="two" style="align-items:end">
+        <div class="three" style="align-items:end">
           <div class="field">
             <label for="set-wave">Questionnaire shown to students</label>
             <select id="set-wave">
@@ -785,12 +867,35 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
               <option value="yes">Open (from Week 8)</option>
             </select>
           </div>
+          <div class="field">
+            <label for="set-record">Record conversation text</label>
+            <select id="set-record">
+              <option value="yes">On (for verification reviews)</option>
+              <option value="no">Off (usage data only)</option>
+            </select>
+          </div>
         </div>
         <div class="submit-row" style="margin-top:4px">
           <button class="btn btn-primary" id="settings-btn" onclick="saveSettings()">Save changes</button>
           <p class="status" id="settings-status" aria-live="polite"></p>
         </div>
         <p class="note" style="margin-top:14px">Opening a questionnaire shows it to every consented student on the roster and adds a reminder in the companion until they finish. Each student can submit once per questionnaire. Also announce it on Blackboard, because Group B students may not sign in otherwise.</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>Usage per participant</h2><span class="spacer"></span>
+        <button class="btn btn-ghost" id="usage-btn" onclick="loadUsage()">Load</button>
+        <button class="btn btn-ghost" id="usage-csv" onclick="downloadUsage()" disabled>Download CSV</button>
+      </div>
+      <p class="note">Consented students only, by research code. Minutes come from sign-out times, so they undercount sessions where a student closed the browser without signing out.</p>
+      <p class="status" id="usage-status" aria-live="polite"></p>
+      <div class="table-wrap" id="usage-wrap" hidden>
+        <table class="data">
+          <thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th class="n">Sessions</th><th class="n">Minutes</th><th class="n">Messages</th><th class="n">Topics</th><th class="n">Practice answers</th><th class="n">% correct</th><th class="n">👍 / 👎</th><th class="n">Evaluations</th><th class="n">Checks</th><th>Last active</th></tr></thead>
+          <tbody id="usage-body"></tbody>
+        </table>
       </div>
     </section>
 
@@ -1110,6 +1215,7 @@ async function loadStats() {
     : '<tr><td colspan="6">No roster yet. Add students to the Roster tab of the private study spreadsheet.</td></tr>';
   document.getElementById('set-wave').value = r.data.wave || 'closed';
   document.getElementById('set-groupb').value = r.data.groupBOpen ? 'yes' : 'no';
+  document.getElementById('set-record').value = r.data.recordContent === false ? 'no' : 'yes';
   st.textContent = 'Updated ' + (r.data.generated || 'just now') + ', Bahrain time.';
 }
 
@@ -1117,18 +1223,48 @@ async function loadStats() {
 async function saveSettings() {
   const wave = document.getElementById('set-wave').value;
   const groupBOpen = document.getElementById('set-groupb').value === 'yes';
+  const recordContent = document.getElementById('set-record').value === 'yes';
   const labels = { closed: 'closed', T1: 'the start-of-study questionnaire (T1)', T2: 'the end-of-study questionnaire (T2)' };
-  if (!confirm(`Save these settings?\n\nQuestionnaire: ${labels[wave]}\nGroup B companion: ${groupBOpen ? 'OPEN' : 'locked'}`)) return;
+  if (!confirm(`Save these settings?\n\nQuestionnaire: ${labels[wave]}\nGroup B companion: ${groupBOpen ? 'OPEN' : 'locked'}\nConversation text: ${recordContent ? 'RECORDED' : 'not recorded'}`)) return;
   const btn = document.getElementById('settings-btn'), st = document.getElementById('settings-status');
   btn.disabled = true; btn.textContent = 'Saving…'; st.className = 'status'; st.textContent = '';
   let r;
-  try { r = await api('/admin-settings', { password: portal.password, set: { wave, groupBOpen } }); }
+  try { r = await api('/admin-settings', { password: portal.password, set: { wave, groupBOpen, recordContent } }); }
   catch (e) { r = { ok: false, status: 0 }; }
   btn.disabled = false; btn.textContent = 'Save changes';
   if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); return; }
   st.className = 'status ok';
-  st.textContent = `Saved. Questionnaire: ${labels[r.data.wave]}. Group B companion: ${r.data.groupBOpen ? 'open' : 'locked'}.`;
+  st.textContent = `Saved. Questionnaire: ${labels[r.data.wave]}. Group B companion: ${r.data.groupBOpen ? 'open' : 'locked'}. Conversation text: ${r.data.recordContent ? 'recorded' : 'not recorded'}.`;
   loadStats();
+}
+
+// ── Usage per participant (dose) ──
+let usageRows = [];
+async function loadUsage() {
+  const st = document.getElementById('usage-status'), btn = document.getElementById('usage-btn');
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Loading…';
+  let r;
+  try { r = await api('/admin-usage', { password: portal.password }); } catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false;
+  if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); return; }
+  usageRows = r.data.participants || [];
+  const pct = (a, b) => b ? Math.round(100 * a / b) + '%' : '–';
+  document.getElementById('usage-body').innerHTML = usageRows.length ? usageRows.map(u => `<tr><td>${esc(u.code)}</td><td>${esc(u.course)}</td>
+    <td>${esc(u.section)}</td><td>${esc(u.group)}</td><td class="n">${u.sessions}</td><td class="n">${u.minutes}</td><td class="n">${u.messages}</td>
+    <td class="n">${u.topics}</td><td class="n">${u.quiz}</td><td class="n">${pct(u.right, u.quiz)}</td><td class="n">${u.feedbackUp} / ${u.feedbackDown}</td>
+    <td class="n">${u.evaluations}</td><td class="n">${u.checks}</td><td>${esc((u.last || '').slice(0, 16).replace('T', ' ')) || '–'}</td></tr>`).join('')
+    : '<tr><td colspan="14">No consented participants yet.</td></tr>';
+  document.getElementById('usage-wrap').hidden = false;
+  document.getElementById('usage-csv').disabled = !usageRows.length;
+  st.textContent = usageRows.length + ' participants.';
+}
+function downloadUsage() {
+  const cols = ['code', 'course', 'section', 'group', 'sessions', 'minutes', 'messages', 'topics', 'quiz', 'right', 'feedbackUp', 'feedbackDown', 'evaluations', 'checks', 'last'];
+  const csv = [cols.join(','), ...usageRows.map(u => cols.map(c => '"' + String(u[c] == null ? '' : u[c]).replace(/"/g, '""') + '"').join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'companion_usage_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 </script>
