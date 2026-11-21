@@ -757,6 +757,11 @@ body { background: var(--ground); }
 .topic-ids { margin: 8px 0 12px; font-size: var(--fs-sm); }
 .topic-ids p { margin: 6px 0; line-height: 1.7; }
 .topic-ids code { background: var(--brand-soft); padding: 1px 6px; border-radius: 6px; }
+.media-zoom { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(10,16,30,.92); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 16px; cursor: zoom-out; }
+.lightbox img { max-width: 100%; max-height: calc(100% - 120px); object-fit: contain; background: #fff; border-radius: 8px; }
+.lightbox p { color: #E6EAF2; font-size: var(--fs-sm); text-align: center; max-width: 70ch; }
 
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
@@ -1198,6 +1203,23 @@ const COURSE_OUTLINE = {"NUR312": {"units": [{"title": "Foundations of nursing r
 let survey = { pages: [], page: 0, answers: {} };
 
 // ── HELPERS ────────────────────────────────────────────────────────────────
+// A random ID for this browser, so signing in again on the same device replaces its own session
+// instead of being blocked by the one-device rule.
+const DEVICE = (() => { try { let d = localStorage.getItem('deviceId'); if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); localStorage.setItem('deviceId', d); } return d; } catch (e) { return ''; } })();
+function saveSession() { try { if (me) sessionStorage.setItem('companion-session', JSON.stringify({ ...me, _start: state.sessionStart })); } catch (e) {} }
+function clearSession() { try { sessionStorage.removeItem('companion-session'); } catch (e) {} }
+// Coming back to the tab (browser Back button, reload): continue the same session without signing in again.
+async function restoreSession() {
+  let saved = null; try { saved = JSON.parse(sessionStorage.getItem('companion-session') || 'null'); } catch (e) {}
+  if (!saved || !saved.token) return;
+  me = saved;
+  const r = await safeApi('/student-status', { token: me.token });
+  if (!r.ok) { me = null; clearSession(); return; }
+  Object.assign(me, r.data);
+  loadQueue(); if (logQueue.length) flushLogs();
+  startHeartbeat(); ping();
+  if (!me.consent) showConsent(); else enterApp(saved._start);
+}
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1258,7 +1280,7 @@ async function signIn() {
   if (!id) { input.focus(); return; }
   if (!pw) { pwIn.focus(); return; }
   btn.disabled = true; btn.textContent = 'Checking…';
-  const r = await safeApi('/student-login', { studentId: id, password: pw },
+  const r = await safeApi('/student-login', { studentId: id, password: pw, device: DEVICE },
     () => { msg.textContent = 'Many students are signing in at the same time. Trying again…'; });
   btn.disabled = false; btn.textContent = 'Sign in';
   if (!r.ok) {
@@ -1279,13 +1301,15 @@ async function signIn() {
   startHeartbeat();
   if (!me.consent) showConsent(); else enterApp();
 }
-function enterApp() {
+function enterApp(resumedStart) {
   document.getElementById('ctx').textContent = me.course + ' · Section ' + me.section;
-  state.sessionStart = new Date().toISOString(); state.messageCount = 0; state.goal = '';
+  const resumed = typeof resumedStart === 'string' && resumedStart;
+  state.sessionStart = resumed || new Date().toISOString(); state.messageCount = 0; state.goal = '';
   showScreen('app-screen');
   applyAccess();
+  saveSession();
   if (me.companionOpen) {
-    logEvent('session_start', '', '');
+    if (!resumed) logEvent('session_start', '', '');
     if (COURSE_OUTLINE[me.course]) showOutline(); else { state.topic = null; showChat(); setMode('learn'); }
     if (me.consent === 'Y') syncLessons();
     loadMediaList();
@@ -1300,7 +1324,7 @@ function signOut() {
 function finishSignOut(note) {
   if (me && me.companionOpen && state.sessionStart)
     logEvent('session_end', '', `${state.messageCount} messages`, '', '', String(Math.round((Date.now() - new Date(state.sessionStart)) / 600) / 100));
-  flushLogs(true);
+  flushLogs(true); clearSession();
   if (me) fetch(CONFIG.API + '/logout', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: me.token }) }).catch(() => {});
   stopHeartbeat(); closeModal();
   stopSpeaking(); if (listening) stopMic();
@@ -1317,6 +1341,7 @@ async function refreshStatus() {
   if (!r.ok) return;
   const wasOpen = me.companionOpen;
   Object.assign(me, r.data);
+  saveSession();
   applyAccess();
   if (me.companionOpen && !wasOpen) { enterApp(); return; }
   if (!document.getElementById('outline').hidden) showOutline();
@@ -1688,12 +1713,26 @@ function mediaCard(m) {
   const credit = [m.source, m.licence].filter(Boolean).map(esc).join(' · ');
   const yt = m.type === 'video' && youTubeId(m.url);
   const body = m.type === 'image'
-    ? `<a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(m.url)}" alt="${esc(m.title)}" loading="lazy" referrerpolicy="no-referrer"></a>`
+    ? `<button type="button" class="media-zoom" onclick="zoomMedia('${esc(m.id)}')" aria-label="Enlarge: ${esc(m.title)}"><img src="${esc(m.url)}" alt="${esc(m.title)}" loading="lazy" referrerpolicy="no-referrer"></button>`
     : yt ? `<button type="button" class="media-play" onclick="playMedia(this, '${yt}', '${esc(m.id)}')" aria-label="Play video: ${esc(m.title)}">
              <img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="play-dot" aria-hidden="true">▶</span></button>`
     : '';
   return `<figure class="media-card">${body}<figcaption><strong>${esc(m.title)}</strong>${credit ? `<span>${credit}</span>` : ''}
-    <a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer" onclick="logEvent('media_open', '', '', '', '', '${esc(m.id)}')">${m.type === 'video' ? 'Watch on the source site' : m.type === 'image' ? 'Open full size' : 'Open link'}</a></figcaption></figure>`;
+    ${m.type === 'image' ? `<button type="button" class="linklike" onclick="zoomMedia('${esc(m.id)}')">Enlarge</button>`
+      : `<a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer" onclick="logEvent('media_open', '', '', '', '', '${esc(m.id)}')">${m.type === 'video' ? 'Watch on the source site (new tab)' : 'Open link (new tab)'}</a>`}</figcaption></figure>`;
+}
+// Pictures open full screen inside the companion (no leaving the page); tap anywhere or Close to return.
+function zoomMedia(id) {
+  const m = (state.media || []).find(x => x.id === id); if (!m) return;
+  logEvent('media_open', '', '', '', '', id);
+  const box = document.createElement('div'); box.className = 'lightbox'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', m.title);
+  box.innerHTML = `<img src="${esc(m.url)}" alt="${esc(m.title)}" referrerpolicy="no-referrer">
+    <p>${esc(m.title)}${m.source ? ' · ' + esc(m.source) : ''}${m.licence ? ' · ' + esc(m.licence) : ''}</p>
+    <button type="button" class="btn btn-primary">Close</button>`;
+  const close = () => { box.remove(); document.removeEventListener('keydown', onKey, true); };
+  const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+  box.addEventListener('click', close); document.addEventListener('keydown', onKey, true);
+  document.body.appendChild(box); box.querySelector('button').focus();
 }
 function playMedia(btn, yt, id) {
   logEvent('media_open', '', '', '', '', id);
@@ -2484,6 +2523,8 @@ function checkPage() {
 }
 function goPage(i) { survey.page = i; renderSurvey(); document.getElementById('survey-scroll').scrollTop = 0; }
 function nextPage() { if (checkPage()) goPage(survey.page + 1); }
+restoreSession();
+
 async function submitSurvey() {
   if (!checkPage()) return;
   const btn = document.getElementById('survey-next'), msg = document.getElementById('survey-msg');
