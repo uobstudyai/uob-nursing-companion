@@ -725,6 +725,40 @@ body { background: var(--ground); }
 .gate-note { margin-top: 18px; text-align: center; }
 @media (max-width: 480px) { .bar .ctx { display: none; } }
 
+/* v13: consent requests, AI-skills check, course guide */
+.req-note { background: var(--brand-soft); border-radius: 10px; padding: 10px 14px; margin: 10px 0 14px; font-size: var(--fs-sm); color: var(--ink-2); }
+.locked-card .btn { margin-top: 12px; }
+.gate-check { display: flex; gap: 14px; align-items: center; justify-content: space-between; margin-top: 14px; padding: 16px 18px;
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--r); box-shadow: var(--shadow); }
+.gate-check strong { display: block; }
+.gate-check span { display: block; margin-top: 4px; font-size: var(--fs-sm); color: var(--muted); }
+.gate-check.off { opacity: .7; }
+.gate-check .btn { flex-shrink: 0; }
+.guide-go { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.row-actions { white-space: nowrap; display: flex; gap: 6px; }
+@media (max-width: 760px) { .gate-check { flex-direction: column; align-items: stretch; } }
+
+/* v14: vetted media */
+.topic-head { flex-wrap: wrap; }
+.media-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: var(--surface); color: var(--brand); font: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.media-btn svg { width: 16px; height: 16px; }
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 12px 0; }
+.media-inline { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; max-width: 560px; }
+.media-card { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.media-card img { display: block; width: 100%; height: 160px; object-fit: contain; background: #F6F7F9; }
+.media-card figcaption { padding: 8px 10px 10px; font-size: var(--fs-sm); display: grid; gap: 3px; }
+.media-card figcaption span { color: var(--muted); font-size: var(--fs-xs); }
+.media-card figcaption a { color: var(--brand); font-weight: 600; }
+.media-play { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #000; cursor: pointer; }
+.media-play img { height: 160px; object-fit: cover; opacity: .85; }
+.play-dot { position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,.92); color: var(--brand);
+  display: grid; place-items: center; font-size: 18px; }
+.media-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+.topic-ids { margin: 8px 0 12px; font-size: var(--fs-sm); }
+.topic-ids p { margin: 6px 0; line-height: 1.7; }
+.topic-ids code { background: var(--brand-soft); padding: 1px 6px; border-radius: 6px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -969,6 +1003,33 @@ body { background: var(--ground); }
 
     <section class="block">
       <div class="block-head">
+        <h2>Pictures and videos library</h2><span class="spacer"></span>
+        <button class="btn btn-ghost" id="media-load" onclick="loadMediaAdmin()">Load</button>
+      </div>
+      <p class="note">Add items as rows in the <b>Media</b> tab of the study spreadsheet: ID (short, unique, e.g. NUR125-BP-1), Course, Topic ID (from the list below; leave blank for the whole course), Type (image, video or link), Title (what the AI sees), URL (https; YouTube links play inside the companion), Source, Licence, Approved (Y). Only approved rows reach students; changes appear within 10 minutes (immediately after you press Load here). Use only material you have the right to share, and never textbook figures from the course PDFs.</p>
+      <details class="topic-ids"><summary>Topic IDs by course</summary><div id="topic-ids"></div></details>
+      <p class="status" id="media-status" aria-live="polite"></p>
+      <div class="table-wrap" id="media-wrap" hidden>
+        <table class="data"><thead><tr><th>ID</th><th>Course</th><th>Topic</th><th>Type</th><th>Title</th><th>Source · licence</th><th>Approved</th><th>Preview</th></tr></thead>
+        <tbody id="media-body"></tbody></table>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <h2>Requests to join the study</h2><span class="spacer"></span>
+        <button class="btn btn-ghost" id="req-btn" onclick="loadRequests()">Refresh</button>
+      </div>
+      <p class="note">Students who first declined and later asked to join. Approving records their consent (with the date of their request) and opens the questionnaire and, for Group A, the companion. Check whether the start-of-study questionnaire is still open before approving: a participant without a baseline questionnaire cannot be analysed as planned.</p>
+      <p class="status" id="req-status" aria-live="polite"></p>
+      <div class="table-wrap" id="req-wrap" hidden>
+        <table class="data"><thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th>Requested</th><th>Items</th><th>T1 done</th><th></th></tr></thead>
+        <tbody id="req-body"></tbody></table>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
         <h2>Usage per participant</h2><span class="spacer"></span>
         <button class="btn btn-ghost" id="usage-btn" onclick="loadUsage()">Load</button>
         <button class="btn btn-ghost" id="usage-csv" onclick="downloadUsage()" disabled>Download CSV</button>
@@ -977,7 +1038,7 @@ body { background: var(--ground); }
       <p class="status" id="usage-status" aria-live="polite"></p>
       <div class="table-wrap" id="usage-wrap" hidden>
         <table class="data">
-          <thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th class="n">Sessions</th><th class="n">Minutes</th><th class="n">Messages</th><th class="n">Topics</th><th class="n">Practice answers</th><th class="n">% correct</th><th class="n">👍 / 👎</th><th class="n">Evaluations</th><th class="n">Checks</th><th class="n">AI lessons</th><th class="n">Checked answers</th><th class="n">AI cases</th><th class="n">Accepted flawed AI</th><th>Last active</th></tr></thead>
+          <thead><tr><th>Code</th><th>Course</th><th>Sec.</th><th>Grp</th><th class="n">Sessions</th><th class="n">Minutes</th><th class="n">Messages</th><th class="n">Topics</th><th class="n">Practice answers</th><th class="n">% correct</th><th class="n">👍 / 👎</th><th class="n">Evaluations</th><th class="n">Checks</th><th class="n">AI lessons</th><th>AI-skills check (first · passed)</th><th class="n">Checked answers</th><th class="n">AI cases</th><th class="n">Accepted flawed AI</th><th>Last active</th></tr></thead>
           <tbody id="usage-body"></tbody>
         </table>
       </div>
@@ -1054,6 +1115,7 @@ const COURSE_INFO = {
   NUR312: { name: "Nursing Research and Evidence-Based Practice" },
 };
 const CHECK_TOPICS = {"NUR312": [{"id": "1", "title": "Introduction to nursing research"}, {"id": "2", "title": "Ethical issues in nursing research"}, {"id": "3a", "title": "Overview of quantitative research"}, {"id": "3b", "title": "Overview of qualitative research"}, {"id": "10", "title": "Evidence-based practice"}, {"id": "4a", "title": "The research problem"}, {"id": "4b", "title": "Hypotheses and research questions"}, {"id": "5", "title": "Review of the literature"}, {"id": "6", "title": "Theory and nursing research"}, {"id": "7", "title": "Research design"}, {"id": "7a", "title": "Population, sample and sampling"}, {"id": "8", "title": "Measurement and data collection"}, {"id": "8a", "title": "Data collection methods"}, {"id": "9", "title": "Data analysis"}, {"id": "12a", "title": "Presenting and discussing findings"}, {"id": "13", "title": "Communicating and using research"}]};
+const TOPIC_LIST = {"NUR312": [["1", "Introduction to nursing research"], ["2", "Ethical issues in nursing research"], ["3a", "Overview of quantitative research"], ["3b", "Overview of qualitative research"], ["10", "Evidence-based practice"], ["4a", "The research problem"], ["4b", "Hypotheses and research questions"], ["5", "Review of the literature"], ["6", "Theory and nursing research"], ["7", "Research design"], ["7a", "Population, sample and sampling"], ["8", "Measurement and data collection"], ["8a", "Data collection methods"], ["9", "Data analysis"], ["12a", "Presenting and discussing findings"], ["13", "Communicating and using research"], ["PROP", "Research proposal project"], ["CRIT", "Critiquing a research article"]], "NUR125": [["1a", "Infection and the chain of infection"], ["1b", "Isolation precautions, hand hygiene and PPE"], ["2a", "Mobility and body mechanics"], ["2b", "Effects of immobility"], ["2c", "Pressure injuries and skin integrity"], ["3a", "Personal hygiene care"], ["3b", "Bed making"], ["3c", "Sleep"], ["4a", "Nutritional assessment"], ["4b", "Therapeutic diets and appetite"], ["4c", "Fluid balance and intake–output"], ["4d", "Enteral feeding and nasogastric tubes"], ["5a", "Urinary elimination"], ["5b", "Fecal elimination"], ["6a", "Body temperature and cold applications"], ["6b", "Pulse and respiration"], ["6c", "Blood pressure and oxygen saturation"], ["CP", "Care plan assignment"], ["OSPE", "Preparing for the OSPE"]], "NUR225": [["1", "Peptic ulcer disease"], ["2", "Intestinal obstruction"], ["H", "Umbilical hernia"], ["10", "Hepatitis and cirrhosis"], ["11", "Cholecystitis and cholelithiasis"], ["3", "Renal calculi"], ["4", "Renal failure"], ["5", "Diabetes mellitus"], ["6", "Hyperthyroidism"], ["7", "Hypothyroidism"], ["8", "Fractures"], ["12", "Rheumatoid arthritis"], ["13", "Systemic lupus erythematosus"]]};
 let portal = { role: null, password: "", name: "", course: "", items: [] };
 
 function showScreen(id) {
@@ -1267,7 +1329,47 @@ async function loginAdmin() {
   if (!r.ok) { msg.textContent = friendlyError(r.status); return; }
   portal = { role: 'admin', password: pass, name: '', course: '', items: [] };
   showScreen('admin-screen');
-  loadStats();
+  loadStats(); loadRequests();
+}
+async function loadMediaAdmin() {
+  const st = document.getElementById('media-status'), btn = document.getElementById('media-load');
+  document.getElementById('topic-ids').innerHTML = Object.entries(TOPIC_LIST).map(([c, l]) =>
+    `<p><b>${c}</b>: ${l.map(([id, t]) => `<code>${esc(id)}</code> ${esc(t)}`).join(' · ')}</p>`).join('');
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Loading…';
+  let r;
+  try { r = await api('/admin-media', { password: portal.password }); } catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false;
+  if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); return; }
+  const items = r.data.items || [];
+  const tname = (c, id) => { if (!id) return 'Whole course'; const t = (TOPIC_LIST[c] || []).find(x => x[0] === id); return t ? id + ' · ' + t[1] : id + ' (unknown topic ID)'; };
+  document.getElementById('media-body').innerHTML = items.map(m => `<tr><td>${esc(m.id)}</td><td>${esc(m.course)}</td><td>${esc(tname(m.course, m.topic))}</td>
+    <td>${esc(m.type)}</td><td>${esc(m.title)}</td><td>${esc([m.source, m.licence].filter(Boolean).join(' · ') || '–')}</td>
+    <td>${m.approved ? 'Yes' : '<span class="muted">No</span>'}</td><td><a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer">Open</a></td></tr>`).join('');
+  document.getElementById('media-wrap').hidden = !items.length;
+  const ok = items.filter(m => m.approved).length;
+  st.textContent = items.length ? `${items.length} items, ${ok} approved and visible to students.` : 'No items yet. Add rows in the Media tab of the study spreadsheet, then press Load.';
+}
+async function loadRequests() {
+  const st = document.getElementById('req-status'), btn = document.getElementById('req-btn');
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Loading…';
+  let r;
+  try { r = await api('/admin-consent-requests', { password: portal.password }); } catch (e) { r = { ok: false, status: 0 }; }
+  btn.disabled = false;
+  if (!r.ok) { st.className = 'status bad'; st.textContent = friendlyError(r.status); return; }
+  const list = r.data.requests || [];
+  document.getElementById('req-body').innerHTML = list.map(q => `<tr><td>${esc(q.code)}</td><td>${esc(q.course)}</td><td>${esc(q.section)}</td><td>${esc(q.group)}</td>
+    <td>${esc((q.requested || '').slice(0, 16).replace('T', ' '))}</td><td>${esc(q.items || '–')}</td><td>${q.t1 ? 'Yes' : 'No'}</td>
+    <td class="row-actions"><button class="btn btn-primary btn-sm" type="button" onclick="decideRequest('${esc(q.code)}', true)">Approve</button>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="decideRequest('${esc(q.code)}', false)">Decline</button></td></tr>`).join('');
+  document.getElementById('req-wrap').hidden = !list.length;
+  st.textContent = list.length ? `${list.length} request${list.length > 1 ? 's' : ''} waiting. Questionnaire now: ${r.data.wave === 'T1' ? 'start-of-study open' : r.data.wave === 'T2' ? 'end-of-study open' : 'closed'}.` : 'No requests waiting.';
+}
+async function decideRequest(code, approve) {
+  if (!confirm((approve ? 'Approve' : 'Decline') + ' the request from ' + code + '?')) return;
+  let r;
+  try { r = await api('/admin-consent-decide', { password: portal.password, code, approve }); } catch (e) { r = { ok: false, status: 0 }; }
+  if (!r.ok) { const st = document.getElementById('req-status'); st.className = 'status bad'; st.textContent = r.status === 409 ? 'That request was already decided.' : friendlyError(r.status); return; }
+  loadRequests();
 }
 
 async function loadStats() {
@@ -1336,14 +1438,14 @@ async function loadUsage() {
   document.getElementById('usage-body').innerHTML = usageRows.length ? usageRows.map(u => `<tr><td>${esc(u.code)}</td><td>${esc(u.course)}</td>
     <td>${esc(u.section)}</td><td>${esc(u.group)}</td><td class="n">${u.sessions}</td><td class="n">${u.minutes}</td><td class="n">${u.messages}</td>
     <td class="n">${u.topics}</td><td class="n">${u.quiz}</td><td class="n">${pct(u.right, u.quiz)}</td><td class="n">${u.feedbackUp} / ${u.feedbackDown}</td>
-    <td class="n">${u.evaluations}</td><td class="n">${u.checks}</td><td class="n">${u.lessons}</td><td class="n">${u.verifies}</td><td class="n">${u.aiCases}</td><td class="n">${u.aiOverTrust}</td><td>${esc((u.last || '').slice(0, 16).replace('T', ' ')) || '–'}</td></tr>`).join('')
-    : '<tr><td colspan="18">No consented participants yet.</td></tr>';
+    <td class="n">${u.evaluations}</td><td class="n">${u.checks}</td><td class="n">${u.lessons}</td><td>${esc(u.checkFirst || '–')}${u.checkPassed ? ' · ' + esc(u.checkPassed) : ''}</td><td class="n">${u.verifies}</td><td class="n">${u.aiCases}</td><td class="n">${u.aiOverTrust}</td><td>${esc((u.last || '').slice(0, 16).replace('T', ' ')) || '–'}</td></tr>`).join('')
+    : '<tr><td colspan="19">No consented participants yet.</td></tr>';
   document.getElementById('usage-wrap').hidden = false;
   document.getElementById('usage-csv').disabled = !usageRows.length;
   st.textContent = usageRows.length + ' participants.';
 }
 function downloadUsage() {
-  const cols = ['code', 'course', 'section', 'group', 'sessions', 'minutes', 'messages', 'topics', 'quiz', 'right', 'feedbackUp', 'feedbackDown', 'evaluations', 'checks', 'lessons', 'verifies', 'aiCases', 'aiOverTrust', 'last'];
+  const cols = ['code', 'course', 'section', 'group', 'sessions', 'minutes', 'messages', 'topics', 'quiz', 'right', 'feedbackUp', 'feedbackDown', 'evaluations', 'checks', 'lessons', 'checkFirst', 'checkPassed', 'verifies', 'aiCases', 'aiOverTrust', 'last'];
   const csv = [cols.join(','), ...usageRows.map(u => cols.map(c => '"' + String(u[c] == null ? '' : u[c]).replace(/"/g, '""') + '"').join(','))].join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));

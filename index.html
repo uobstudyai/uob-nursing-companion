@@ -724,6 +724,40 @@ body { background: var(--ground); }
 .gate-note { margin-top: 18px; text-align: center; }
 @media (max-width: 480px) { .bar .ctx { display: none; } }
 
+/* v13: consent requests, AI-skills check, course guide */
+.req-note { background: var(--brand-soft); border-radius: 10px; padding: 10px 14px; margin: 10px 0 14px; font-size: var(--fs-sm); color: var(--ink-2); }
+.locked-card .btn { margin-top: 12px; }
+.gate-check { display: flex; gap: 14px; align-items: center; justify-content: space-between; margin-top: 14px; padding: 16px 18px;
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--r); box-shadow: var(--shadow); }
+.gate-check strong { display: block; }
+.gate-check span { display: block; margin-top: 4px; font-size: var(--fs-sm); color: var(--muted); }
+.gate-check.off { opacity: .7; }
+.gate-check .btn { flex-shrink: 0; }
+.guide-go { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.row-actions { white-space: nowrap; display: flex; gap: 6px; }
+@media (max-width: 760px) { .gate-check { flex-direction: column; align-items: stretch; } }
+
+/* v14: vetted media */
+.topic-head { flex-wrap: wrap; }
+.media-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: var(--surface); color: var(--brand); font: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.media-btn svg { width: 16px; height: 16px; }
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 12px 0; }
+.media-inline { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; max-width: 560px; }
+.media-card { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.media-card img { display: block; width: 100%; height: 160px; object-fit: contain; background: #F6F7F9; }
+.media-card figcaption { padding: 8px 10px 10px; font-size: var(--fs-sm); display: grid; gap: 3px; }
+.media-card figcaption span { color: var(--muted); font-size: var(--fs-xs); }
+.media-card figcaption a { color: var(--brand); font-weight: 600; }
+.media-play { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #000; cursor: pointer; }
+.media-play img { height: 160px; object-fit: cover; opacity: .85; }
+.play-dot { position: absolute; inset: 0; margin: auto; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,.92); color: var(--brand);
+  display: grid; place-items: center; font-size: 18px; }
+.media-frame { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+.topic-ids { margin: 8px 0 12px; font-size: var(--fs-sm); }
+.topic-ids p { margin: 6px 0; line-height: 1.7; }
+.topic-ids code { background: var(--brand-soft); padding: 1px 6px; border-radius: 6px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -834,6 +868,8 @@ body { background: var(--ground); }
             <button class="back-link" type="button" onclick="showOutline()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Course outline</button>
             <p class="topic-title" id="topic-title"></p>
+            <button class="media-btn" id="media-btn" type="button" hidden onclick="showMediaGallery()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 9"/></svg><span>Pictures &amp; videos</span></button>
           </div>
           <div class="seg" role="tablist" aria-label="Study mode">
             <button role="tab" id="mode-learn" aria-selected="true" onclick="setMode('learn')">Learn</button>
@@ -1175,8 +1211,17 @@ async function api(path, payload) {
   try { data = await res.json(); } catch (e) {}
   return { ok: res.ok, status: res.status, data };
 }
-async function safeApi(path, payload) {
-  try { return await api(path, payload); } catch (e) { return { ok: false, status: 0, data: {} }; }
+// When many students act at the same moment the spreadsheet service can be briefly busy (503).
+// Retry quietly twice (after about 2 s and 5 s) before showing a message; onWait lets the caller say so.
+async function safeApi(path, payload, onWait) {
+  const waits = [1500 + Math.random() * 1000, 4000 + Math.random() * 2000];
+  for (let i = 0; ; i++) {
+    let r;
+    try { r = await api(path, payload); } catch (e) { r = { ok: false, status: 0, data: {} }; }
+    if (r.status !== 503 || i >= waits.length) return r;
+    if (onWait) onWait(i + 1);
+    await new Promise(res => setTimeout(res, waits[i]));
+  }
 }
 function friendlyError(status, data) {
   const code = data && data.error;
@@ -1186,6 +1231,7 @@ function friendlyError(status, data) {
   if (status === 403) return "The companion only works from the official study link. Open it from Blackboard and try again.";
   if (status === 413) return "This conversation has grown too long. Switch mode to start a fresh conversation.";
   if (status === 429) return "The companion is busy right now. Wait a minute and try again.";
+  if (status === 503 || code === 'busy') return "Many students are using the companion at this moment. Please wait a minute and try again: your work is not lost.";
   return "Something went wrong on our side. Try again in a moment. If it keeps happening, tell your instructor.";
 }
 function esc(t) {
@@ -1212,13 +1258,14 @@ async function signIn() {
   if (!id) { input.focus(); return; }
   if (!pw) { pwIn.focus(); return; }
   btn.disabled = true; btn.textContent = 'Checking…';
-  const r = await safeApi('/student-login', { studentId: id, password: pw });
+  const r = await safeApi('/student-login', { studentId: id, password: pw },
+    () => { msg.textContent = 'Many students are signing in at the same time. Trying again…'; });
   btn.disabled = false; btn.textContent = 'Sign in';
   if (!r.ok) {
     const e = r.data.error;
     msg.textContent =
       e === 'bad_login' ? "That username and password don't match. Check them and try again." :
-      e === 'in_use' ? "This account is already signed in on another device. Sign out there, or wait 3 minutes and try again." :
+      e === 'in_use' ? "This account is already signed in on another device. Sign out there, or wait 4 minutes and try again." :
       e === 'locked' ? "Too many attempts. Wait 15 minutes, or contact the principal investigator." :
       e === 'not_ready' ? "Your account isn't set up yet. Please contact the principal investigator." :
       e === 'no_consent' ? "We don't have your consent form on record yet. Please contact the principal investigator." :
@@ -1228,6 +1275,7 @@ async function signIn() {
   }
   me = r.data;
   input.value = ''; pwIn.value = '';
+  loadQueue(); if (logQueue.length) flushLogs();     // events left from an earlier visit on this device
   startHeartbeat();
   if (!me.consent) showConsent(); else enterApp();
 }
@@ -1240,8 +1288,9 @@ function enterApp() {
     logEvent('session_start', '', '');
     if (COURSE_OUTLINE[me.course]) showOutline(); else { state.topic = null; showChat(); setMode('learn'); }
     if (me.consent === 'Y') syncLessons();
+    loadMediaList();
   }
-  showTab(me.wave && !me.waveDone && !me.companionOpen ? 'survey' : 'companion');
+  showTab(me.needsSurvey || (me.wave && !me.waveDone && !me.companionOpen) ? 'survey' : 'companion');
 }
 
 function signOut() {
@@ -1251,10 +1300,11 @@ function signOut() {
 function finishSignOut(note) {
   if (me && me.companionOpen && state.sessionStart)
     logEvent('session_end', '', `${state.messageCount} messages`, '', '', String(Math.round((Date.now() - new Date(state.sessionStart)) / 600) / 100));
+  flushLogs(true);
   if (me) fetch(CONFIG.API + '/logout', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ token: me.token }) }).catch(() => {});
   stopHeartbeat(); closeModal();
   stopSpeaking(); if (listening) stopMic();
-  me = null; check = null; state.lessonsServer = {}; state.unlockedShown = false; state.topic = null; state.style = null; state.history = []; state.messageCount = 0;
+  me = null; logQueue = []; inflight.clear(); clearTimeout(logTimer); logTimer = null; check = null; state.lessonsServer = {}; state.aiCheckServer = {}; state.unlockedShown = false; state.topic = null; state.style = null; state.history = []; state.messageCount = 0;
   document.getElementById('topic-head').hidden = true;
   document.getElementById('messages').innerHTML = '';
   showScreen('welcome-screen');
@@ -1265,19 +1315,34 @@ async function refreshStatus() {
   if (!me) return;
   const r = await safeApi('/student-status', { token: me.token });
   if (!r.ok) return;
+  const wasOpen = me.companionOpen;
   Object.assign(me, r.data);
   applyAccess();
+  if (me.companionOpen && !wasOpen) { enterApp(); return; }
   if (!document.getElementById('outline').hidden) showOutline();
   if (state.mode === 'check' && !check) renderCheckHome();
 }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshStatus(); });
+let lastStatus = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { flushLogs(true); return; }
+  if (Date.now() - lastStatus > 60000) { lastStatus = Date.now(); refreshStatus(); }
+});
 
 function applyAccess() {
   document.getElementById('companion-locked').hidden = me.companionOpen;
   document.getElementById('tab-learning').hidden = !me.companionOpen;
   const lk = document.querySelector('#companion-locked .locked-card');
-  lk.innerHTML = me.consent === 'N'
-    ? `<h2>The companion opens for you later in the semester</h2><p>You chose not to take part in the research. You can use the companion when it opens for all students (from Week 8), and nothing about your use will be recorded. If you change your mind, contact the principal investigator.</p>`
+  lk.innerHTML = me.needsSurvey
+    ? `<h2>First, the start-of-study questionnaire</h2><p>Thank you for joining the study. Before you use the companion, please complete the start-of-study questionnaire (about 20 minutes). The companion opens as soon as you submit it.</p>
+       <button class="btn btn-primary" type="button" onclick="showTab('survey')">Go to the questionnaire</button>`
+    : me.consent === 'N'
+    ? `<h2>The companion opens for you later in the semester</h2><p>You chose not to take part in the research. You can use the companion when it opens for all students (from Week 8), and nothing about your use will be recorded.</p>` +
+      (me.consentRequest === 'pending'
+        ? `<p class="req-note">You asked to join the study. Your request is waiting for the principal investigator's decision. Sign in again later to see the result.</p>`
+        : me.consentRequest === 'declined'
+        ? `<p class="req-note">The principal investigator could not add you to the study at this stage (for example, because the start-of-study questionnaire has closed). Your access from Week 8 is not affected.</p>`
+        : `<p>Changed your mind? You can ask to join the study. The principal investigator will confirm whether you can still be included.</p>
+           <button class="btn btn-ghost" type="button" onclick="showConsent(true)">I would like to join the study</button>`)
     : `<h2>The companion isn't open for your section yet</h2><p>Your section will get access later in the semester. You'll be told on Blackboard when it opens. Until then, please complete the questionnaire when it is announced.</p>`;
   document.getElementById('companion-ui').style.display = me.companionOpen ? 'flex' : 'none';
   const pending = !!me.wave && !me.waveDone;
@@ -1335,10 +1400,12 @@ function openModal(html) {
 function closeModal() { document.getElementById('modal').hidden = true; }
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('modal').hidden && !document.getElementById('modal').dataset.locked) closeModal(); });
 
-function showConsent() {
+function showConsent(asRequest) {
+  state.consentRequest = !!asRequest;
   showScreen('consent-screen');
   document.getElementById('consent-root').innerHTML = `
-    <p class="eyebrow">Before you start</p>
+    <p class="eyebrow">${asRequest ? 'Request to join the study' : 'Before you start'}</p>
+    ${asRequest ? '<p class="req-note">You previously chose not to take part. If you agree below, your request goes to the principal investigator, who will confirm whether you can still be included.</p>' : '<p class="req-note">Please read the information sheet and choose whether to take part. You need to answer before you can continue. Either choice is fine and does not affect your grades.</p>'}
     <div class="pis">${PIS_HTML.replace('id="modal-title"', '')}</div>
     <fieldset class="consent-box" id="consent-box">
       <legend>Consent</legend>
@@ -1350,8 +1417,8 @@ function showConsent() {
     </fieldset>
     <p class="survey-msg" id="consent-msg"></p>
     <div class="survey-nav">
-      <button class="btn btn-ghost" type="button" onclick="decideConsent(false)">I do not wish to take part</button>
-      <button class="btn btn-primary" type="button" id="consent-yes" onclick="decideConsent(true)">I agree to take part</button>
+      <button class="btn btn-ghost" type="button" onclick="${asRequest ? 'enterApp()' : 'decideConsent(false)'}">${asRequest ? 'Back' : 'I do not wish to take part'}</button>
+      <button class="btn btn-primary" type="button" id="consent-yes" onclick="decideConsent(true)">${asRequest ? 'Send my request to join' : 'I agree to take part'}</button>
     </div>`;
   document.querySelectorAll('#consent-screen .tick input').forEach(b => b.addEventListener('change', () => { document.getElementById('consent-msg').textContent = ''; }));
   window.scrollTo(0, 0);
@@ -1361,19 +1428,20 @@ async function decideConsent(agree) {
   if (agree && (!document.getElementById('cs-main').checked || !document.getElementById('cs-q').checked)) {
     msg.textContent = 'To take part, tick the first two boxes. The interview boxes are optional.'; return;
   }
-  if (!agree && !confirm('Are you sure? You will not take part in the research. You can still use the companion from Week 8, and nothing about your use will be recorded.')) return;
+  if (!agree && !confirm('Are you sure? You will not take part in the research. You can still use the companion from Week 8, and nothing about your use will be recorded. If you change your mind later, you can ask to join.')) return;
   const items = agree ? ['Q', ...(document.getElementById('cs-i').checked ? ['I'] : []), ...(document.getElementById('cs-a').checked ? ['A'] : [])] : [];
   msg.textContent = 'Saving…';
-  const r = await safeApi('/consent', { token: me.token, agree, items, version: PIS_VERSION });
-  if (!r.ok) { msg.textContent = friendlyError(r.status, r.data); return; }
+  const req = state.consentRequest;
+  const r = await safeApi(req ? '/consent-request' : '/consent', { token: me.token, agree, items, version: PIS_VERSION });
+  if (!r.ok) { msg.textContent = r.data && r.data.error === 'decided' ? 'Your choice was already recorded. Please sign in again.' : friendlyError(r.status, r.data); return; }
   Object.assign(me, r.data);
   enterApp();
-  showToast(agree ? 'Thank you. Your consent has been recorded.' : 'Your choice has been recorded.');
+  showToast(req ? 'Your request has been sent to the principal investigator.' : agree ? 'Thank you. Your consent has been recorded.' : 'Your choice has been recorded.');
 }
 
 // ── ONE ACTIVE DEVICE PER ACCOUNT ──────────────────────────────────────────
 let heartbeat = null;
-function startHeartbeat() { stopHeartbeat(); heartbeat = setInterval(ping, 60000); }
+function startHeartbeat() { stopHeartbeat(); heartbeat = setInterval(ping, 90000); }
 function stopHeartbeat() { clearInterval(heartbeat); heartbeat = null; }
 async function ping() {
   if (!me) return;
@@ -1450,17 +1518,21 @@ const AI_LESSONS = [
         why: 'Automation bias is over-reliance on automated suggestions, including failing to notice what the system misses.' } ] },
 ];
 async function syncLessons() {                     // lessons done on another device count too
-  const before = lessonsComplete();
+  const before = gateComplete();
+  await flushLogs();
   const r = await safeApi('/progress', { token: me.token });
   if (!r.ok || !me) return;
   state.lessonsServer = Object.assign({}, r.data.lessons || {});
-  if (lessonsComplete() !== before && !document.getElementById('outline').hidden) showOutline();
+  state.aiCheckServer = r.data.aiCheck || {};
+  if (gateComplete() !== before && !document.getElementById('outline').hidden) showOutline();
 }
 function lessonsComplete() { const d = lessonsDone(); return AI_LESSONS.every(l => d[l.id]); }
 function lessonsGate() {
   const d = lessonsDone(), left = AI_LESSONS.filter(l => !d[l.id]);
-  return `<div class="gate-card"><strong>Before you start: ${left.length === AI_LESSONS.length ? 'complete' : 'finish'} the AI-skills lessons</strong>
-    <p>Read the ${AI_LESSONS.length} short lessons below and answer their questions (about ${AI_LESSONS.reduce((n, l) => n + l.mins, 0)} minutes in total). The course topics open when all ${AI_LESSONS.length} are done${left.length < AI_LESSONS.length ? ` — ${left.length} to go` : ''}. You only do this once.</p></div>`;
+  return `<div class="gate-card"><strong>Before you start: AI skills for nursing</strong>
+    <p>1. Read the ${AI_LESSONS.length} short lessons below and answer their practice questions (about ${AI_LESSONS.reduce((n, l) => n + l.mins, 0)} minutes)${left.length && left.length < AI_LESSONS.length ? ` — ${left.length} to go` : left.length ? '' : ' — done'}.<br>
+    2. Pass the AI-skills check: 10 questions, 80% or more. You can try again with new questions.<br>
+    The course topics open after that. You only do this once.</p></div>`;
 }
 function lessonsDone() { let d = {}; try { d = JSON.parse(localStorage.getItem('lessons-' + me.code) || '{}'); } catch (e) {} return Object.assign(d, state.lessonsServer || {}); }
 function aiSkillsCard() {
@@ -1496,8 +1568,8 @@ function markLesson(id) {
   const d = lessonsDone(); d[id] = score + '/' + l.qs.length;
   try { localStorage.setItem('lessons-' + me.code, JSON.stringify(d)); } catch (e) {}
   logEvent('ai_lesson', l.title, '', '', '', id + '|' + score + '/' + l.qs.length);
-  if (lessonsComplete() && !state.unlockedShown) { state.unlockedShown = true;
-    document.getElementById('lesson-msg').textContent += ' All AI-skills lessons are done: the course topics are now open.'; }
+  if (lessonsComplete() && !aiCheckState().passed && !state.unlockedShown) { state.unlockedShown = true;
+    document.getElementById('lesson-msg').textContent += ' All 4 lessons are done. Next: the AI-skills check on the course page.'; }
   if (!document.getElementById('outline').hidden) showOutline();
 }
 function tryBedside() {
@@ -1510,7 +1582,7 @@ function tryBedside() {
 // ── "CHECK THIS ANSWER" (verification prompt) ─────────────────────────────
 const VERIFY_RULE = '\n\nVERIFY REQUEST: The student tapped "Check this answer" for your previous reply. Re-read it against the course materials and textbook passages you were given. List each key point of that reply on its own line, marked "Supported" (give the source, e.g. the book and page), "Not found in your materials" (the student should check it with the instructor), or "Correction" (state the corrected point and the source). Be honest: if something you wrote was wrong or unsupported, say so plainly. End with one sentence reminding the student that this is a second look by the same AI, not proof, and to confirm important points in the textbook or with the instructor. Do not ask a new question.';
 function addVerify(msgEl) {
-  if (state.mode === 'check' || state.verifying || !state.history.length) return;
+  if (state.mode === 'check' || state.verifying || state.guide || !state.history.length) return;
   const tools = msgEl.querySelector('.msg-tools'); if (!tools) return;
   const b = document.createElement('button'); b.type = 'button'; b.className = 'msg-tool verify';
   b.innerHTML = '<span>Check this answer</span>';
@@ -1521,6 +1593,120 @@ function addVerify(msgEl) {
     document.getElementById('user-input').value = 'Check this answer'; sendMessage();
   });
   tools.prepend(b);
+}
+
+// ── AI-SKILLS CHECK: 10 questions drawn from the bank, pass mark 80% ─────────
+const AI_CHECK_PASS = 0.8;
+const AI_CHECK_DRAW = { L1: 3, L2: 3, L3: 2, L4: 2 };
+const AI_CHECK_BANK = [
+  { l: 'L1', q: 'What does a large language model do when it writes an answer?', o: ['It looks every fact up in a verified medical database', 'It predicts likely next words from patterns in the text it was trained on', 'It copies the answer from your textbook', 'It forwards your question to a nursing expert'], a: 1, why: 'A language model generates likely text. It does not check facts unless it is given trusted sources.' },
+  { l: 'L1', q: 'What is an AI "hallucination"?', o: ['A fluent answer that contains false or made-up information', 'An answer that is too short', 'A refusal to answer', 'An answer written in another language'], a: 0, why: 'Hallucinations are confident, fluent statements that are wrong or invented.' },
+  { l: 'L1', q: 'An AI answer sounds very confident. What does this tell you about its accuracy?', o: ['It is almost certainly correct', 'It has been checked by experts', 'Nothing on its own: confident wording is not evidence of accuracy', 'It is copied from a textbook'], a: 2, why: 'The tone of an answer says nothing about whether it is correct.' },
+  { l: 'L1', q: 'Why can an AI chatbot give outdated information?', o: ['Because it deliberately hides new guidelines', 'Because its knowledge comes from text up to a certain date, unless it is given current sources', 'Because it only reads books printed before 2000', 'It cannot: AI is always up to date'], a: 1, why: 'A model only knows what was in its training text, unless current sources are supplied.' },
+  { l: 'L2', q: 'Which part of an AI answer needs checking most carefully?', o: ['The greeting', 'Exact numbers such as doses, normal values and time frames', 'The headings', 'The length of the answer'], a: 1, why: 'Precise numbers look trustworthy but are a common source of AI errors, and mistakes in them can harm patients.' },
+  { l: 'L2', q: 'The companion cites a textbook chapter and page. What should you do with an important point from that answer?', o: ['Nothing: a citation proves the point is correct', 'Open the textbook at that page and confirm the point', 'Ask the companion the same question again', 'Copy the citation into your assignment'], a: 1, why: 'A citation tells you where to check. It does not prove the AI used the source correctly.' },
+  { l: 'L2', q: 'Which of these is a red flag in an AI answer?', o: ['It uses headings', 'It gives an example', 'It cites a reference you cannot find in the library database', 'It explains a term'], a: 2, why: 'AI can invent references. A source you cannot find is a strong warning sign.' },
+  { l: 'L2', q: 'After "Check this answer", the companion marks a point as "Supported". What is the right conclusion?', o: ['The point is now proven', 'It is a useful second look, but you still verify important points yourself', 'The instructor has approved it', 'You no longer need the textbook'], a: 1, why: 'The check is done by the same AI. It helps, but it is not proof.' },
+  { l: 'L3', q: 'You want help understanding a client\'s lab results from your clinical placement. What should you type?', o: ['The client\'s name and file number with the results', 'A photo of the lab report', 'A made-up case with the relevant values and no identifying details', 'The ward and bed number with the results'], a: 2, why: 'Only fictional or fully de-identified information may be entered into an AI tool.' },
+  { l: 'L3', q: 'Your assignment asks you to write a care plan. Which use of AI respects academic integrity?', o: ['Asking the AI to write the care plan and submitting it', 'Using AI to understand the nursing diagnoses, then writing the plan yourself and following your course\'s AI rules', 'Paraphrasing an AI-written plan so it is not detected', 'Asking a friend to run the AI for you'], a: 1, why: 'Use AI to learn. The work you submit must be your own, within your course\'s rules on AI use.' },
+  { l: 'L3', q: 'Which of these is identifying information that must never be entered into an AI tool?', o: ['A blood pressure reading of 150/90', 'A general question about wound care', 'A patient\'s file number', 'The name of a nursing diagnosis'], a: 2, why: 'File numbers, names, dates of birth and photos can identify a person.' },
+  { l: 'L3', q: 'What is the nurse\'s responsibility when using an AI tool in practice?', o: ['None: the software is responsible', 'To use it as support while remaining accountable for checking it and for the care given', 'To follow it exactly', 'To use it only at night'], a: 1, why: 'AI output is advice. Professional accountability stays with the nurse.' },
+  { l: 'L4', q: 'Which of these is an example of automation bias?', o: ['Giving a medication dose because the system suggested it, without checking the order and the patient', 'Turning off a computer at the end of a shift', 'Asking a colleague for help', 'Documenting care in the electronic record'], a: 0, why: 'Automation bias is acting on automated advice without the checks you would normally make.' },
+  { l: 'L4', q: 'An early-warning system has not raised an alert, but the patient looks worse to you. What should you do?', o: ['Wait, because there is no alert', 'Re-assess the patient and escalate based on your findings', 'Restart the system', 'Document that the system shows no alert'], a: 1, why: 'Your assessment comes first. Missing a problem because the system stayed silent is also automation bias.' },
+  { l: 'L4', q: 'What is "alert fatigue"?', o: ['Feeling tired after a night shift', 'Ignoring or overriding alerts because there are too many of them', 'A device battery running low', 'An alert that a patient is tired'], a: 1, why: 'Frequent alerts can lead staff to dismiss them, including the important ones.' },
+  { l: 'L4', q: 'Before acting on an AI suggestion in practice, what should a safe nurse check?', o: ['Only that the suggestion appeared on the screen', 'The patient, the data the tool used, and the relevant policy or prescription', 'Whether the AI sounded confident', 'Whether other nurses used the same tool'], a: 1, why: 'Check the patient, the inputs, and the policy or order before acting.' },
+];
+function aiCheckState() {
+  let d = {}; try { d = JSON.parse(localStorage.getItem('aicheck-' + me.code) || '{}'); } catch (e) {}
+  const s = state.aiCheckServer || {};
+  return { attempts: Math.max(d.attempts || 0, s.attempts || 0), best: Math.max(d.best || 0, s.best || 0), passed: !!(d.passed || s.passed) };
+}
+function gateComplete() { return lessonsComplete() && aiCheckState().passed; }
+function aiCheckCard() {
+  const st = aiCheckState(), ready = lessonsComplete();
+  return `<div class="gate-check${ready ? '' : ' off'}"><div><strong>AI-skills check · 10 questions · pass mark 80%</strong>
+    <span>${!ready ? 'Opens when you have read all 4 lessons.' : st.attempts ? `Best so far: ${st.best}%. Review the lessons and try again: the questions change each time.` : 'Answer 10 questions about the lessons. You need 8 or more correct.'}</span></div>
+    <button class="btn btn-primary" type="button" ${ready ? '' : 'disabled'} onclick="openAICheck()">${st.attempts ? 'Try again' : 'Start the check'}</button></div>`;
+}
+function openAICheck() {
+  if (!lessonsComplete()) return;
+  const pick = [];
+  Object.entries(AI_CHECK_DRAW).forEach(([l, n]) => {
+    const pool = AI_CHECK_BANK.filter(x => x.l === l).sort(() => Math.random() - 0.5);
+    pick.push(...pool.slice(0, n));
+  });
+  state.aiCheck = pick;
+  openModal(`<p class="eyebrow">AI-skills check</p><h2 id="modal-title">10 questions · pass mark 80%</h2>
+    <p class="muted">Choose one answer for each question. You need 8 or more correct to open the course topics.</p>
+    ${pick.map((q, i) => `<fieldset class="q compact"><legend>${i + 1}. ${esc(q.q)}</legend>${q.o.map((o, j) =>
+      `<label class="opt"><input type="radio" name="ck${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')}<p class="why" id="cw${i}" hidden></p></fieldset>`).join('')}
+    <p class="survey-msg" id="ck-msg"></p>
+    <div class="survey-nav"><button class="btn btn-ghost" type="button" id="ck-close" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" type="button" id="ck-go" onclick="markAICheck()">Submit answers</button></div>`);
+  const h = document.getElementById('modal-title'); h.tabIndex = -1; h.focus({ preventScroll: true });
+}
+function markAICheck() {
+  const pick = state.aiCheck || [];
+  const ans = pick.map((q, i) => { const x = document.querySelector(`input[name="ck${i}"]:checked`); return x ? Number(x.value) : null; });
+  const missing = ans.findIndex(a => a === null);
+  if (missing >= 0) { document.getElementById('ck-msg').textContent = `Answer all 10 questions first (question ${missing + 1} is empty).`; return; }
+  let score = 0;
+  pick.forEach((q, i) => { const ok = ans[i] === q.a; if (ok) score++;
+    const w = document.getElementById('cw' + i); w.hidden = false; w.className = 'why ' + (ok ? 'good' : 'bad');
+    w.textContent = (ok ? 'Correct. ' : 'Not quite. The answer is: ' + q.o[q.a] + '. ') + q.why; });
+  const pct = Math.round(100 * score / pick.length), pass = score / pick.length >= AI_CHECK_PASS;
+  const st = aiCheckState(), rec = { attempts: st.attempts + 1, best: Math.max(st.best, pct), passed: st.passed || pass };
+  try { localStorage.setItem('aicheck-' + me.code, JSON.stringify(rec)); } catch (e) {}
+  state.aiCheckServer = Object.assign({}, state.aiCheckServer || {}, rec);
+  logEvent('ai_check', pick.map(q => q.q.slice(0, 60)).join(' | '), '', '', '', `${score}/${pick.length}|${rec.attempts}|${pass ? 'pass' : 'fail'}`);
+  document.getElementById('ck-go').hidden = true;
+  document.getElementById('ck-msg').innerHTML = pass
+    ? `<strong>${score}/10 (${pct}%). Passed.</strong> The course topics are now open.`
+    : `<strong>${score}/10 (${pct}%). Not yet.</strong> You need 8 or more. Read the explanations, review the lessons, then try again with new questions.`;
+  document.getElementById('ck-close').textContent = pass ? 'Go to the course topics' : 'Close';
+  document.getElementById('ck-msg').scrollIntoView({ block: 'center' });
+  if (!document.getElementById('outline').hidden) showOutline();
+}
+
+// ── VETTED PICTURES AND VIDEOS (only items the PI approved in the Media tab) ──
+async function loadMediaList() {
+  state.media = [];
+  const r = await safeApi('/media', { token: me.token });
+  if (r.ok && me) { state.media = r.data.items || []; updateMediaButton(); }
+}
+function mediaForTopic(topic) { return (state.media || []).filter(m => !m.topic || m.topic === topic); }
+function updateMediaButton() {
+  const b = document.getElementById('media-btn'); if (!b) return;
+  const n = state.topic && !state.guide ? mediaForTopic(state.topic).length : 0;
+  b.hidden = !n; b.querySelector('span').textContent = `Pictures & videos (${n})`;
+}
+function youTubeId(url) {
+  const m = String(url).match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function mediaCard(m) {
+  const credit = [m.source, m.licence].filter(Boolean).map(esc).join(' · ');
+  const yt = m.type === 'video' && youTubeId(m.url);
+  const body = m.type === 'image'
+    ? `<a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer"><img src="${esc(m.url)}" alt="${esc(m.title)}" loading="lazy" referrerpolicy="no-referrer"></a>`
+    : yt ? `<button type="button" class="media-play" onclick="playMedia(this, '${yt}', '${esc(m.id)}')" aria-label="Play video: ${esc(m.title)}">
+             <img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy"><span class="play-dot" aria-hidden="true">▶</span></button>`
+    : '';
+  return `<figure class="media-card">${body}<figcaption><strong>${esc(m.title)}</strong>${credit ? `<span>${credit}</span>` : ''}
+    <a href="${esc(m.url)}" target="_blank" rel="noopener noreferrer" onclick="logEvent('media_open', '', '', '', '', '${esc(m.id)}')">${m.type === 'video' ? 'Watch on the source site' : m.type === 'image' ? 'Open full size' : 'Open link'}</a></figcaption></figure>`;
+}
+function playMedia(btn, yt, id) {
+  logEvent('media_open', '', '', '', '', id);
+  const f = document.createElement('iframe');
+  f.src = `https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0`; f.title = 'Video'; f.allow = 'autoplay; encrypted-media; picture-in-picture'; f.allowFullscreen = true;
+  f.className = 'media-frame'; btn.replaceWith(f);
+}
+function showMediaGallery() {
+  const list = mediaForTopic(state.topic);
+  logEvent('media_gallery', '', '', '', '', String(list.length));
+  openModal(`<p class="eyebrow">Approved by the course team</p><h2 id="modal-title">Pictures & videos</h2>
+    <div class="media-grid">${list.map(mediaCard).join('')}</div>
+    <div class="actions-row"><button class="btn btn-primary" type="button" onclick="closeModal()">Close</button></div>`);
 }
 
 const EVAL_ITEMS = [
@@ -1592,6 +1778,7 @@ async function renderLearning() {
     root.innerHTML = `<h2>My learning</h2><p class="lede">Progress tracking is part of the research study, so it is only available to study participants.</p>`; return;
   }
   root.innerHTML = '<p class="status">Loading your progress…</p>';
+  await flushLogs();                               // include anything still waiting to be sent
   const r = await safeApi('/progress', { token: me.token });
   if (!r.ok) { root.innerHTML = `<p class="status bad">${esc(friendlyError(r.status, r.data))}</p>`; return; }
   const p = r.data, o = COURSE_OUTLINE[me.course];
@@ -1678,27 +1865,37 @@ function showOutline() {
       <h2>${esc(name)}</h2>
       <p>Choose a topic to learn it with explanations, or practise it with scenarios, quizzes and AI-judgement cases.</p>
       <div class="hero-facts"><span><b>${o.units.length}</b> units</span><span><b>${nTopics}</b> topics</span><span><b>${AI_LESSONS.length}</b> AI-skills lessons</span></div></header>` +
-    (lessonsComplete() ? '' : lessonsGate() + aiSkillsCard() + (live ? '' : '<p class="muted gate-note">Course topics will appear here.</p>')) +
-    (lessonsComplete() ? aiWiseCard() + goalCard() + aiSkillsCard() : '') +
+    (gateComplete() ? '' : lessonsGate() + aiSkillsCard() + aiCheckCard() + (live ? '' : '<p class="muted gate-note">Course topics will appear here.</p>')) +
+    (gateComplete() ? aiWiseCard() + goalCard() + aiSkillsCard() : '') +
     (live ? `<div class="check-call"><div><strong>Class check open: ${esc(me.check.title)}</strong>
       <span>Your instructor opened it for your section. It closes at ${esc(clock(me.check.closes))}. It does not count towards your grade.</span></div>
       <button class="btn btn-primary" type="button" onclick="openTopic('${esc(me.check.topic)}', 'check')">Start the check</button></div>` : '') +
-    (!lessonsComplete() ? '' : o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
+    (!gateComplete() ? '' : o.units.map(u => `<section class="unit"><h3>${esc(u.title)}</h3><ul class="topic-list">` +
       u.topics.map(t => row(t, topicLabel(t))).join('') + `</ul></section>`).join('') +
-    (o.all ? `<section class="unit"><h3>Not sure where it fits?</h3><ul class="topic-list">${row(o.all, '')}</ul></section>` : ''));
+    (o.all ? `<section class="unit"><h3>Not sure which topic to study?</h3><ul class="topic-list">${row({ id: o.all.id, title: 'Ask the course guide',
+      blurb: 'Describe what you want to learn and the guide points you to the right topic. It does not teach content here.' }, '?')}</ul></section>` : ''));
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
 }
 function openTopic(id, startMode) {
   const t = topicInfo(id); if (!t) return;
-  if (startMode !== 'check' && !lessonsComplete()) { showTab('companion'); showOutline(); showToast('Complete the AI-skills lessons first.'); return; }
+  if (startMode !== 'check' && !gateComplete()) { showTab('companion'); showOutline(); showToast('Complete the AI-skills lessons and check first.'); return; }
   state.topic = id;
   document.getElementById('topic-head').hidden = false;
   document.getElementById('topic-title').textContent = (topicLabel(t) ? topicLabel(t) + ' · ' : '') + t.title;
   showChat();
-  setMode(startMode || 'learn');
+  state.guide = id === 'ALL';
+  ['practice', 'check'].forEach(x => document.getElementById('mode-' + x).hidden = state.guide);
+  if (state.guide) document.getElementById('topic-title').textContent = 'Course guide · find the right topic';
+  setMode(state.guide ? 'learn' : (startMode || 'learn'));
+  updateMediaButton();
   if (!startMode) document.getElementById('user-input').focus();
 }
+const GUIDE_CHIPS = {
+  NUR125: ['Where do I learn about wound care?', 'Which topic covers vital signs?', 'I want to revise infection control'],
+  NUR225: ['Which topic covers diabetes complications?', 'Where do I study hip fracture care?', 'I want to revise liver disorders'],
+  NUR312: ['Where do I learn about sampling?', 'Which topic covers research ethics?', 'I want to revise data analysis'],
+};
 
 // ── MODES & CHAT ───────────────────────────────────────────────────────────
 const MODE_META = {
@@ -1720,10 +1917,10 @@ function setMode(m) {
     const b = document.getElementById('mode-' + x);
     b.setAttribute('aria-selected', x === m ? 'true' : 'false'); b.tabIndex = x === m ? 0 : -1;
   });
-  document.getElementById('mode-desc').textContent = MODE_META[m].desc;
+  document.getElementById('mode-desc').textContent = state.guide ? 'Tell me what you want to study. I will point you to the right topic; I do not teach content here.' : MODE_META[m].desc;
   const chips = document.getElementById('quick-chips'); chips.innerHTML = '';
   const t = state.topic ? topicInfo(state.topic) : null;
-  const chipList = m === 'learn' ? (t && t.chips ? [...t.chips, 'Explain it with a clinical example'] : MODE_META.learn.chips) : [];
+  const chipList = state.guide ? (GUIDE_CHIPS[me.course] || []) : m === 'learn' ? (t && t.chips ? [...t.chips, 'Explain it with a clinical example'] : MODE_META.learn.chips) : [];
   setChips(chipList);
   document.getElementById('messages').innerHTML = '';
   if (isCheck) { renderCheckHome(); return; }
@@ -1814,6 +2011,7 @@ document.addEventListener('keydown', e => {
 });
 function addWelcome() {
   const t = state.topic ? topicInfo(state.topic) : null;
+  if (state.guide) { addAIMessage(`I'm the **course guide** for ${esc(me.course)}.\n\nTell me what you want to learn or revise, and I'll point you to the topic that covers it. Then open that topic to study it with explanations, practice and checks.`); return; }
   if (t && t.id !== 'ALL') {
     const tm = {
       learn:    `Let's study **${t.title}**.\n\nAsk me anything about this topic, or pick a suggestion below. I'll explain it step by step with nursing examples.`,
@@ -1837,7 +2035,12 @@ function readTags(text) {
   Object.keys(TAGS).forEach(t => { if (text.indexOf(t) !== -1) { refusal = refusal || TAGS[t]; text = text.split(t).join(''); } });
   const m = text.match(/\[\[RESULT:(correct|partly|incorrect)\]\]/i);
   if (m) { result = m[1].toLowerCase(); text = text.replace(/\[\[RESULT:[a-z]+\]\]/gi, ''); }
-  return { text: text.trim(), refusal, result };
+  const topics = [...text.matchAll(/\[\[TOPIC:([A-Za-z0-9_-]+)\]\]/g)].map(x => x[1]).filter((x, i, a) => a.indexOf(x) === i && topicInfo(x) && x !== 'ALL');
+  text = text.replace(/\[\[TOPIC:[^\]]*\]\]/g, '');
+  const media = [...text.matchAll(/\[\[MEDIA:([A-Za-z0-9_.-]+)\]\]/g)].map(x => x[1])
+    .filter((x, i, a) => a.indexOf(x) === i).map(id => (state.media || []).find(m => m.id === id)).filter(Boolean).slice(0, 2);
+  text = text.replace(/\[\[MEDIA:[^\]]*\]\]/g, '');
+  return { text: text.trim(), refusal, result, topics, media };
 }
 
 async function sendMessage() {
@@ -1872,11 +2075,23 @@ async function sendMessage() {
     if (!res.ok) throw new Error('HTTP ' + status);
     const raw = (data.choices && data.choices[0].message.content || '').trim();
     if (!raw) throw new Error('empty reply');
-    const { text: reply, refusal, result } = readTags(raw);
+    const { text: reply, refusal, result, topics: goTopics, media: shownMedia } = readTags(raw);
     const kbv = res.headers.get('X-KB-Version');
     state.modelVersion = (data.model || '') + (kbv && kbv !== 'none' ? ' · ' + kbv : '');
     removeTyping(tid);
-    addAIMessage(reply);
+    const msgEl = addAIMessage(reply);
+    if (shownMedia.length && msgEl) {
+      const box = document.createElement('div'); box.className = 'media-inline'; box.innerHTML = shownMedia.map(mediaCard).join('');
+      msgEl.querySelector('.body').after(box);
+      logEvent('media_shown', '', '', '', '', shownMedia.map(m => m.id).join(','));
+    }
+    if (state.guide && goTopics.length && msgEl) {
+      const box = document.createElement('div'); box.className = 'guide-go';
+      goTopics.slice(0, 3).forEach(id => { const t = topicInfo(id); const b = document.createElement('button');
+        b.type = 'button'; b.className = 'btn btn-primary btn-sm'; b.textContent = 'Open: ' + (topicLabel(t) ? topicLabel(t) + ' · ' : '') + t.title;
+        b.addEventListener('click', () => { logEvent('guide_open', '', '', '', '', id); openTopic(id); }); box.appendChild(b); });
+      msgEl.querySelector('.body').after(box);
+    }
     state.history.push({ role: 'user', content: text }, { role: 'assistant', content: reply });
     state.messageCount++;
     logEvent('message', text, reply, refusal, inputMethod);
@@ -1932,6 +2147,7 @@ function addAIMessage(text, isError) {
   }
   if (!isError && me && state.messageCount >= 0 && document.getElementById('messages').children.length > 0) { addThumbs(d, text); addVerify(d); }
   appendMsg(d);
+  return d;
 }
 
 // ── VOICE: read aloud (speech synthesis) and speak instead of typing (speech recognition)
@@ -2125,8 +2341,36 @@ function logEvent(type, userMsg, aiMsg, refusal, input, value) {
     model: state.modelVersion, refusal: refusal || '', value: value || '',
   };
   if (me.consent !== 'Y') return;                 // nothing is recorded for students who have not consented
-  fetch(CONFIG.API + '/log', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) }).catch(() => {});
+  delete payload.token;
+  payload.qid = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  logQueue.push(payload); saveQueue();
+  // progress-related events go out at once; the rest are sent together every 10 s (fewer spreadsheet calls)
+  if (['ai_lesson', 'ai_check', 'session_start'].includes(type) || logQueue.length >= 8) flushLogs();
+  else if (!logTimer && type !== 'session_end') logTimer = setTimeout(() => flushLogs(), 10000);
 }
+let logQueue = [], logTimer = null;
+const inflight = new Set();
+function queueKey() { return me ? 'logq-' + me.code : ''; }
+function saveQueue() { try { if (me) localStorage.setItem(queueKey(), JSON.stringify(logQueue.slice(-200))); } catch (e) {} }
+function loadQueue() { try { logQueue = JSON.parse(localStorage.getItem(queueKey()) || '[]'); } catch (e) { logQueue = []; } }
+async function flushLogs(leaving) {
+  clearTimeout(logTimer); logTimer = null;
+  if (!me) return;
+  const batch = logQueue.filter(e => !inflight.has(e.qid)).slice(0, 40), token = me.token;
+  if (!batch.length) return;
+  const ids = new Set(batch.map(e => e.qid)); ids.forEach(i => inflight.add(i));
+  let done = false;
+  try {
+    const res = await fetch(CONFIG.API + '/log', { method: 'POST', keepalive: !!leaving, headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ token, events: batch }) });
+    done = res.ok || res.status === 401 || res.status === 400;        // saved, or can never be saved
+  } catch (e) {}
+  ids.forEach(i => inflight.delete(i));
+  if (done) { logQueue = logQueue.filter(e => !ids.has(e.qid)); saveQueue(); }
+  else if (!logTimer) logTimer = setTimeout(() => flushLogs(), 30000 + Math.random() * 15000);   // busy: try again later
+  if (done && logQueue.some(e => !inflight.has(e.qid)) && !logTimer && !leaving) logTimer = setTimeout(() => flushLogs(), 2000);
+}
+window.addEventListener('pagehide', () => flushLogs(true));
 
 // ── QUESTIONNAIRE ──────────────────────────────────────────────────────────
 async function refreshSurvey() {
@@ -2249,7 +2493,9 @@ async function submitSurvey() {
   if (r.ok || (r.data && r.data.error === 'done')) {
     me.waveDone = true; survey = { pages: [], page: 0, answers: {} };
     store('survey:' + me.code + ':' + me.wave, null);
+    const gated = me.needsSurvey;
     applyAccess(); renderSurvey(); showToast('Questionnaire submitted. Thank you.');
+    if (gated) { await refreshStatus(); if (me.companionOpen) showToast('Thank you. The companion is now open: start with the AI-skills lessons.'); }
     return;
   }
   msg.textContent = r.data && r.data.error === 'closed'
