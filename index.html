@@ -4,9 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UoB Nursing AI Companion</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AI Companion">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ── Tokens ─────────────────────────────────────────────────────────────── */
 :root {
@@ -886,6 +893,172 @@ body { background: var(--ground); }
 .style-now strong { color:var(--ink); font-weight:600; }
 .style-now button { border:0; background:none; color:var(--brand); font:inherit; font-weight:600; padding:6px 4px; min-height:32px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
 
+/* ── v19: colour, the companion character, levels and badges, case of the day ─────────────────────
+   UoB navy stays the action colour; the companion is teal; coral, sun and course tints add warmth.
+   Colour carries meaning where it appears: status (mastered / revisit / in progress), level, badges. */
+:root {
+  --teal: #0E9384; --teal-soft: #E3F5F2; --teal-ink: #0A6B61;
+  --coral: #E8603F; --coral-soft: #FDECE6;
+  --sun: #F2B33D; --sun-soft: #FEF4DC;
+  --sky: #2F6FDE; --sky-soft: #E6EEFC;
+  --course: var(--teal); --course-soft: var(--teal-soft);
+}
+.course-NUR125 { --course: #0E9384; --course-soft: #E3F5F2; }
+.course-NUR225 { --course: #2F6FDE; --course-soft: #E8EFFD; }
+.course-NUR312 { --course: #8257E5; --course-soft: #F0EAFD; }
+
+/* the character */
+.bud .bb, .bud .bud-arm rect { fill: var(--teal); }
+.bud .bf { fill: #F2FCFA; }
+.bud .bc { fill: #fff; stroke: #B9DCD7; stroke-width: 1.2; }
+.bud .bh { fill: var(--coral); }
+.bud .bk { fill: #FFB7A8; opacity: .85; }
+.bud .be { fill: var(--ink); }
+.bud .bl { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; }
+.bud .bm { fill: var(--ink); }
+.bud .bs { fill: none; stroke: var(--brand); stroke-width: 2.4; stroke-linecap: round; }
+.bud .bsc { fill: var(--sun); stroke: var(--brand); stroke-width: 1.6; }
+.bud .bsp { stroke: var(--sun); stroke-width: 2.2; stroke-linecap: round; }
+.bud-arm { transform-origin: 54px 36px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-bud .bud-arm { animation: wave 1.6s var(--ease-out) 0.3s 2; }
+  .bud-think { animation: bob 1.2s ease-in-out infinite; }
+  .bud-happy { animation: pop 420ms var(--ease-out); }
+}
+@keyframes wave { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-18deg); } 50% { transform: rotate(8deg); } 75% { transform: rotate(-12deg); } }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes pop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.msg.ai .who-label::before { content: none; }
+.msg.ai .who-label { gap: 6px; color: var(--teal-ink); font-weight: 600; }
+.who-bud { width: 26px; height: 26px; flex-shrink: 0; }
+
+/* chat colour */
+.msg.ai .body { background: var(--teal-soft); }
+.msg.ai.err .body { background: var(--coral-soft); }
+.tab[aria-selected="true"]::after { background: var(--teal); }
+.chip { background: var(--teal-soft); color: var(--teal-ink); border-color: transparent; }
+@media (hover: hover) and (pointer: fine) { .chip:hover { background: #CDEEE8; } }
+.btn-accent { background: var(--teal); color: #fff; border: 0; font-weight: 600; }
+@media (hover: hover) and (pointer: fine) { .btn-accent:hover { background: var(--teal-ink); } }
+.style-card strong { color: var(--teal-ink); }
+.style-now { background: var(--teal-soft); border-color: transparent; }
+
+/* home hero */
+.home-hero { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--course-soft); border-radius: var(--r); padding: 24px 28px; }
+.home-hero .hero-t { min-width: 0; }
+.hero-bud { width: 88px; height: 88px; flex-shrink: 0; }
+.topic-row .tnum { color: var(--course); }
+
+/* topic status */
+.st { flex-shrink: 0; font-size: var(--fs-xs); font-weight: 600; padding: 3px 10px; border-radius: var(--r-pill); white-space: nowrap; }
+.st-mastered { background: #DDF3E6; color: #17663F; }
+.st-revisit { background: var(--sun-soft); color: #845400; }
+.st-started { background: var(--sky-soft); color: #1F4FA8; }
+
+/* case of the day */
+.cod { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-radius: var(--r); background: var(--sun-soft); }
+.cod-bud .bud { width: 56px; height: 56px; display: block; }
+.cod-t { flex: 1; min-width: 0; }
+.cod h3 { font-size: var(--fs-md); font-weight: 600; margin: 0 0 2px; }
+.cod p { font-size: var(--fs-sm); color: var(--ink-2); }
+
+/* level and badges */
+.level-card { background: var(--course-soft); }
+.lvl { display: flex; align-items: center; gap: 12px; }
+.lvl-num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--course); color: #fff; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; }
+.lvl strong { display: block; font-weight: 600; }
+.lvl span:not(.lvl-num) { display: block; font-size: var(--fs-sm); color: var(--ink-2); }
+.lvl-track { height: 8px; border-radius: var(--r-pill); background: rgba(20,33,61,.08); margin: 12px 0 14px; overflow: hidden; }
+.lvl-track i { display: block; height: 100%; border-radius: inherit; background: var(--course); }
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.badge { width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; background: #fff; color: #A8B3C2; border: 1.5px dashed #C6CFDA; flex-shrink: 0; }
+.badge svg { width: 17px; height: 17px; }
+.badge.on { background: var(--bc); color: #fff; border: 0; }
+.badge-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-top: 8px; }
+.badge-list li { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); }
+.badge-list li:not(.on) { color: var(--muted); }
+.badge-list .badge { width: 40px; height: 40px; }
+.badge-list strong { display: block; font-weight: 600; font-size: var(--fs-sm); color: var(--ink); }
+.badge-list li:not(.on) strong { color: var(--muted); }
+.badge-list span span { display: block; font-size: var(--fs-xs); line-height: 1.45; margin-top: 2px; }
+.lvl.big .lvl-num { width: 48px; height: 48px; font-size: 1.25rem; background: var(--teal); }
+.lvl.big ~ .lvl-track i { background: var(--teal); }
+.small-note { font-size: var(--fs-sm); }
+
+/* AI skills tab */
+.aiskills-hero { display: flex; align-items: center; gap: 14px; background: var(--teal-soft); border-radius: var(--r); padding: 16px 18px; margin: 16px 0; }
+.aiskills-hero .bud { width: 56px; height: 56px; flex-shrink: 0; }
+.aiskills-hero strong { display: block; font-weight: 600; }
+.aiskills-hero span { font-size: var(--fs-sm); color: var(--ink-2); }
+#aiskills-root .panel { margin-bottom: 16px; }
+#aiskills-root .panel .btn { margin-top: 12px; }
+
+/* celebration */
+.cele { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 60; display: flex; align-items: center; gap: 12px;
+  width: max-content; max-width: calc(100vw - 32px); padding: 12px 14px 12px 12px; border-radius: 14px; background: var(--ink); color: #fff;
+  box-shadow: 0 12px 32px rgba(20,33,61,.28); }
+.cele .bud, .cele .badge { width: 44px; height: 44px; flex-shrink: 0; }
+.cele .badge svg { width: 22px; height: 22px; }
+.cele .bud .bf { fill: #fff; }
+.cele-t strong { display: block; font-weight: 600; }
+.cele-t span { display: block; font-size: var(--fs-sm); color: #CBD5E4; }
+.cele-x { background: none; border: 0; color: #CBD5E4; font-size: 1.4rem; line-height: 1; width: 36px; height: 36px; flex-shrink: 0; }
+.cele.out { opacity: 0; transform: translate(-50%, 8px); transition: opacity 300ms ease, transform 300ms ease; }
+@media (prefers-reduced-motion: no-preference) { .cele { animation: rise 320ms var(--ease-out); } }
+.confetti { position: absolute; left: 34px; top: 30px; width: 0; height: 0; pointer-events: none; }
+.confetti i { position: absolute; width: 7px; height: 11px; border-radius: 2px; opacity: 0; animation: burst 1100ms cubic-bezier(.2,.7,.3,1) forwards; }
+@keyframes burst { 0% { opacity: 1; transform: translate(0,0) rotate(0); } 100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 60px)) rotate(var(--r)); } }
+
+/* four tabs on a phone: scroll sideways rather than wrap */
+.tabs-in { overflow-x: auto; scrollbar-width: none; }
+.tabs-in::-webkit-scrollbar { display: none; }
+
+@media (max-width: 760px) {
+  .home-hero { padding: 18px; }
+  .hero-bud { width: 64px; height: 64px; }
+  .cod { flex-wrap: wrap; }
+  .cod .btn { width: 100%; }
+  .topic-row .st { align-self: center; }
+  .cele { bottom: 88px; }
+}
+@media (max-width: 420px) { .tab { padding-left: 8px; padding-right: 8px; font-size: 0.9375rem; } .tabs-in { gap: 0; } }
+.tab .t-sm { display: none; }
+@media (max-width: 420px) { .tab .t-lg { display: none; } .tab .t-sm { display: inline; } .tabs { padding: 0 6px; } .tab:first-child { margin-left: 0; } }
+.home-main, .home-side { grid-template-columns: minmax(0, 1fr); }
+.goal-card input { min-width: 0; }
+.level-card .badge { width: 28px; height: 28px; } .level-card .badge svg { width: 15px; height: 15px; } .level-card .badge-row { gap: 5px; }
+.install-card .btn { margin-top: 4px; }
+.install-card .linklike { display: block; margin-top: 10px; }
+.ios-steps { font-size: var(--fs-sm); color: var(--ink-2); }
+.ios-share { width: 18px; height: 18px; vertical-align: -3px; color: var(--sky); }
+.cele { pointer-events: none; } .cele-x { pointer-events: auto; }
+
+/* ── v19: Arabic interface (right to left) ── */
+.lang-btn { font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, sans-serif; margin-inline-end: 8px; }
+.lang-btn[lang="en"] { font-family: "IBM Plex Sans", system-ui, sans-serif; }
+html[lang="ar"] body { font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+html[lang="ar"] .msg .body, html[lang="ar"] .ttext, html[lang="ar"] .topic-title, html[lang="ar"] .lesson, html[lang="ar"] #survey-root, html[lang="ar"] #consent-root, html[lang="ar"] #modal-card { direction: ltr; text-align: left; }
+html[lang="ar"] .msg .body { unicode-bidi: plaintext; text-align: start; }
+[dir="rtl"] .topic-row svg:last-child, [dir="rtl"] .back-link svg { transform: scaleX(-1); }
+[dir="rtl"] .tab .pip { margin-left: 0; margin-right: 6px; }
+[dir="rtl"] .tab:first-child { margin-left: 0; margin-right: -12px; }
+
+[dir="rtl"] .gate-note, [dir="rtl"] .goal-card p { text-align: right; }
+[dir="rtl"] .confetti { left: auto; right: 34px; }
+html[lang="ar"] .home-head [data-title], html[lang="ar"] .outline-in h2, html[lang="ar"] .consent-title { letter-spacing: 0; }
+html[lang="ar"] .tab { letter-spacing: 0; }
+@media (max-width: 760px) { [dir="rtl"] .tab:first-child { margin-right: -10px; } }
+@media (max-width: 420px) { [dir="rtl"] .tab:first-child { margin-right: 0; } .lang-btn { padding-left: 10px; padding-right: 10px; } }
+.bar-ico { display: none; width: 20px; height: 20px; }
+[dir="rtl"] .bar-ico { transform: scaleX(-1); }
+@media (max-width: 520px) {
+  .bar { padding-left: 12px; padding-right: 12px; gap: 8px; }
+  .signout-btn { width: 44px; padding: 0; display: inline-grid; place-items: center; }
+  .signout-btn .bar-ico { display: block; }
+  .signout-btn .bar-lbl { display: none; }
+  .lang-btn { margin-inline-end: 0; padding-left: 10px; padding-right: 10px; }
+}
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -894,7 +1067,7 @@ body { background: var(--ground); }
 <!-- ═══ SIGN-IN ═══════════════════════════════════════════════════════════ -->
 <div id="consent-screen" class="screen">
   <header class="bar"><span class="wordmark"><span class="logo" aria-hidden="true"></span><span class="wm-text"><small>University of Bahrain</small>Nursing AI Companion</span></span><span class="spacer"></span>
-    <button class="bar-btn" onclick="finishSignOut()">Sign out</button></header>
+    <button class="bar-btn lang-btn" type="button" onclick="setLang(LANG==='ar'?'en':'ar')">عربي</button><button class="bar-btn signout-btn" onclick="finishSignOut()" aria-label="Sign out"><svg class="bar-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="bar-lbl">Sign out</span></button></header>
   <div class="survey"><div class="survey-in" id="consent-root"></div></div>
 </div>
 
@@ -908,12 +1081,14 @@ body { background: var(--ground); }
     <span class="wordmark"><span class="logo" aria-hidden="true"></span><span class="wm-text"><small>University of Bahrain</small>Nursing AI Companion</span></span>
     <span class="ctx" id="ctx"></span>
     <span class="spacer"></span>
-    <button class="bar-btn" onclick="signOut()">Sign out</button>
+    <button class="bar-btn lang-btn" type="button" onclick="setLang(LANG==='ar'?'en':'ar')">عربي</button>
+    <button class="bar-btn signout-btn" onclick="signOut()" aria-label="Sign out"><svg class="bar-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg><span class="bar-lbl">Sign out</span></button>
   </header>
   <nav class="tabs" aria-label="Sections">
     <div class="tabs-in" role="tablist">
       <button class="tab" role="tab" id="tab-companion" aria-selected="true" onclick="showTab('companion')">Companion</button>
-      <button class="tab" role="tab" id="tab-learning" aria-selected="false" onclick="showTab('learning')">My learning</button>
+      <button class="tab" role="tab" id="tab-learning" aria-selected="false" onclick="showTab('learning')"><span class="t-lg">My learning</span><span class="t-sm">Progress</span></button>
+      <button class="tab" role="tab" id="tab-aiskills" aria-selected="false" onclick="showTab('aiskills')" hidden>AI skills</button>
       <button class="tab" role="tab" id="tab-survey" aria-selected="false" onclick="showTab('survey')">Questionnaire<span class="pip" id="survey-pip" hidden></span></button>
     </div>
   </nav>
@@ -937,7 +1112,7 @@ body { background: var(--ground); }
       <div class="modebar">
         <div class="modebar-in">
           <div class="topic-head" id="topic-head" hidden>
-            <button class="back-link" type="button" onclick="showOutline()">
+            <button class="back-link" type="button" onclick="backToOutline()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span class="back-label">Course outline</span></button>
             <h2 class="topic-title" id="topic-title" data-title></h2>
             <button class="media-btn" id="media-btn" type="button" hidden onclick="showMediaGallery()">
@@ -976,6 +1151,11 @@ body { background: var(--ground); }
     <div class="survey" id="learning-scroll"><div class="survey-in" id="learning-root"></div></div>
   </section>
 
+  <!-- AI skills -->
+  <section class="panel-view" id="view-aiskills">
+    <div class="survey"><div class="survey-in" id="aiskills-root"></div></div>
+  </section>
+
   <!-- Questionnaire -->
   <section class="panel-view" id="view-survey">
     <div class="survey" id="survey-scroll"><div class="survey-in" id="survey-root"></div></div>
@@ -985,7 +1165,7 @@ body { background: var(--ground); }
 <div id="toast" role="status" aria-live="polite"></div>
 
 <div id="welcome-screen" class="screen active">
-  <header class="bar"><span class="wordmark"><span class="logo" aria-hidden="true"></span><span class="wm-text"><small>University of Bahrain</small>Nursing AI Companion</span></span></header>
+  <header class="bar"><span class="wordmark"><span class="logo" aria-hidden="true"></span><span class="wm-text"><small>University of Bahrain</small>Nursing AI Companion</span></span><span class="spacer"></span><button class="bar-btn lang-btn" type="button" onclick="setLang(LANG==='ar'?'en':'ar')">عربي</button></header>
   <div class="hero">
     <main class="entry">
       <img class="entry-logo" src="data:image/webp;base64,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" alt="University of Bahrain">
@@ -1502,6 +1682,7 @@ document.addEventListener('visibilitychange', () => {
 function applyAccess() {
   document.getElementById('companion-locked').hidden = me.companionOpen;
   document.getElementById('tab-learning').hidden = !me.companionOpen;
+  updateAITab();
   const lk = document.querySelector('#companion-locked .locked-card');
   lk.innerHTML = me.needsSurvey
     ? `<h2 data-title>First, the start-of-study questionnaire</h2><p>Thank you for joining the study. Before you use the companion, please complete the start-of-study questionnaire (about 20 minutes). The companion opens as soon as you submit it.</p>
@@ -1527,12 +1708,13 @@ function applyAccess() {
 }
 
 function showTab(t) {
-  ['companion', 'learning', 'survey'].forEach(x => {
+  ['companion', 'learning', 'aiskills', 'survey'].forEach(x => {
     document.getElementById('tab-' + x).setAttribute('aria-selected', x === t ? 'true' : 'false');
     document.getElementById('view-' + x).classList.toggle('active', x === t);
   });
   if (t === 'survey') refreshSurvey();
   if (t === 'learning') renderLearning();
+  if (t === 'aiskills') renderAISkills();
 }
 
 // ── PARTICIPANT INFORMATION SHEET + ELECTRONIC CONSENT ────────────────────
@@ -1681,7 +1863,7 @@ const AI_LESSONS = [
       <li><b>Missing a problem</b> because the system did not raise an alert.</li></ul>
       <p>Too many alerts can also lead to <b>alert fatigue</b>, and relying on tools for everything can weaken your own skills over time.</p>
       <p><b>A safe nurse:</b> assesses the patient, checks that the data the tool used is correct and current, compares the suggestion with policy and with their own judgement, and escalates when something does not fit.</p>
-      <p>Practise this with the <i>AI at the bedside</i> practice style (<i>AI research assistant</i> in NUR312). Some of the AI outputs you see there are deliberately wrong.</p>`,
+      <p>Practise this with the <i>Judge an AI suggestion</i> practice style (<i>Judge AI research output</i> in NUR312). Some of the AI outputs you see there are deliberately wrong.</p>`,
     qs: [
       { q: 'An AI alert says a patient is "low risk", but you find new confusion and a respiratory rate of 28. What should you do?', opts: ['Trust the low-risk alert', 'Re-assess, act on your findings and escalate, and check the data the tool used', 'Wait for the next automatic score', 'Document the alert only'], ans: 1,
         why: 'Your assessment wins. Missing a problem because the system stayed quiet is a form of automation bias.' },
@@ -1696,8 +1878,8 @@ async function syncLessons() {                     // lessons done on another de
   state.lessonsServer = Object.assign({}, r.data.lessons || {});
   state.aiCheckServer = r.data.aiCheck || {};
   state.progress = r.data;
-  if (!document.getElementById('outline').hidden) { showOutline(); return; }
-  if (gateComplete() !== before && !document.getElementById('outline').hidden) showOutline();
+  if (!document.getElementById('outline').hidden) showOutline();
+  checkNewBadges();
 }
 function lessonsComplete() { const d = lessonsDone(); return AI_LESSONS.every(l => d[l.id]); }
 function lessonsGate() {
@@ -1838,6 +2020,7 @@ function markAICheck() {
     ? `<strong>${score}/10 (${pct}%). Passed.</strong> The course topics are now open.`
     : `<strong>${score}/10 (${pct}%). Not yet.</strong> You need 8 or more. Read the explanations, review the lessons, then try again with new questions.`;
   document.getElementById('ck-close').textContent = pass ? 'Go to the course topics' : 'Close';
+  if (pass) celebrate('AI-skills check passed', 'Your course topics are now open.');
   document.getElementById('ck-msg').scrollIntoView({ block: 'center' });
   if (!document.getElementById('outline').hidden) showOutline();
 }
@@ -1990,6 +2173,7 @@ async function renderLearning() {
       <div class="stat"><b>${studied.length}<small>/${all.length}</small></b><span>topics studied</span></div>
       <div class="stat"><b>${p.quiz ? pct(p.right, p.quiz) + '%' : '–'}</b><span>practice answers correct${p.quiz ? ' (' + p.quiz + ')' : ''}</span></div>
     </div>
+    ${(state.progress = p, badgesSection())}
     <div class="check-card"><strong>Confidence check</strong><p>${esc(calMsg)}</p></div>
     ${weak.length ? `<div class="check-card warnish"><strong>Worth another look</strong><p>${weak.map(t => esc(t.title)).join(' · ')}</p></div>` : ''}
     <section class="unit"><h3>Topics</h3><ul class="topic-list">${all.map(t => { const s = p.topics && p.topics[t.id];
@@ -2003,18 +2187,12 @@ async function renderLearning() {
       : '<p class="muted">No mistakes recorded yet. Use Practice to test yourself.</p>'}</section>`;
   state.mistakes = byTopic;
   state.lessonsServer = {}; Object.entries(p.lessons || {}).forEach(([k, v]) => state.lessonsServer[k] = v);
-  const done = lessonsDone(), ai = p.ai || {};
-  const aiMsg = !ai.cases ? 'Try the ' + (me.course === 'NUR312' ? 'AI research assistant' : 'AI at the bedside') + ' practice style to train your judgement of AI suggestions.'
-    : ai.overTrust ? `You accepted a flawed AI suggestion ${ai.overTrust} time${ai.overTrust > 1 ? 's' : ''} out of ${ai.flawed}. Before accepting, check the data the AI used against the case.`
-    : ai.flawed ? `You caught every flawed AI suggestion so far (${ai.flawed}). Keep checking before you accept.` : 'No flawed AI suggestions yet. Keep practising.';
+  const ai = p.ai || {};
   root.insertAdjacentHTML('beforeend', `<section class="unit"><h3>AI skills</h3>
-    <div class="stat-row">
-      <div class="stat"><b>${AI_LESSONS.filter(l => done[l.id]).length}<small>/${AI_LESSONS.length}</small></b><span>AI lessons done</span></div>
-      <div class="stat"><b>${ai.cases || 0}</b><span>AI suggestions judged${ai.cases ? ' (' + Math.round(100 * ai.right / ai.cases) + '% well)' : ''}</span></div>
-      <div class="stat"><b>${p.verifies || 0}</b><span>answers you asked to check</span></div>
-    </div>
-    <div class="check-card"><strong>Trusting AI wisely</strong><p>${esc(aiMsg)}</p>
-      <button class="btn btn-ghost btn-sm" type="button" onclick="tryBedside()">Practise judging AI output</button></div></section>`);
+    <div class="check-card"><strong>${ai.cases || 0} AI suggestion${ai.cases === 1 ? '' : 's'} judged · ${p.verifies || 0} answer${p.verifies === 1 ? '' : 's'} checked</strong>
+      <p>Your AI lessons, check result and AI-judgement practice are on the AI skills tab.</p>
+      <button class="btn btn-ghost btn-sm" type="button" onclick="showTab('aiskills')">Open AI skills</button></div></section>`);
+  checkNewBadges();
 }
 function practiseMistakes(id) {
   const ms = (state.mistakes || {})[id] || [];
@@ -2047,7 +2225,7 @@ function showOutline() {
   const root = document.getElementById('outline-root');
   const chev = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
   const row = (t, label) => `<li><button type="button" class="topic-row" onclick="openTopic('${t.id}')">
-      <span class="tnum">${esc(label)}</span><span class="ttext"><strong>${esc(t.title)}</strong><span>${esc(t.blurb)}</span></span>${chev}</button></li>`;
+      <span class="tnum">${esc(label)}</span><span class="ttext"><strong>${esc(t.title)}</strong><span>${esc(t.blurb)}</span></span>${statusPill(t.id)}${chev}</button></li>`;
   const name = COURSE_INFO[me.course] ? COURSE_INFO[me.course].name : me.course;
   const live = me.check && !me.check.done;
   const nTopics = o.units.reduce((n, u) => n + u.topics.length, 0);
@@ -2060,15 +2238,16 @@ function showOutline() {
       <span>Your instructor opened it for your section. It closes at ${esc(clock(me.check.closes))}. It does not count towards your grade.</span></div>
       <button class="btn btn-primary" type="button" onclick="openTopic('${esc(me.check.topic)}', 'check')">Start the check</button></div>` : '';
   const done = gateComplete();
-  root.innerHTML = `<header class="home-head"><h2 data-title>${esc(greeting())}, ${esc(me.course)} student</h2>
-      <p class="home-sub">${esc(name)} · Section&nbsp;${esc(me.section || '–')} · ${esc(homeFact(o, nTopics, done))}</p></header>` + checkCall +
+  root.innerHTML = `<header class="home-head home-hero course-${esc(me.course)}"><div class="hero-t"><h2 data-title>${esc(greeting())}, ${esc(me.course)} student</h2>
+      <p class="home-sub">${esc(name)} · Section&nbsp;${esc(me.section || '–')} · ${esc(homeFact(o, nTopics, done))}</p></div>${buddy(done ? 'wave' : 'cheer', 'hero-bud')}</header>` + checkCall +
     (done
-      ? `<div class="home-grid"><div class="home-main">${units}</div>
-           <aside class="home-side">${goalCard()}${aiWiseCard()}${guide}${aiSkillsCard()}</aside></div>`
+      ? `<div class="home-grid"><div class="home-main">${caseOfDay(o)}${units}</div>
+           <aside class="home-side">${levelCard()}${installCard()}${goalCard()}${aiWiseCard()}${guide}</aside></div>`
       : `<div class="home-grid"><div class="home-main">${aiSkillsCard()}${aiCheckCard()}</div>
            <aside class="home-side">${lessonsGate()}</aside></div>`);
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
+  updateAITab();
 }
 function greeting() { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; }
 // one fact from the student's own data for the line under the greeting
@@ -2077,7 +2256,7 @@ function homeFact(o, nTopics, done) {
   const p = state.progress;
   if (!p || !p.recorded) return `${o.units.length} units, ${nTopics} topics`;
   const studied = Object.values(p.topics || {}).filter(t => t.messages > 0).length;
-  const weak = Object.values(p.topics || {}).filter(t => t.quiz >= 2 && t.right / t.quiz < 0.6).length;
+  const weak = Object.keys(p.topics || {}).filter(id => topicStatus(id) === 'revisit').length;
   return `you have studied ${studied} of ${nTopics} topics` + (weak ? `, ${weak} to revisit` : '');
 }
 function openTopic(id, startMode) {
@@ -2134,7 +2313,7 @@ function setMode(m) {
 function setChips(list) {
   const chips = document.getElementById('quick-chips'); chips.innerHTML = '';
   list.forEach(text => {
-    const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = text;
+    const b = document.createElement('button'); b.className = 'chip' + (AR[text] ? ' ui-chip' : ''); b.type = 'button'; b.textContent = text;
     b.addEventListener('click', () => {
       if (text === 'Change practice style') { setMode('practice'); return; }
       document.getElementById('user-input').value = text; sendMessage();
@@ -2330,6 +2509,9 @@ async function sendMessage() {
     state.messageCount++;
     logEvent('message', text, reply, refusal, inputMethod);
     if (result && state.mode === 'practice' && !state.verifying) {
+      setFace(msgEl, result === 'correct' ? 'happy' : 'cheer');
+      state.streak = result === 'correct' ? (state.streak || 0) + 1 : 0;
+      if (state.streak && state.streak % 3 === 0) celebrate(state.streak + ' correct in a row', 'Keep going.');
       const lastQ = [...state.history].reverse().find((h, i) => h.role === 'assistant' && i > 1);
       if (aiStyle) logEvent('ai_appraisal', lastQ ? lastQ.content.slice(0, 600) : '', '', '', '',
         (state.aiFlawed ? 'flawed' : 'sound') + '|' + (state.aiChoice || 'text') + '|' + result + '|' + (state.pendingConf || 0));
@@ -2365,7 +2547,7 @@ function addAIMessage(text, isError) {
   const d = document.createElement('div'); d.className = 'msg ai' + (isError ? ' err' : '');
   if (!isError) text = text.replace(/\s*\((?:Lecture|Lec\.?|slides?)\b[^()]*\bslides?\b[^()]*\)|\s*\([^()]*\bslides?\s*\d[^()]*\)/gi, '');
   const { text: body, opts } = isError ? { text, opts: null } : splitOptions(text);
-  d.innerHTML = `<span class="who-label">Companion</span><div class="body">${isError ? esc(body) : fmt(esc(body))}${
+  d.innerHTML = `<span class="who-label">${buddy(isError ? 'cheer' : 'wave', 'who-bud')}Companion</span><div class="body">${isError ? esc(body) : fmt(esc(body))}${
     opts ? `<div class="opt-row" role="group" aria-label="Answer options">${opts.map(([k, v]) =>
       `<button type="button" data-k="${k}"><b>${k}</b><span>${inline(esc(v))}</span></button>`).join('')}</div>` : ''}</div>`;
   if (opts) d.querySelectorAll('.opt-row button').forEach(b => b.addEventListener('click', () => {
@@ -2435,7 +2617,7 @@ function stopMic() { if (rec) try { rec.stop(); } catch (e) {} }
 if (SR) document.getElementById('mic-btn').hidden = false;
 function addTyping() {
   const id = 'typ-' + Date.now(), d = document.createElement('div'); d.className = 'msg ai'; d.id = id;
-  d.innerHTML = `<span class="who-label">Companion</span><div class="body"><span class="typing" aria-label="Companion is writing"><i></i><i></i><i></i></span></div>`;
+  d.innerHTML = `<span class="who-label">${buddy('think', 'who-bud')}Companion</span><div class="body"><span class="typing" aria-label="Companion is writing"><i></i><i></i><i></i></span></div>`;
   appendMsg(d); return id;
 }
 function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
@@ -2765,6 +2947,576 @@ async function submitSurvey() {
     ? 'This questionnaire has just been closed by the research team. Your answers could not be saved.'
     : friendlyError(r.status, r.data);
 }
+
+// ── v19: the companion character, levels and badges, celebrations, case of the day, AI-skills tab ──
+// Levels and badges are private and earned by learning (mastery, judging AI well), never by time spent,
+// so Group B (access from Week 8) can reach the same levels. Nothing is ranked against other students.
+const BUD_FACE = {
+  wave:  '<ellipse cx="26" cy="33" rx="2.4" ry="3" class="be"/><ellipse cx="38" cy="33" rx="2.4" ry="3" class="be"/><path d="M27 39.5q5 4 10 0" class="bl"/>',
+  think: '<ellipse cx="27.5" cy="31.5" rx="2.2" ry="2.7" class="be"/><ellipse cx="39.5" cy="31.5" rx="2.2" ry="2.7" class="be"/><path d="M29 41h6" class="bl"/>',
+  happy: '<path d="M23.5 34q2.5-3.6 5 0M35.5 34q2.5-3.6 5 0" class="bl"/><path d="M26 38.5h12q-1 6.5-6 6.5t-6-6.5z" class="bm"/>',
+  cheer: '<path d="M23 28.2q3-2 6-.6M35 27.6q3-1.4 6 .6" class="bl"/><ellipse cx="26" cy="33" rx="2.4" ry="3" class="be"/><ellipse cx="38" cy="33" rx="2.4" ry="3" class="be"/><path d="M27.5 40q4.5 3 9 0" class="bl"/>',
+};
+function buddy(face, cls) {
+  face = BUD_FACE[face] ? face : 'wave';
+  return `<svg class="bud bud-${face} ${cls || ''}" viewBox="0 0 64 64" aria-hidden="true">
+    ${face === 'wave' ? '<g class="bud-arm"><rect x="49" y="12" width="8.5" height="23" rx="4.25" transform="rotate(24 53 34)"/></g>' : ''}
+    <rect x="9" y="16" width="44" height="43" rx="18" class="bb"/>
+    <rect x="14.5" y="22" width="33" height="26" rx="13" class="bf"/>
+    <path d="M18.5 18.5 20.5 8.5Q31 4.5 41.5 8.5l2 10Q31 15.5 18.5 18.5z" class="bc"/>
+    <path d="M31 14.4l-2.9-2.7a1.8 1.8 0 0 1 2.9-2.1 1.8 1.8 0 0 1 2.9 2.1z" class="bh"/>
+    <circle cx="20.5" cy="39.5" r="2.6" class="bk"/><circle cx="41.5" cy="39.5" r="2.6" class="bk"/>
+    ${BUD_FACE[face]}
+    <path d="M19 52q12 8.5 24 0" class="bs"/><circle cx="43" cy="52" r="3" class="bsc"/>
+    ${face === 'happy' ? '<path d="M56 10v6M53 13h6M7 24v4M5 26h4" class="bsp"/>' : ''}</svg>`;
+}
+function setFace(msgEl, face) {
+  const s = msgEl && msgEl.querySelector('.who-label .bud'); if (!s) return;
+  s.outerHTML = buddy(face, 'who-bud');
+}
+
+// topic status from the student's own results
+function topicStatus(id) {
+  const s = state.progress && state.progress.topics && state.progress.topics[id];
+  if (!s) return 'new';
+  if (s.quiz >= 3 && s.right / s.quiz >= 0.8) return 'mastered';
+  if (s.quiz >= 3 && s.right / s.quiz < 0.6) return 'revisit';
+  return (s.messages || s.quiz) ? 'started' : 'new';
+}
+const STATUS_LABEL = { mastered: 'Mastered', revisit: 'Revisit', started: 'In progress' };
+function statusPill(id) { const s = topicStatus(id); return STATUS_LABEL[s] ? `<span class="st st-${s}">${STATUS_LABEL[s]}</span>` : ''; }
+
+const BADGE_ICON = {
+  shield: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',
+  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4 2.5 4H5"/>',
+  lens: '<circle cx="11" cy="11" r="6"/><path d="m20 20-4.3-4.3"/>',
+  scale: '<path d="M12 4v16M7 20h10M5 8h14"/><path d="M5 8l-2.5 6a2.5 2.5 0 0 0 5 0zM19 8l-2.5 6a2.5 2.5 0 0 0 5 0z"/>',
+  target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.6"/>',
+  ticks: '<path d="M2.5 12.5l4 4L16 7"/><path d="M11 16l.5.5L21 7"/>',
+  book: '<path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2zm0 0a2 2 0 0 0 2 2h14"/>',
+  star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/>',
+  gauge: '<path d="M4 18a8 8 0 1 1 16 0"/><path d="m12 18 4-5"/>',
+};
+const BADGES = [
+  { id: 'ai-ready',   icon: 'shield', c: '#0E9384', name: 'AI-ready',          desc: 'Passed the AI-skills check.' },
+  { id: 'first-step', icon: 'flag',   c: '#2F6FDE', name: 'First steps',       desc: 'Studied your first topic.' },
+  { id: 'second-look',icon: 'lens',   c: '#7A5AF0', name: 'Second look',       desc: 'Used "Check this answer" on an AI reply.' },
+  { id: 'caught-it',  icon: 'target', c: '#E0623A', name: 'Caught it',         desc: 'Spotted a deliberately flawed AI suggestion.' },
+  { id: 'fair-judge', icon: 'scale',  c: '#0E7490', name: 'Careful judge',     desc: 'Judged 3 AI suggestions well.' },
+  { id: 'ten-right',  icon: 'ticks',  c: '#1D8A55', name: 'Ten right',         desc: '10 practice answers correct.' },
+  { id: 'unit-done',  icon: 'book',   c: '#B45309', name: 'Unit explored',     desc: 'Studied every topic in one unit.' },
+  { id: 'mastered',   icon: 'star',   c: '#D69E00', name: 'Topic mastered',    desc: 'Mastered a topic: 3 or more practice answers, 80% or more correct.' },
+  { id: 'calibrated', icon: 'gauge',  c: '#C2417A', name: 'Know what you know', desc: 'More confident when you are right than when you are wrong (5 or more quiz answers).' },
+];
+function badgeEarned(id) {
+  const p = state.progress || {}, T = p.topics || {}, ai = p.ai || {}, o = COURSE_OUTLINE[me.course];
+  const all = o ? o.units.flatMap(u => u.topics) : [];
+  const cal = p.confidence || {};
+  switch (id) {
+    case 'ai-ready':   return !!aiCheckState().passed;
+    case 'first-step': return all.some(t => T[t.id] && T[t.id].messages > 0);
+    case 'second-look':return (p.verifies || 0) >= 1;
+    case 'caught-it':  return (ai.flawed || 0) - (ai.overTrust || 0) >= 1;
+    case 'fair-judge': return (ai.right || 0) >= 3;
+    case 'ten-right':  return (p.right || 0) >= 10;
+    case 'unit-done':  return !!o && o.units.some(u => u.topics.length && u.topics.every(t => T[t.id] && T[t.id].messages > 0));
+    case 'mastered':   return all.some(t => topicStatus(t.id) === 'mastered');
+    case 'calibrated': return (p.quiz || 0) >= 5 && cal.whenRight != null && cal.whenWrong != null && cal.whenRight - cal.whenWrong >= 1;
+  }
+  return false;
+}
+function earnedBadges() { return me && state.progress ? BADGES.filter(b => badgeEarned(b.id)) : []; }
+function badgeIcon(b, on) {
+  return `<span class="badge${on ? ' on' : ''}" style="--bc:${b.c}" title="${esc(b.name + (on ? '' : ' (not yet)'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${BADGE_ICON[b.icon]}</svg></span>`;
+}
+function levelInfo() {
+  const o = COURSE_OUTLINE[me.course], n = o ? o.units.reduce((k, u) => k + u.topics.length, 0) : 0;
+  const all = o ? o.units.flatMap(u => u.topics) : [];
+  const studied = all.filter(t => topicStatus(t.id) !== 'new').length, mastered = all.filter(t => topicStatus(t.id) === 'mastered').length;
+  const L = [
+    { name: 'Starter',     have: 1, need: 1, next: '' },
+    { name: 'Explorer',    have: studied, need: 3, next: 'Study 3 topics' },
+    { name: 'Practising',  have: mastered, need: 2, next: 'Master 2 topics' },
+    { name: 'Confident',   have: mastered, need: Math.max(3, Math.ceil(n / 3)), next: `Master ${Math.max(3, Math.ceil(n / 3))} topics` },
+    { name: 'Skilled',     have: mastered, need: Math.max(4, Math.ceil(2 * n / 3)), next: `Master ${Math.max(4, Math.ceil(2 * n / 3))} topics` },
+  ];
+  let lv = 0; while (lv + 1 < L.length && L[lv + 1].have >= L[lv + 1].need) lv++;
+  const nx = L[lv + 1];
+  return { level: lv + 1, name: L[lv].name, of: L.length, next: nx ? `${nx.next} to reach ${nx.name}` : 'Top level reached. Well done.',
+           pct: nx ? Math.min(100, Math.round(100 * nx.have / nx.need)) : 100, mastered, studied };
+}
+function levelCard() {
+  if (!me || me.consent !== 'Y' || !state.progress) return '';
+  const lv = levelInfo(), got = earnedBadges().map(b => b.id);
+  return `<section class="panel level-card"><div class="panel-head"><h3>Your level</h3><span class="count">${got.length} of ${BADGES.length} badges</span></div>
+    <div class="lvl"><span class="lvl-num num">${lv.level}</span><div><strong>${esc(lv.name)}</strong><span>${esc(lv.next)}</span></div></div>
+    <div class="lvl-track" role="img" aria-label="${lv.pct}% of the way to the next level"><i style="width:${lv.pct}%"></i></div>
+    <div class="badge-row">${BADGES.map(b => badgeIcon(b, got.includes(b.id))).join('')}</div>
+    <button type="button" class="linklike" onclick="showTab('learning')">See your badges</button></section>`;
+}
+function badgesSection() {
+  if (!state.progress) return '';
+  const lv = levelInfo(), got = earnedBadges().map(b => b.id);
+  return `<section class="unit"><h3>Level and badges</h3>
+    <div class="lvl big"><span class="lvl-num num">${lv.level}</span><div><strong>Level ${lv.level} of ${lv.of}: ${esc(lv.name)}</strong><span>${esc(lv.next)}</span></div></div>
+    <div class="lvl-track"><i style="width:${lv.pct}%"></i></div>
+    <p class="muted small-note">Levels and badges are private and come from what you learn, not from time spent. Nobody else sees them.</p>
+    <ul class="badge-list">${BADGES.map(b => `<li class="${got.includes(b.id) ? 'on' : ''}">${badgeIcon(b, got.includes(b.id))}<span><strong>${esc(b.name)}</strong><span>${esc(b.desc)}</span></span></li>`).join('')}</ul></section>`;
+}
+function checkNewBadges() {
+  if (!me || me.consent !== 'Y' || !state.progress) return;
+  const got = earnedBadges(); let seen = null;
+  try { seen = JSON.parse(localStorage.getItem('badges-' + me.code) || 'null'); } catch (e) {}
+  const fresh = got.filter(b => !(seen || []).includes(b.id));
+  try { localStorage.setItem('badges-' + me.code, JSON.stringify(got.map(b => b.id))); } catch (e) {}
+  if (!fresh.length) return;
+  fresh.forEach(b => logEvent('badge', '', '', '', '', b.id));
+  celebrate(fresh.length === 1 ? 'New badge: ' + fresh[0].name : fresh.length + ' new badges', fresh.length === 1 ? fresh[0].desc : fresh.map(b => b.name).join(' · '), fresh);
+}
+
+// a short, private celebration
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function celebrate(title, sub, badges) {
+  document.querySelectorAll('.cele').forEach(x => x.remove());
+  const el = document.createElement('div'); el.className = 'cele'; el.setAttribute('role', 'status');
+  el.innerHTML = `${badges && badges.length ? badgeIcon(badges[0], true) : buddy('happy', 'cele-bud')}<div class="cele-t"><strong>${esc(title)}</strong>${sub ? `<span>${esc(sub)}</span>` : ''}</div>
+    <button type="button" class="cele-x" aria-label="Close">×</button>`;
+  el.querySelector('.cele-x').addEventListener('click', () => el.remove());
+  if (!reduceMotion()) {
+    const box = document.createElement('div'); box.className = 'confetti'; box.setAttribute('aria-hidden', 'true');
+    const cols = ['#0E9384', '#F06A4E', '#F5B638', '#2F6FDE', '#C2417A'];
+    for (let i = 0; i < 26; i++) {
+      const p = document.createElement('i'), a = Math.PI * (0.15 + 0.7 * Math.random()), d = 70 + 90 * Math.random();
+      p.style.cssText = `--x:${Math.round(Math.cos(a) * d * (Math.random() < .5 ? -1 : 1))}px;--y:${-Math.round(Math.sin(a) * d)}px;--r:${Math.round(360 * Math.random())}deg;background:${cols[i % cols.length]}`;
+      box.appendChild(p);
+    }
+    el.appendChild(box);
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add('out'), 4800); setTimeout(() => el.remove(), 5200);
+}
+
+// case of the day: one short practice case a day, on a topic the student has started but not mastered
+function caseOfDay(o) {
+  const all = o.units.flatMap(u => u.topics); if (!all.length) return '';
+  const day = Math.floor((Date.now() + 3 * 3600e3) / 864e5);              // Bahrain day
+  const pool = all.filter(t => ['started', 'revisit'].includes(topicStatus(t.id)));
+  const list = pool.length ? pool : all, t = list[day % list.length];
+  let done = false; try { done = localStorage.getItem('cod-' + me.code) === String(day); } catch (e) {}
+  const what = me.course === 'NUR312' ? 'A short practice case' : 'A short patient case';
+  return `<section class="cod"><div class="cod-bud">${buddy('think')}</div><div class="cod-t"><h3>Case of the day</h3>
+      <p>${what} on <b>${esc(t.title)}</b>. About 5 minutes.${done ? ' You did today’s case. Try another one?' : ''}</p></div>
+      <button class="btn btn-accent" type="button" onclick="startCaseOfDay('${t.id}', ${day})">${done ? 'Another case' : 'Start the case'}</button></section>`;
+}
+function startCaseOfDay(id, day) {
+  try { localStorage.setItem('cod-' + me.code, String(day)); } catch (e) {}
+  logEvent('case_of_day', '', '', '', '', id);
+  openTopic(id); if (state.topic !== id) return;
+  setMode('practice'); pickStyle('scenario');
+}
+function backToOutline() { showOutline(); if (me && me.consent === 'Y') syncLessons(); }
+
+// AI skills: its own tab once the gate is passed, so the course page stays for course topics
+function updateAITab() {
+  const t = document.getElementById('tab-aiskills'); if (!t || !me) return;
+  t.hidden = !(me.companionOpen && gateComplete());
+}
+async function renderAISkills() {
+  const root = document.getElementById('aiskills-root'); if (!root || !me) return;
+  const st = aiCheckState();
+  const head = `<h2 data-title>AI skills</h2>
+    <p class="lede">The lessons and check you completed before starting, and practice in judging AI output. Read a lesson again any time.</p>
+    <div class="aiskills-hero">${buddy('cheer')}<div><strong>${st.passed ? 'AI-skills check passed' : 'AI-skills check'}</strong>
+      <span>${st.passed ? `Best score ${st.best}% · ${st.attempts} attempt${st.attempts === 1 ? '' : 's'}` : 'Not passed yet.'}</span></div></div>
+    ${aiSkillsCard()}
+    <section class="panel"><div class="panel-head"><h3>Practise judging AI output</h3></div>
+      <p class="muted">${me.course === 'NUR312' ? 'A simulated AI research assistant gives an output on a made-up study.' : 'A simulated clinical AI tool makes a suggestion on a made-up case.'} You decide whether to use it, change it or reject it. Some outputs are deliberately wrong.</p>
+      <button class="btn btn-accent" type="button" onclick="tryBedside()">Start practising</button></section>`;
+  root.innerHTML = head + '<div id="aiskills-stats"></div>';
+  if (me.consent !== 'Y') return;
+  const r = await safeApi('/progress', { token: me.token });
+  if (!r.ok || !me) return;
+  state.progress = r.data;
+  const ai = r.data.ai || {};
+  const aiMsg = !ai.cases ? 'Try practising above to train your judgement of AI suggestions.'
+    : ai.overTrust ? `You accepted a flawed AI suggestion ${ai.overTrust} time${ai.overTrust > 1 ? 's' : ''} out of ${ai.flawed}. Before accepting, check the data the AI used against the case.`
+    : ai.flawed ? `You caught every flawed AI suggestion so far (${ai.flawed}). Keep checking before you accept.` : 'No flawed AI suggestions yet. Keep practising.';
+  document.getElementById('aiskills-stats').innerHTML = `<div class="stat-row">
+      <div class="stat"><b>${ai.cases || 0}</b><span>AI suggestions judged${ai.cases ? ' (' + Math.round(100 * ai.right / ai.cases) + '% well)' : ''}</span></div>
+      <div class="stat"><b>${r.data.verifies || 0}</b><span>answers you asked to check</span></div></div>
+    <div class="check-card"><strong>Trusting AI wisely</strong><p>${esc(aiMsg)}</p></div>`;
+  checkNewBadges();
+}
+
+// ── v19: install to the home screen ──────────────────────────────────────
+let installEvt = null;
+const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (me && !document.getElementById('outline').hidden) showOutline(); });
+window.addEventListener('appinstalled', () => { installEvt = null; if (me) logEvent('app_installed', '', ''); });
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+function installCard() {
+  let off = false; try { off = localStorage.getItem('install-off') === '1'; } catch (e) {}
+  if (off || isStandalone() || !(installEvt || isIOS())) return '';
+  const share = '<svg class="ios-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Share"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  return `<section class="panel install-card"><div class="panel-head"><h3>Add to your home screen</h3></div>
+    <p class="muted">Open the companion like an app, in one tap.</p>
+    ${installEvt ? `<button type="button" class="btn btn-accent" onclick="doInstall()">Install</button>`
+      : `<p class="ios-steps">In Safari, tap ${share} <b>Share</b>, then <b>Add to Home Screen</b>.</p>`}
+    <button type="button" class="linklike" onclick="try{localStorage.setItem('install-off','1')}catch(e){}; showOutline()">Not now</button></section>`;
+}
+async function doInstall() {
+  if (!installEvt) return;
+  installEvt.prompt(); const r = await installEvt.userChoice.catch(() => null);
+  logEvent('install_prompt', '', '', '', '', r ? r.outcome : '');
+  installEvt = null; showOutline();
+}
+
+// ── v19: Arabic interface ────────────────────────────────────────────────
+// Only the interface is translated (menus, buttons, headings, hints). Course content, the AI's replies,
+// the AI lessons and check, the consent form, the information sheet and the questionnaires stay in
+// English, as approved. The translation is applied to the page as it is drawn, so the rest of the code
+// keeps its English strings.
+const AR = {
+"Companion": "المرافق",
+"My learning": "تعلّمي",
+"Progress": "تقدّمي",
+"AI skills": "مهارات الذكاء الاصطناعي",
+"Questionnaire": "الاستبيان",
+"Sections": "الأقسام",
+"Sign in": "تسجيل الدخول",
+"Sign out": "تسجيل الخروج",
+"Username": "اسم المستخدم",
+"Password": "كلمة المرور",
+"e.g. T12": "مثال: T12",
+"Enter your username.": "أدخل اسم المستخدم.",
+"Enter your password.": "أدخل كلمة المرور.",
+"Checking…": "جارٍ التحقق…",
+"Loading…": "جارٍ التحميل…",
+"Saving…": "جارٍ الحفظ…",
+"Submitting…": "جارٍ الإرسال…",
+"Loading your progress…": "جارٍ تحميل تقدّمك…",
+"Your nursing study companion": "مرافقك في دراسة التمريض",
+"Ask questions, practise, and check your understanding in NUR125, NUR225 and NUR312. Part of research project 25-2024, University of Bahrain Department of Nursing.": "اطرح أسئلتك، وتدرّب، وتحقّق من فهمك في NUR125 وNUR225 وNUR312. جزء من المشروع البحثي 25-2024، قسم التمريض، جامعة البحرين.",
+"For study participants, use of the companion is recorded under an anonymous research code, never your name. The research team reviews a random selection of anonymous AI responses to check that the companion is accurate.": "للمشاركين في الدراسة: يُسجَّل استخدام المرافق برمز بحثي مجهول، ولا يُسجَّل اسمك أبدًا. يراجع فريق البحث عيّنة عشوائية من ردود الذكاء الاصطناعي المجهولة للتأكد من دقة المرافق.",
+"Read the participant information sheet": "اقرأ ورقة معلومات المشارك",
+"Questions about the study? Contact the principal investigator, Marwan Altheeb, at": "لديك أسئلة عن الدراسة؟ تواصل مع الباحث الرئيسي، مروان الذيب، على",
+"That username and password don't match. Check them and try again.": "اسم المستخدم وكلمة المرور غير متطابقين. تحقّق منهما وحاول مرة أخرى.",
+"This account is already signed in on another device. Sign out there, or wait 4 minutes and try again.": "هذا الحساب مسجَّل الدخول على جهاز آخر. سجّل الخروج هناك، أو انتظر 4 دقائق وحاول مرة أخرى.",
+"Too many attempts. Wait 15 minutes, or contact the principal investigator.": "محاولات كثيرة. انتظر 15 دقيقة، أو تواصل مع الباحث الرئيسي.",
+"We don't have your consent form on record yet. Please contact the principal investigator.": "لم نسجّل نموذج موافقتك بعد. يُرجى التواصل مع الباحث الرئيسي.",
+"Your account isn't set up yet. Please contact the principal investigator.": "لم يُجهَّز حسابك بعد. يُرجى التواصل مع الباحث الرئيسي.",
+"Many students are signing in at the same time. Trying again…": "يسجّل كثير من الطلبة الدخول في الوقت نفسه. نحاول مرة أخرى…",
+"Can't reach the companion. Check your internet connection and try again.": "تعذّر الوصول إلى المرافق. تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.",
+"Your session has expired. Sign out and sign in again with your student ID.": "انتهت جلستك. سجّل الخروج ثم سجّل الدخول مرة أخرى.",
+"The companion isn't open for your section yet.": "المرافق غير متاح لشعبتك بعد.",
+"The companion only works from the official study link. Open it from Blackboard and try again.": "يعمل المرافق من رابط الدراسة الرسمي فقط. افتحه من Blackboard وحاول مرة أخرى.",
+"This conversation has grown too long. Switch mode to start a fresh conversation.": "أصبحت هذه المحادثة طويلة جدًا. غيّر الوضع لبدء محادثة جديدة.",
+"The companion is busy right now. Wait a minute and try again.": "المرافق مشغول الآن. انتظر دقيقة وحاول مرة أخرى.",
+"Many students are using the companion at this moment. Please wait a minute and try again: your work is not lost.": "يستخدم كثير من الطلبة المرافق الآن. انتظر دقيقة وحاول مرة أخرى؛ عملك محفوظ.",
+"Something went wrong on our side. Try again in a moment. If it keeps happening, tell your instructor.": "حدث خطأ من جهتنا. حاول بعد لحظات. وإذا تكرّر ذلك فأخبر مدرّسك.",
+"Microphone access is blocked. Allow it in your browser settings, or type instead.": "الوصول إلى الميكروفون محظور. اسمح به من إعدادات المتصفح، أو اكتب بدلًا من ذلك.",
+"Complete the AI-skills lessons and check first.": "أكمل أولًا دروس مهارات الذكاء الاصطناعي واختبارها.",
+"Questionnaire submitted. Thank you.": "تم إرسال الاستبيان. شكرًا لك.",
+"Thank you. The companion is now open: start with the AI-skills lessons.": "شكرًا لك. المرافق متاح الآن: ابدأ بدروس مهارات الذكاء الاصطناعي.",
+"Thanks for the feedback.": "شكرًا على ملاحظتك.",
+"Thanks. The research team will review it.": "شكرًا. سيراجعها فريق البحث.",
+"Thank you. Your consent has been recorded.": "شكرًا لك. سُجّلت موافقتك.",
+"Your choice has been recorded.": "سُجّل اختيارك.",
+"Your request has been sent to the principal investigator.": "أُرسل طلبك إلى الباحث الرئيسي.",
+"Thank you. See you next time.": "شكرًا لك. نراك في المرة القادمة.",
+"Go to questionnaire": "إلى الاستبيان",
+"Go to the questionnaire": "إلى الاستبيان",
+"First, the start-of-study questionnaire": "أولًا: استبيان بداية الدراسة",
+"Thank you for joining the study. Before you use the companion, please complete the start-of-study questionnaire (about 20 minutes). The companion opens as soon as you submit it.": "شكرًا لانضمامك إلى الدراسة. قبل استخدام المرافق، أكمل استبيان بداية الدراسة (نحو 20 دقيقة). يُفتح المرافق فور إرساله.",
+"The companion opens for you later in the semester": "سيُفتح لك المرافق لاحقًا في الفصل الدراسي",
+"You chose not to take part in the research. You can use the companion when it opens for all students (from Week 8), and nothing about your use will be recorded.": "اخترت عدم المشاركة في البحث. يمكنك استخدام المرافق عندما يُفتح لجميع الطلبة (من الأسبوع 8)، ولن يُسجَّل شيء عن استخدامك.",
+"You asked to join the study. Your request is waiting for the principal investigator's decision. Sign in again later to see the result.": "طلبت الانضمام إلى الدراسة. طلبك بانتظار قرار الباحث الرئيسي. سجّل الدخول لاحقًا لمعرفة النتيجة.",
+"The principal investigator could not add you to the study at this stage (for example, because the start-of-study questionnaire has closed). Your access from Week 8 is not affected.": "لم يتمكن الباحث الرئيسي من إضافتك إلى الدراسة في هذه المرحلة (مثلًا لأن استبيان بداية الدراسة أُغلق). لا يتأثر وصولك من الأسبوع 8.",
+"Changed your mind? You can ask to join the study. The principal investigator will confirm whether you can still be included.": "غيّرت رأيك؟ يمكنك طلب الانضمام إلى الدراسة، وسيؤكد الباحث الرئيسي إن كان ذلك ما زال ممكنًا.",
+"I would like to join the study": "أرغب في الانضمام إلى الدراسة",
+"The companion isn't open for your section yet": "المرافق غير متاح لشعبتك بعد",
+"Your section will get access later in the semester. You'll be told on Blackboard when it opens. Until then, please complete the questionnaire when it is announced.": "ستحصل شعبتك على الوصول لاحقًا في الفصل الدراسي، وسيُعلَن ذلك على Blackboard. حتى ذلك الحين، أكمل الاستبيان عند الإعلان عنه.",
+"Course outline": "محتوى المقرر",
+"Back to the course outline": "العودة إلى محتوى المقرر",
+"Learn": "تعلّم",
+"Practice": "تدرّب",
+"Check": "اختبر",
+"Study mode": "وضع الدراسة",
+"Ask me to explain any concept from your course.": "اطلب مني شرح أي مفهوم من مقررك.",
+"Choose a practice style: a scenario, a spot-the-mistake exercise, judging an AI suggestion, or a quick quiz.": "اختر أسلوب التدريب: حالة سريرية، أو اكتشاف الخطأ، أو تقييم اقتراح من الذكاء الاصطناعي، أو اختبار سريع.",
+"Class checks open when your instructor starts one in class. They do not count towards your grade.": "تُفتح الاختبارات الصفية عندما يبدأها مدرّسك في المحاضرة، ولا تُحتسب في درجتك.",
+"Tell me what you want to study. I will point you to the right topic; I do not teach content here.": "أخبرني بما تريد دراسته وسأدلّك على الموضوع المناسب؛ لا أشرح المحتوى هنا.",
+"Course guide · find the right topic": "دليل المقرر · اعثر على الموضوع المناسب",
+"Ask a question about your course": "اسأل عن مقررك",
+"Your message": "رسالتك",
+"Send message": "إرسال الرسالة",
+"Speak instead of typing": "تحدّث بدلًا من الكتابة",
+"Suggested questions": "أسئلة مقترحة",
+"You said:": "قلت:",
+"Latest": "الأحدث",
+"Listen": "استمع",
+"Stop": "إيقاف",
+"Helpful": "مفيد",
+"Not helpful": "غير مفيد",
+"Check this answer": "تحقّق من هذه الإجابة",
+"Check again": "تحقّق مرة أخرى",
+"What was wrong?": "ما الخطأ؟",
+"Inaccurate": "غير دقيق",
+"Off-topic": "خارج الموضوع",
+"Unclear": "غير واضح",
+"How sure are you?": "ما مدى ثقتك؟",
+"Guessing": "أخمّن",
+"Unsure": "غير متأكد",
+"Fairly sure": "متأكد نوعًا ما",
+"Sure": "متأكد",
+"Certain": "متأكد تمامًا",
+"Pictures & videos": "صور وفيديوهات",
+"Enlarge": "تكبير",
+"Close": "إغلاق",
+"Back": "رجوع",
+"Next": "التالي",
+"Start": "ابدأ",
+"Change": "تغيير",
+"Practice style:": "أسلوب التدريب:",
+"Change practice style": "تغيير أسلوب التدريب",
+"Give me a hint": "أعطني تلميحًا",
+"Next question": "السؤال التالي",
+"Harder, please": "أصعب من فضلك",
+"New scenario": "حالة جديدة",
+"New case": "حالة جديدة",
+"Show me another situation": "أرني موقفًا آخر",
+"Show me another excerpt": "أرني مقتطفًا آخر",
+"Explain it with a clinical example": "اشرحه بمثال سريري",
+"Clinical scenario": "حالة سريرية",
+"A simulated patient case in a ward or community setting. You apply the topic step by step.": "حالة مريض محاكاة في جناح أو في المجتمع، تطبّق فيها الموضوع خطوة بخطوة.",
+"Spot the error": "اكتشف الخطأ",
+"A short made-up nursing care situation with one mistake in it. Find it, explain why it matters, correct it.": "موقف رعاية تمريضية قصير ومتخيَّل فيه خطأ واحد. اكتشفه، واشرح أهميته، وصحّحه.",
+"Spot the flaw": "اكتشف الخلل",
+"A short made-up study excerpt with a mistake in it. Find it, explain it, fix it.": "مقتطف قصير من دراسة متخيَّلة فيه خطأ. اكتشفه، واشرحه، وصحّحه.",
+"Judge an AI suggestion": "قيّم اقتراح الذكاء الاصطناعي",
+"Not a patient case: a simulated clinical AI tool makes a suggestion and you decide to accept, modify or reject it. Some are deliberately wrong.": "ليست حالة مريض: أداة ذكاء اصطناعي سريرية محاكاة تقدّم اقتراحًا، وتقرّر أنت قبوله أو تعديله أو رفضه. بعض الاقتراحات خاطئة عمدًا.",
+"Judge AI research output": "قيّم مخرجات الذكاء الاصطناعي البحثية",
+"A simulated AI research assistant summarises or advises on a made-up study. Decide: use, revise or reject. Some outputs are deliberately wrong.": "مساعد بحثي محاكاة بالذكاء الاصطناعي يلخّص دراسة متخيَّلة أو ينصح بشأنها. قرّر: تستخدمه أو تعدّله أو ترفضه. بعض المخرجات خاطئة عمدًا.",
+"Quick quiz": "اختبار سريع",
+"Multiple-choice questions one at a time. Tap your answer and get instant feedback.": "أسئلة اختيار من متعدد واحدًا تلو الآخر. اختر إجابتك واحصل على تغذية راجعة فورية.",
+"Practise judging AI output": "تدرّب على تقييم مخرجات الذكاء الاصطناعي",
+"Start practising": "ابدأ التدريب",
+"Go to Practice": "إلى التدريب",
+"Class checks": "الاختبارات الصفية",
+"No class check is open": "لا يوجد اختبار صفي متاح",
+"Your instructor opens a short check at the end of some classes. When one is open for your section, it appears here and at the top of the course outline.": "يفتح مدرّسك اختبارًا قصيرًا في نهاية بعض المحاضرات. عندما يُفتح اختبار لشعبتك يظهر هنا وفي أعلى محتوى المقرر.",
+"Class checks are not part of the study for your section.": "الاختبارات الصفية ليست جزءًا من الدراسة لشعبتك.",
+"Start the check": "ابدأ الاختبار",
+"Submit answers": "إرسال الإجابات",
+"You've completed this check": "أكملت هذا الاختبار",
+"This does not count towards your grade. Your answers are saved with your research code only.": "لا يُحتسب هذا في درجتك. تُحفظ إجاباتك برمزك البحثي فقط.",
+"This check is on a different topic from the one you have open.": "هذا الاختبار عن موضوع غير الموضوع المفتوح لديك.",
+"5 multiple-choice questions on this lecture. Answer on your own, without notes or the companion. You'll see your score and explanations straight after.": "5 أسئلة اختيار من متعدد عن هذه المحاضرة. أجب وحدك دون ملاحظات أو المرافق، وسترى نتيجتك والشرح مباشرة بعدها.",
+"Not sure which topic?": "لست متأكدًا من الموضوع؟",
+"Describe what you want to learn. The course guide points you to the right topic; it does not teach content here.": "صف ما تريد تعلّمه، وسيدلّك دليل المقرر على الموضوع المناسب؛ ولا يشرح المحتوى هنا.",
+"Ask the course guide": "اسأل دليل المقرر",
+"Your goal for this session": "هدفك لهذه الجلسة",
+"Optional. You will see it again when you sign out.": "اختياري. ستراه مرة أخرى عند تسجيل الخروج.",
+"Set goal": "حدّد الهدف",
+"Today's goal": "هدف اليوم",
+"e.g. Understand the stages of pressure injury": "مثال: فهم مراحل إصابات الضغط",
+"Using AI wisely": "استخدام الذكاء الاصطناعي بحكمة",
+"Try first.": "حاول أولًا.",
+"Answer in your own words before asking for the answer. That is how you learn.": "أجب بكلماتك قبل طلب الإجابة؛ هكذا تتعلّم.",
+"Check it.": "تحقّق منه.",
+"The AI can be wrong. Compare important points with your textbook and your instructor.": "قد يخطئ الذكاء الاصطناعي. قارن النقاط المهمة بكتابك المقرر ومدرّسك.",
+"Keep it fictional.": "اجعلها متخيَّلة.",
+"Never enter real patient details or personal information.": "لا تُدخل أبدًا بيانات مرضى حقيقية أو معلومات شخصية.",
+"Your work is yours.": "عملك مسؤوليتك.",
+"Use it to learn, not to write graded work for you.": "استخدمه لتتعلّم، لا ليكتب لك أعمالًا تُقيَّم.",
+"Tell us.": "أخبرنا.",
+"Use “Not helpful” under any answer that looks wrong.": "استخدم «غير مفيد» تحت أي إجابة تبدو خاطئة.",
+"Got it": "فهمت",
+"Case of the day": "حالة اليوم",
+"A short patient case on": "حالة مريض قصيرة عن",
+"A short practice case on": "حالة تدريبية قصيرة عن",
+". About 5 minutes.": ". نحو 5 دقائق.",
+". About 5 minutes. You did today’s case. Try another one?": ". نحو 5 دقائق. أنجزت حالة اليوم، هل تجرّب حالة أخرى؟",
+"Start the case": "ابدأ الحالة",
+"Another case": "حالة أخرى",
+"Your level": "مستواك",
+"See your badges": "اعرض شاراتك",
+"Level and badges": "المستوى والشارات",
+"Levels and badges are private and come from what you learn, not from time spent. Nobody else sees them.": "المستويات والشارات خاصة بك، وتأتي مما تتعلّمه لا من الوقت الذي تقضيه. لا يراها أحد غيرك.",
+"Starter": "مبتدئ",
+"Explorer": "مستكشف",
+"Practising": "متدرّب",
+"Confident": "واثق",
+"Skilled": "متمكّن",
+"Top level reached. Well done.": "وصلت إلى أعلى مستوى. أحسنت.",
+"AI-ready": "جاهز للذكاء الاصطناعي",
+"Passed the AI-skills check.": "اجتزت اختبار مهارات الذكاء الاصطناعي.",
+"First steps": "الخطوات الأولى",
+"Studied your first topic.": "درست موضوعك الأول.",
+"Second look": "نظرة ثانية",
+"Used \"Check this answer\" on an AI reply.": "استخدمت «تحقّق من هذه الإجابة» على رد من الذكاء الاصطناعي.",
+"Caught it": "اكتشفته",
+"Spotted a deliberately flawed AI suggestion.": "اكتشفت اقتراحًا خاطئًا عمدًا من الذكاء الاصطناعي.",
+"Careful judge": "مقيِّم دقيق",
+"Judged 3 AI suggestions well.": "قيّمت 3 اقتراحات من الذكاء الاصطناعي تقييمًا صحيحًا.",
+"Ten right": "عشر إجابات صحيحة",
+"10 practice answers correct.": "10 إجابات تدريبية صحيحة.",
+"Unit explored": "وحدة مكتملة",
+"Studied every topic in one unit.": "درست جميع موضوعات وحدة واحدة.",
+"Topic mastered": "موضوع متقَن",
+"Mastered a topic: 3 or more practice answers, 80% or more correct.": "أتقنت موضوعًا: 3 إجابات تدريبية أو أكثر، صحيحة بنسبة 80% أو أكثر.",
+"Know what you know": "اعرف ما تعرفه",
+"More confident when you are right than when you are wrong (5 or more quiz answers).": "ثقتك أعلى عندما تصيب منها عندما تخطئ (5 إجابات اختبار أو أكثر).",
+"Keep going.": "واصل.",
+"AI-skills check passed": "اجتزت اختبار مهارات الذكاء الاصطناعي",
+"Your course topics are now open.": "موضوعات مقررك متاحة الآن.",
+"Mastered": "متقَن",
+"Revisit": "للمراجعة",
+"In progress": "قيد الدراسة",
+"Add to your home screen": "أضِفه إلى الشاشة الرئيسية",
+"Open the companion like an app, in one tap.": "افتح المرافق كتطبيق بلمسة واحدة.",
+"Install": "تثبيت",
+"Not now": "ليس الآن",
+"Share": "مشاركة",
+"In Safari, tap": "في Safari، اضغط",
+", then": "، ثم",
+"Add to Home Screen": "إضافة إلى الشاشة الرئيسية",
+"Before you start: AI skills for nursing": "قبل أن تبدأ: مهارات الذكاء الاصطناعي في التمريض",
+"Then pass the AI-skills check: 10 questions, 8 or more correct. If you need another try, you get new questions.": "ثم اجتز اختبار مهارات الذكاء الاصطناعي: 10 أسئلة، و8 إجابات صحيحة أو أكثر. إذا احتجت محاولة أخرى فستحصل على أسئلة جديدة.",
+"Your course topics open after that. You only do this once.": "بعدها تُفتح موضوعات مقررك. تفعل ذلك مرة واحدة فقط.",
+"AI skills for nursing": "مهارات الذكاء الاصطناعي في التمريض",
+"AI-skills check · 10 questions · pass mark 80%": "اختبار مهارات الذكاء الاصطناعي · 10 أسئلة · درجة النجاح 80%",
+"Answer 10 questions about the lessons. You need 8 or more correct.": "أجب عن 10 أسئلة عن الدروس. تحتاج إلى 8 إجابات صحيحة أو أكثر.",
+"Opens when you have read all 4 lessons.": "يُفتح بعد قراءة الدروس الأربعة.",
+"Try again": "حاول مجددًا",
+"Done · read again": "مكتمل · اقرأ مرة أخرى",
+"AI-skills check": "اختبار مهارات الذكاء الاصطناعي",
+"Not passed yet.": "لم تجتزه بعد.",
+"The lessons and check you completed before starting, and practice in judging AI output. Read a lesson again any time.": "الدروس والاختبار اللذان أكملتهما قبل البدء، والتدرّب على تقييم مخرجات الذكاء الاصطناعي. يمكنك قراءة أي درس مرة أخرى في أي وقت.",
+"A simulated clinical AI tool makes a suggestion on a made-up case.": "تقدّم أداة ذكاء اصطناعي سريرية محاكاة اقتراحًا عن حالة متخيَّلة.",
+"A simulated AI research assistant gives an output on a made-up study.": "يقدّم مساعد بحثي محاكاة بالذكاء الاصطناعي مخرجات عن دراسة متخيَّلة.",
+"A simulated clinical AI tool makes a suggestion on a made-up case. You decide whether to use it, change it or reject it. Some outputs are deliberately wrong.": "تقدّم أداة ذكاء اصطناعي سريرية محاكاة اقتراحًا عن حالة متخيَّلة. تقرّر أنت أن تستخدمه أو تعدّله أو ترفضه. بعض المخرجات خاطئة عمدًا.",
+"A simulated AI research assistant gives an output on a made-up study. You decide whether to use it, change it or reject it. Some outputs are deliberately wrong.": "يقدّم مساعد بحثي محاكاة بالذكاء الاصطناعي مخرجات عن دراسة متخيَّلة. تقرّر أنت أن تستخدمها أو تعدّلها أو ترفضها. بعض المخرجات خاطئة عمدًا.",
+"Trusting AI wisely": "الثقة بالذكاء الاصطناعي بحكمة",
+"Try practising above to train your judgement of AI suggestions.": "جرّب التدريب أعلاه لتنمية حكمك على اقتراحات الذكاء الاصطناعي.",
+"No flawed AI suggestions yet. Keep practising.": "لم تظهر لك اقتراحات خاطئة بعد. واصل التدريب.",
+"answers you asked to check": "إجابات طلبت التحقق منها",
+"Your AI lessons, check result and AI-judgement practice are on the AI skills tab.": "دروس الذكاء الاصطناعي ونتيجة الاختبار والتدرّب على التقييم موجودة في تبويب مهارات الذكاء الاصطناعي.",
+"Open AI skills": "افتح مهارات الذكاء الاصطناعي",
+"study sessions": "جلسات دراسة",
+"topics studied": "موضوعات درستها",
+"Confidence check": "مدى ثقتك",
+"Answer a few quick-quiz questions to see how well your confidence matches your results.": "أجب عن بعض أسئلة الاختبار السريع لترى مدى توافق ثقتك مع نتائجك.",
+"You often feel as sure when you are wrong as when you are right. Slow down and check your reasoning before answering.": "تشعر غالبًا بالثقة نفسها عندما تخطئ وعندما تصيب. تمهّل وراجع تفكيرك قبل الإجابة.",
+"Your confidence matches your results well: you are more sure when you are right.": "ثقتك تتوافق جيدًا مع نتائجك: أنت أكثر ثقة عندما تصيب.",
+"Worth another look": "تستحق نظرة أخرى",
+"Topics": "الموضوعات",
+"Not started": "لم يبدأ",
+"Review my mistakes": "مراجعة أخطائي",
+"Practise these again": "تدرّب عليها مرة أخرى",
+"No mistakes recorded yet. Use Practice to test yourself.": "لا أخطاء مسجّلة بعد. استخدم «تدرّب» لاختبار نفسك.",
+"Go over my mistakes with the companion": "راجع أخطائي مع المرافق",
+"Progress tracking is part of the research study, so it is only available to study participants.": "متابعة التقدّم جزء من الدراسة البحثية، لذا تتاح للمشاركين في الدراسة فقط.",
+"Submit questionnaire": "إرسال الاستبيان"
+};
+const AR_RX = [
+  [/^Lecture (\S+)$/, m => 'المحاضرة ' + m[1]],
+  [/^Lecture (\S+) · (.+)$/, m => 'المحاضرة ' + m[1] + ' · ' + m[2]],
+  [/^Open: (?:Lecture (\S+) · )?(.+)$/, m => 'افتح: ' + (m[1] ? 'المحاضرة ' + m[1] + ' · ' : '') + m[2]],
+  [/^(\d+) topics?$/, m => { const n = +m[1]; return n === 1 ? 'موضوع واحد' : n === 2 ? 'موضوعان' : n <= 10 ? n + ' موضوعات' : n + ' موضوعًا'; }],
+  [/^Good (morning|afternoon|evening), (\S+) student$/, m => (m[1] === 'morning' ? 'صباح الخير' : 'مساء الخير') + '، أهلًا بك في ' + m[2]],
+  [/^(\d+) of (\d+) done$/, m => `أُنجز ${m[1]} من ${m[2]}`],
+  [/^(\d+) of (\d+) badges$/, m => `الشارات: ${m[1]} من ${m[2]}`],
+  [/^(\d+) new badges$/, m => `شارات جديدة: ${m[1]}`],
+  [/^New badge: (.+)$/, m => 'شارة جديدة: ' + (arFor(m[1]) || m[1])],
+  [/^(.+) \(not yet\)$/, m => (arFor(m[1]) || m[1]) + ' (لم تُكتسب بعد)'],
+  [/^([^·]+ · )+[^·]+$/, m => { const p = m[0].split(' · '); const t = p.map(x => AR[x.trim()]); return t.every(Boolean) ? t.join(' · ') : null; }],
+  [/^(\d+)% of the way to the next level$/, m => `${m[1]}% من الطريق إلى المستوى التالي`],
+  [/^Level (\d) of (\d): (.+)$/, m => `المستوى ${m[1]} من ${m[2]}: ` + (AR[m[3]] || m[3])],
+  [/^(Study|Master) (\d+) topics to reach (\w+)$/, m => (m[1] === 'Study' ? 'ادرس ' : 'أتقن ') + m[2] + ' موضوعات للوصول إلى مستوى ' + (AR[m[3]] || m[3])],
+  [/^Best score (\d+)% · (\d+) attempts?$/, m => `أفضل نتيجة ${m[1]}% · عدد المحاولات: ${m[2]}`],
+  [/^Best so far: (\d+)%\. Review the lessons and try again: the questions change each time\.$/, m => `أفضل نتيجة حتى الآن: ${m[1]}%. راجع الدروس وحاول مجددًا؛ تتغيّر الأسئلة في كل مرة.`],
+  [/^(\d+) min · 2 questions$/, m => `${m[1]} دقائق · سؤالان`],
+  [/^Read the (\d+) short lessons and answer their practice questions \(about (\d+) minutes\)(?:; (\d+) to go|; (all done))?\.$/, m => `اقرأ الدروس القصيرة الأربعة وأجب عن أسئلتها التدريبية (نحو ${m[2]} دقيقة)` + (m[3] ? `؛ متبقٍّ: ${m[3]}` : m[4] ? '؛ اكتملت جميعها' : '') + '.'],
+  [/^Pictures & videos \((\d+)\)$/, m => `صور وفيديوهات (${m[1]})`],
+  [/^Questionnaire open · about (\d+) min$/, m => `الاستبيان متاح · نحو ${m[1]} دقيقة`],
+  [/^The (start|end)-of-study questionnaire is open\. It takes about (\d+) minutes\. Please complete it\.$/, m => `استبيان ${m[1] === 'start' ? 'بداية' : 'نهاية'} الدراسة متاح، ويستغرق نحو ${m[2]} دقيقة. يُرجى إكماله.`],
+  [/^Your own progress in (\S+)\. Only you see this page\.$/, m => `تقدّمك في ${m[1]}. لا يرى هذه الصفحة أحد غيرك.`],
+  [/^Your instructor opened it for your section\. It closes at (.+)\. It does not count towards your grade\.$/, m => `فتحه مدرّسك لشعبتك، ويُغلق الساعة ${m[1]}. لا يُحتسب في درجتك.`],
+  [/^Class check open: (.+)$/, m => 'اختبار صفي متاح: ' + m[1]],
+  [/^(\d+) AI suggestions? judged · (\d+) answers? checked$/, m => `اقتراحات ذكاء اصطناعي قيّمتها: ${m[1]} · إجابات تحقّقت منها: ${m[2]}`],
+  [/^AI suggestions judged(?: \((\d+)% well\))?$/, m => 'اقتراحات ذكاء اصطناعي قيّمتها' + (m[1] ? ` (${m[1]}% بشكل صحيح)` : '')],
+  [/^practice answers correct(?: \((\d+)\))?$/, m => 'إجابات تدريبية صحيحة' + (m[1] ? ` (من ${m[1]})` : '')],
+  [/^You accepted a flawed AI suggestion (\d+) times? out of (\d+)\. Before accepting, check the data the AI used against the case\.$/, m => `قبلت اقتراحًا خاطئًا من الذكاء الاصطناعي ${m[1]} مرة من أصل ${m[2]}. قبل القبول، قارن البيانات التي استخدمها بالحالة.`],
+  [/^You caught every flawed AI suggestion so far \((\d+)\)\. Keep checking before you accept\.$/, m => `اكتشفت كل اقتراح خاطئ حتى الآن (${m[1]}). واصل التحقق قبل القبول.`],
+  [/^(\d+) correct in a row$/, m => `${m[1]} إجابات صحيحة متتالية`],
+  [/^(\d+) messages(?: · (\d+) practice answers, (\d+)% correct)?$/, m => `رسائل: ${m[1]}` + (m[2] ? ` · إجابات تدريبية: ${m[2]}، صحيحة بنسبة ${m[3]}%` : '')],
+  [/^(.+): (\d+) answers? to revisit$/, m => `${m[1]}: إجابات للمراجعة: ${m[2]}`],
+];
+const I18N_SKIP = '.msg:not(.err) .body, .chips .chip:not(.ui-chip), .ttext, .topic-title, .unit.panel .panel-head h3, .home-sub, #ctx, .wm-text, .lesson, .opt-row, #consent-root, #modal, script, style, textarea, [data-noi18n]';
+const I18N_BTN_ONLY = '#survey-root, #check-root';
+let LANG = 'en'; try { LANG = localStorage.getItem('lang') === 'ar' ? 'ar' : 'en'; } catch (e) {}
+const i18nOrig = new WeakMap(), i18nAttr = new WeakMap();
+window.__i18nMiss = new Set();
+function arFor(t) {
+  const k = t.replace(/\s+/g, ' ').trim();
+  if (!k || !/[A-Za-z]/.test(k)) return null;
+  if (AR[k] != null) return AR[k];
+  for (const [rx, f] of AR_RX) { const m = k.match(rx); if (m) { const r = f(m); if (r != null) return r; } }
+  if (!window.__i18nMiss.has(k)) { window.__i18nMiss.add(k); if (window.__i18nDebug) console.debug('I18NMISS\t' + k); } return null;
+}
+function i18nAllowed(el) {
+  if (!el || el.closest(I18N_SKIP)) return false;
+  if (el.closest(I18N_BTN_ONLY) && !el.closest('button, .btn')) return false;
+  return true;
+}
+function i18nText(n) {
+  const el = n.parentElement; if (!i18nAllowed(el)) return;
+  if (LANG === 'ar') {
+    const src = i18nOrig.has(n) && i18nOrig.get(n).ar === n.nodeValue ? i18nOrig.get(n).en : n.nodeValue;
+    const ar = arFor(src); if (ar == null) return;
+    const lead = src.match(/^\s*/)[0], trail = src.match(/\s*$/)[0], val = lead + ar + trail;
+    i18nOrig.set(n, { en: src, ar: val }); if (n.nodeValue !== val) n.nodeValue = val;
+  } else if (i18nOrig.has(n)) { const o = i18nOrig.get(n); if (n.nodeValue === o.ar) n.nodeValue = o.en; i18nOrig.delete(n); }
+}
+function i18nAttrs(el) {
+  if (!i18nAllowed(el) && !(el.matches && el.matches('textarea'))) return;
+  ['placeholder', 'aria-label', 'title'].forEach(a => {
+    if (!el.hasAttribute(a)) return;
+    const store = i18nAttr.get(el) || {}; const cur = el.getAttribute(a);
+    if (LANG === 'ar') {
+      const src = store[a] && store[a].ar === cur ? store[a].en : cur, ar = arFor(src);
+      if (ar != null) { store[a] = { en: src, ar }; i18nAttr.set(el, store); if (cur !== ar) el.setAttribute(a, ar); }
+    } else if (store[a]) { if (cur === store[a].ar) el.setAttribute(a, store[a].en); delete store[a]; }
+  });
+}
+function i18nWalk(root) {
+  if (!root) return;
+  if (root.nodeType === 3) { i18nText(root); return; }
+  if (root.nodeType !== 1) return;
+  i18nAttrs(root);
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+  let n; while ((n = w.nextNode())) { if (n.nodeType === 3) i18nText(n); else i18nAttrs(n); }
+}
+let i18nBusy = false;
+const i18nObs = new MutationObserver(ms => {
+  if (i18nBusy) return; i18nBusy = true;
+  try { ms.forEach(m => { if (m.type === 'characterData') i18nText(m.target); else if (m.type === 'attributes') i18nAttrs(m.target); else m.addedNodes.forEach(i18nWalk); }); }
+  finally { i18nObs.takeRecords(); i18nBusy = false; }
+});
+function setLang(l) {
+  LANG = l === 'ar' ? 'ar' : 'en';
+  try { localStorage.setItem('lang', LANG); } catch (e) {}
+  document.documentElement.lang = LANG; document.documentElement.dir = LANG === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.lang-btn').forEach(b => { b.textContent = LANG === 'ar' ? 'English' : 'عربي'; b.setAttribute('lang', LANG === 'ar' ? 'en' : 'ar');
+    b.setAttribute('aria-label', LANG === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'); });
+  i18nBusy = true; i18nWalk(document.body); i18nObs.takeRecords(); i18nBusy = false;
+  if (me) logEvent('ui_language', '', '', '', '', LANG);
+}
+i18nObs.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['placeholder', 'aria-label', 'title'] });
+document.querySelectorAll('.lang-btn').forEach(b => b.setAttribute('data-noi18n', ''));
+if (LANG === 'ar') setLang('ar'); else document.querySelectorAll('.lang-btn').forEach(b => { b.textContent = 'عربي'; b.setAttribute('lang', 'ar'); });
 </script>
 </body>
 </html>
