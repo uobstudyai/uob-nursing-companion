@@ -882,6 +882,11 @@ body { background: var(--ground); }
   body.kb-open #app-screen > .bar, body.kb-open .tabs, body.kb-open .modebar, body.kb-open #quick-chips, body.kb-open #survey-banner { display: none !important; }
 }
 
+/* v18: active practice style */
+.style-now { display:flex; align-items:center; justify-content:space-between; gap:12px; max-width:68ch; padding:8px 12px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel); font-size:var(--fs-sm); color:var(--muted); }
+.style-now strong { color:var(--ink); font-weight:600; }
+.style-now button { border:0; background:none; color:var(--brand); font:inherit; font-weight:600; padding:6px 4px; min-height:32px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>

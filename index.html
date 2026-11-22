@@ -881,6 +881,11 @@ body { background: var(--ground); }
   body.kb-open #app-screen > .bar, body.kb-open .tabs, body.kb-open .modebar, body.kb-open #quick-chips, body.kb-open #survey-banner { display: none !important; }
 }
 
+/* v18: active practice style */
+.style-now { display:flex; align-items:center; justify-content:space-between; gap:12px; max-width:68ch; padding:8px 12px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel); font-size:var(--fs-sm); color:var(--muted); }
+.style-now strong { color:var(--ink); font-weight:600; }
+.style-now button { border:0; background:none; color:var(--brand); font:inherit; font-weight:600; padding:6px 4px; min-height:32px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -2142,7 +2147,7 @@ function setChips(list) {
 const NO_REAL_STUDIES = ' Every scenario, study and dataset you write must be clearly fictional: never name real studies, authors, journals, DOIs or statistics.';
 const PRACTICE_STYLES = {
   scenario: {
-    label: 'Clinical scenario', blurb: 'A short ward or community situation. You apply the topic step by step.',
+    label: 'Clinical scenario', blurb: 'A simulated patient case in a ward or community setting. You apply the topic step by step.',
     chips: ['Next question', 'Give me a hint', 'New scenario', 'Change practice style'],
     prompt: 'PRACTICE STYLE: CLINICAL SCENARIO. Write a short, realistic scenario (3 to 5 sentences) set in a hospital, clinic or community in Bahrain or a similar setting, built around the chosen topic. Start it with the label "Fictional scenario:". Then ask ONE question that makes the student apply the topic (for clinical topics: what to assess first, the priority nursing action and its rationale, what a finding means, or what to teach the client; for research topics: identify the variables, choose a design or sampling method, spot the ethical issue, or write a PICO question or hypothesis). Wait for the answer. Then give feedback: what was right, what was missing, and a model answer. Then ask ONE follow-up question on the same scenario. If the student asks for a hint, give a hint, not the answer.' + NO_REAL_STUDIES,
   },
@@ -2157,12 +2162,12 @@ const PRACTICE_STYLES = {
     prompt: 'PRACTICE STYLE: SPOT THE FLAW. Write a short excerpt (4 to 6 sentences) from a made-up research report on the chosen topic. Start it with the label "Fictional study excerpt:". Build in ONE deliberate methodological flaw of the kind this topic\'s slides teach students to recognise (for example: a convenience sample described as random, a "directional" hypothesis with no direction, a leading or double-barrelled questionnaire item, a design called experimental with no random assignment, a statistically significant result described as clinically important without justification). Ask the student to find the flaw, explain why it is a problem, and suggest a fix. Do not reveal the flaw before the student answers. If they are stuck or ask for a hint, give one hint first. After their answer, give feedback, then offer another excerpt.' + NO_REAL_STUDIES,
   },
   aitool: {
-    label: 'AI at the bedside', blurb: 'A made-up case with a suggestion from a simulated clinical AI tool. Decide: accept, modify or reject. Some are deliberately wrong.',
+    label: 'Judge an AI suggestion', blurb: 'Not a patient case: a simulated clinical AI tool makes a suggestion and you decide to accept, modify or reject it. Some are deliberately wrong.',
     chips: ['New case', 'Give me a hint', 'Change practice style'],
     prompt: 'PRACTICE STYLE: AI AT THE BEDSIDE. This trains students to judge the output of clinical AI tools and to avoid automation bias. Write a short fictional case (2 to 4 sentences) on the chosen topic with the key assessment data, starting with the label "Fictional case:". Then show the output of a made-up clinical AI tool under the label "Simulated AI tool output (fictional, for practice only):" in 2 to 4 lines, written in the confident style such tools use. Choose the kind of tool that fits the topic: an early-warning or deterioration alert, a medication or dose suggestion, a care-plan or discharge-teaching draft, or a documentation summary. Never use the name of a real product or company. {TRUTH} Then ask "What would you do with this AI suggestion?" and give exactly these three options, each on its own line:\nA) Accept it as it is\nB) Modify it before acting\nC) Reject it and escalate\nThen write only: "Choose A, B or C, and tell me what you would check first." Do not reveal whether the output is correct before the student answers. After the answer, give feedback: say whether the AI output was sound or flawed, point to the case data that shows it, and explain what a safe nurse checks before acting on any AI output (the patient, the data the tool used, the policy or protocol, the prescriber or a senior colleague). Where relevant, name the risk of over-trusting automated advice. Mark as correct: B or C for a flawed output when the student identifies or reasonably suspects the problem; A for a sound output, or B if the change they propose is reasonable and safe. Then offer a new case.' + NO_REAL_STUDIES,
   },
   airesearch: {
-    label: 'AI research assistant', blurb: 'A simulated AI research assistant summarises or advises on a made-up study. Decide: use, revise or reject. Some outputs are deliberately wrong.',
+    label: 'Judge AI research output', blurb: 'A simulated AI research assistant summarises or advises on a made-up study. Decide: use, revise or reject. Some outputs are deliberately wrong.',
     chips: ['New case', 'Give me a hint', 'Change practice style'],
     prompt: 'PRACTICE STYLE: AI RESEARCH ASSISTANT. This trains students to judge the output of AI research tools and to avoid over-trusting them. Write a short fictional research situation (2 to 4 sentences) on the chosen topic, starting with the label "Fictional situation:" (for example a student planning a study, or a made-up study\'s design and results). Then show the output of a made-up AI research assistant under the label "Simulated AI assistant output (fictional, for practice only):" in 2 to 4 lines, in the confident style such tools use: for example a summary of the study\'s findings, a suggested design, sampling method or statistical test, or a draft conclusion. Never use the name of a real product or company, and never cite real studies, authors or DOIs. {TRUTH} Then ask "What would you do with this AI output?" and give exactly these three options, each on its own line:\nA) Use it as it is\nB) Revise it before using it\nC) Reject it and check the original source\nThen write only: "Choose A, B or C, and tell me what you would check first." Do not reveal whether the output is correct before the student answers. After the answer, give feedback: say whether the AI output was sound or flawed, point to the details that show it, and explain how a careful researcher verifies AI output (read the original report, check the design and the numbers, check that conclusions match the evidence). Mark as correct: B or C for a flawed output when the student identifies or reasonably suspects the problem; A for a sound output, or B if the change they propose is reasonable. Then offer a new case.' + NO_REAL_STUDIES,
   },
@@ -2182,13 +2187,31 @@ function addStylePicker() {
     `<button type="button" class="style-card" onclick="pickStyle('${k}')"><strong>${esc(v.label)}</strong><span>${esc(v.blurb)}</span></button>`).join('');
   appendMsg(d);
 }
-function pickStyle(k) {
-  if (state.busy) return;
+function styleBar(k) {
+  const d = document.createElement('div'); d.className = 'style-now';
+  d.innerHTML = `<span>Practice style: <strong>${esc(PRACTICE_STYLES[k].label)}</strong></span><button type="button" onclick="setMode('practice')">Change</button>`;
+  document.getElementById('messages').appendChild(d);
+}
+function setStyle(k) {
   state.style = k; state.history = [];
   document.getElementById('messages').innerHTML = '';
-  setChips(PRACTICE_STYLES[k].chips);
+  setChips(PRACTICE_STYLES[k].chips); styleBar(k);
+}
+function pickStyle(k) {
+  if (state.busy) return;
+  setStyle(k);
   document.getElementById('user-input').value = 'Start';
   sendMessage();
+}
+// A typed request for a kind of practice ("give me a simulation case on asepsis") wins over the current style.
+function requestedStyle(text) {
+  if (/^[A-D]\)/.test(text) || text.length < 6) return null;
+  const t = text.toLowerCase(), r312 = me.course === 'NUR312';
+  if (/\b(ai|a\.i\.)\b.*\b(suggestion|tool|output|assistant)|automation bias/.test(t)) return r312 ? 'airesearch' : 'aitool';
+  if (/spot the (error|mistake|flaw)|find the (error|mistake|flaw)/.test(t)) return r312 ? 'flaw' : 'error';
+  if (/multiple.choice|\bmcqs?\b|\bquiz\b/.test(t)) return 'mcq';
+  if (/simulat|scenario|case stud|clinical case|patient case|case scenario|a case\b/.test(t)) return 'scenario';
+  return null;
 }
 const AITOOL_FLAWED = 'In THIS case the AI output MUST contain exactly one important error that the case details reveal (for clinical tools: a wrong dose or unit, a missed allergy or contraindication, an alert that ignores a deteriorating sign, a wrong priority, or teaching that contradicts the topic; for research tools: a causal claim from a non-experimental design, a wrong statistical test or sampling description, a misreported number, or a conclusion the results do not support). Make the error discoverable from the details given, not obvious.';
 const AITOOL_SOUND = 'In THIS case the AI output MUST be correct, safe and consistent with the case details and the course materials. Do not put any error in it.';
@@ -2205,7 +2228,7 @@ function styleNote() {
   if (state.mode !== 'practice') return '';
   let s = state.style ? '\n\n' + PRACTICE_STYLES[state.style].prompt : '';
   if (state.style === 'aitool' || state.style === 'airesearch') s = s.replace('{TRUTH}', state.aiFlawed ? AITOOL_FLAWED : AITOOL_SOUND);
-  return s + RESULT_RULE;
+  return s + RESULT_RULE + '\n\nSTUDENT REQUEST FIRST: If the student explicitly asks for a different kind of practice activity from the style above, do not force the style on them: give what they asked for, on the chosen topic, and mention in one short line that they can tap "Change practice style" to switch.';
 }
 document.addEventListener('keydown', e => {
   if (!e.target.closest || !e.target.closest('.seg')) return;
@@ -2258,7 +2281,11 @@ async function sendMessage() {
   if (isTouch()) input.blur();              // keyboard down: the whole screen is free to read the answer
   if (listening) stopMic();
   const inputMethod = state.input; state.input = 'typed';
-  if (state.mode === 'practice' && !state.style) state.style = 'mcq';   // typed straight into the picker
+  if (state.mode === 'practice') {
+    const want = requestedStyle(text);
+    if (want && want !== state.style) setStyle(want);                 // honour what the student asked for
+    else if (!state.style) setStyle('mcq');                            // typed straight into the picker
+  }
   const aiStyle = state.mode === 'practice' && (state.style === 'aitool' || state.style === 'airesearch');
   if (aiStyle && (/^(start|new case)\b/i.test(text) || !state.history.length)) { state.aiFlawed = Math.random() < 0.5; state.aiChoice = ''; }
   if (aiStyle) { const c = text.match(/^([ABC])\)/); if (c) state.aiChoice = { A: 'accept', B: 'modify', C: 'reject' }[c[1]]; }
