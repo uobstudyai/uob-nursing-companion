@@ -156,7 +156,8 @@ a { color: var(--brand); text-underline-offset: 3px; text-decoration-thickness: 
   font-size: var(--fs-sm); font-weight: 500; color: var(--ink-2);
   transition: background-color var(--t-fast) ease, color var(--t-fast) ease, transform var(--t-fast) var(--ease-out);
 }
-.seg button[aria-selected="true"] { background: var(--surface); color: var(--brand); font-weight: 600; box-shadow: 0 1px 2px rgba(20,33,61,.12); }
+.seg button { border: 1px solid transparent; }
+.seg button[aria-selected="true"] { background: var(--surface); color: var(--brand); font-weight: 600; border-color: var(--line); }
 #mode-desc { font-size: var(--fs-sm); color: var(--muted); }
 
 .thread { flex: 1; overflow-y: auto; padding: 24px; scroll-behavior: smooth; }
@@ -358,7 +359,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 
 .locked { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
 .locked-card { max-width: 480px; background: var(--surface); border-radius: var(--r); padding: 28px; }
-.locked-card h2 { font-size: var(--fs-lg); margin-bottom: 8px; }
+.locked-card h2, .locked-card h1 { font-size: var(--fs-lg); margin-bottom: 8px; }
 .locked-card p { color: var(--ink-2); }
 
 /* ── Questionnaire ──────────────────────────────────────────────────────── */
@@ -493,7 +494,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 #mic-btn { width: 48px; min-height: 48px; padding: 0; border-radius: var(--r); }
 #mic-btn svg { width: 20px; height: 20px; }
 #mic-btn.live { background: var(--bad); color: #fff; animation: micpulse 1.4s ease-in-out infinite; }
-@keyframes micpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(163,39,31,.35); } 50% { box-shadow: 0 0 0 6px rgba(163,39,31,0); } }
+@keyframes micpulse { /* taste-skill-ignore: recording indicator, not at rest */ 0%, 100% { box-shadow: 0 0 0 0 rgba(163,39,31,.35); } 50% { box-shadow: 0 0 0 6px rgba(163,39,31,0); } }
 @media (prefers-reduced-motion: reduce) { #mic-btn.live { animation: none; } }
 
 .check-call {
@@ -510,7 +511,6 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 .check-card h2, .check-head h2 { font-size: var(--fs-lg); font-weight: 600; line-height: 1.25; }
 .check-card p { margin-top: 10px; color: var(--ink-2); }
 .check-card .muted, .muted { color: var(--muted); font-size: var(--fs-sm); }
-.eyebrow { font-size: var(--fs-xs); font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
 .actions-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
 .check-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .check-clock { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--brand); background: var(--brand-soft); padding: 6px 12px; border-radius: var(--r-pill); font-size: var(--fs-sm); }
@@ -569,10 +569,8 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 @media (hover: hover) and (pointer: fine) { .bar-btn:hover { background: var(--brand-soft); color: var(--brand); } }
 .entry-logo { height: 96px; width: auto; display: block; margin-bottom: 20px; }
 .tabs { box-shadow: none; }
-.topic-list, .check-card, .msg.ai .body, .signin, .q, .review, .style-card, .locked-card { box-shadow: var(--shadow); }
 .msg.ai .body { border: 1px solid #E6EAF0; }
 .unit h3 { display: flex; align-items: center; gap: 10px; }
-.unit h3::before { content: ""; width: 4px; height: 18px; border-radius: 2px; background: var(--gold); }
 .linklike { background: none; border: 0; padding: 0; color: var(--brand); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .privacy-note { display: flex; gap: 12px; margin-top: 18px; padding: 14px 16px; background: var(--brand-soft); border-radius: var(--r-sm); font-size: var(--fs-sm); color: var(--ink-2); max-width: 60ch; }
 .privacy-note svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--brand); margin-top: 2px; }
@@ -599,12 +597,12 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 .tick input { width: 22px; height: 22px; margin-top: 1px; flex-shrink: 0; accent-color: var(--brand); }
 
 /* goal + AI-wise cards */
-.goal-card { background: var(--surface); border-radius: var(--r); padding: 14px 16px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.goal-card { padding: 16px 18px; }
 .goal-card .row { display: flex; gap: 8px; margin-top: 8px; }
 .goal-card input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); font: inherit; }
 .goal-card.set { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-left: 4px solid var(--ok); }
 .goal-card.set p { flex: 1; min-width: 200px; font-weight: 500; }
-.aiwise { display: flex; gap: 16px; align-items: flex-start; background: #FBF6E9; border: 1px solid #EBDDB4; border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px; }
+.aiwise { display: flex; gap: 16px; align-items: flex-start; background: var(--panel); border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px; }
 .aiwise > div { flex: 1; }
 .aiwise ul { margin-top: 6px; padding-left: 1.2em; font-size: var(--fs-sm); color: var(--ink-2); }
 .aiwise li + li { margin-top: 3px; }
@@ -620,7 +618,7 @@ table.data tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
 
 /* my learning */
 .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 20px 0; }
-.stat { background: var(--surface); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); }
+.stat { background: var(--panel); border-radius: var(--r-sm); padding: 16px; }
 .stat b { display: block; font-size: var(--fs-xl); font-weight: 600; color: var(--brand); font-variant-numeric: tabular-nums; line-height: 1.1; }
 .stat b small { font-size: var(--fs-md); color: var(--muted); font-weight: 500; }
 .stat span { font-size: var(--fs-sm); color: var(--muted); }
@@ -659,35 +657,22 @@ label.opt input { margin-top: 3px; }
 body { background: var(--ground); }
 
 /* header wordmark: emblem + two-line name */
-.bar { min-height: 64px; box-shadow: 0 1px 0 var(--line); border-bottom: 0; }
+.bar { min-height: 60px; border-bottom: 1px solid var(--line); }
 .wordmark { gap: 12px; }
 .wordmark .logo { width: 36px; height: 42px; }
 .wm-text { display: flex; flex-direction: column; line-height: 1.15; font-weight: 600; color: var(--brand); letter-spacing: -0.01em; }
-.wm-text small { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+.wm-text small { font-size: 12px; font-weight: 500; color: var(--muted); }
 
 /* sign-in: logo keeps its proportions */
 .entry-logo { height: 104px; width: auto; max-width: 100%; object-fit: contain; align-self: flex-start; margin-bottom: 28px; }
-.hero-art { background: radial-gradient(120% 90% at 30% 20%, #2A4A80 0%, var(--brand) 55%, var(--brand-2) 100%); }
+.hero-art { background: var(--brand); }
 .signin { border-radius: var(--r); }
 .btn { border-radius: 10px; }
-.btn-primary { box-shadow: 0 1px 2px rgba(20,33,61,.2), 0 4px 12px rgba(31,56,100,.18); }
-
-/* course hero on the outline */
-.course-hero { position: relative; overflow: hidden; background: linear-gradient(135deg, #24467E 0%, var(--brand) 55%, var(--brand-2) 100%);
-  color: #fff; border-radius: var(--r); padding: 24px 24px 20px; margin-bottom: 18px; box-shadow: var(--shadow); }
-.course-hero::after { content: ""; position: absolute; right: -40px; top: -40px; width: 200px; height: 200px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(184,145,46,.35), rgba(184,145,46,0) 70%); pointer-events: none; }
-.course-code { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
-  background: rgba(255,255,255,.14); color: #F3E3B5; padding: 4px 10px; border-radius: var(--r-pill); }
-.course-hero h2 { font-size: var(--fs-xl); line-height: 1.2; letter-spacing: -0.02em; font-weight: 600; margin-top: 10px; color: #fff; }
-.course-hero p { margin-top: 6px; color: #D6DEEC; max-width: 60ch; }
-.hero-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; font-size: var(--fs-sm); color: #D6DEEC; }
-.hero-facts b { color: #fff; font-weight: 600; }
 
 /* AI-skills cards */
 .skill-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .skill-card { display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%; padding: 14px 16px; border: 1px solid #EDE3C6;
-  background: linear-gradient(180deg, #FFFDF7, var(--surface)); border-radius: var(--r); box-shadow: var(--shadow); cursor: pointer;
+  background: var(--surface); border-radius: var(--r-sm); cursor: pointer;
   font: inherit; color: var(--ink); transition: transform var(--t-fast) var(--ease-out), border-color var(--t-fast); }
 .skill-card strong { display: block; font-weight: 600; line-height: 1.3; }
 .skill-card .ttext span { display: block; font-size: var(--fs-sm); color: var(--muted); margin-top: 4px; }
@@ -710,14 +695,12 @@ body { background: var(--ground); }
 @media (max-width: 760px) {
   .bar { min-height: 56px; }
   .wordmark .logo { width: 30px; height: 35px; }
-  .wm-text small { font-size: 10px; }
+  .wm-text small { font-size: 12px; }
   .entry { padding-top: 28px; }
   .entry-logo { height: 84px; align-self: center; margin-bottom: 20px; }
   .hero-art { padding: 20px !important; }
   .hero-art svg { max-width: 190px !important; }
-  .course-hero { padding: 20px 18px 18px; }
-  .course-hero h2 { font-size: var(--fs-lg); }
-  .skill-grid { grid-template-columns: 1fr; }
+      .skill-grid { grid-template-columns: 1fr; }
   .topic-row .tnum { align-self: flex-start; margin-top: 2px; }
 }
 .gate-card { background: var(--gold-soft); border: 1px solid #E6D3A0; border-left: 4px solid var(--gold); border-radius: var(--r); padding: 16px 18px; margin-bottom: 18px; }
@@ -729,7 +712,7 @@ body { background: var(--ground); }
 .req-note { background: var(--brand-soft); border-radius: 10px; padding: 10px 14px; margin: 10px 0 14px; font-size: var(--fs-sm); color: var(--ink-2); }
 .locked-card .btn { margin-top: 12px; }
 .gate-check { display: flex; gap: 14px; align-items: center; justify-content: space-between; margin-top: 14px; padding: 16px 18px;
-  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--r); box-shadow: var(--shadow); }
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); }
 .gate-check strong { display: block; }
 .gate-check span { display: block; margin-top: 4px; font-size: var(--fs-sm); color: var(--muted); }
 .gate-check.off { opacity: .7; }
@@ -764,6 +747,117 @@ body { background: var(--ground); }
 .lightbox img { max-width: 100%; max-height: calc(100% - 120px); object-fit: contain; background: #fff; border-radius: 8px; }
 .lightbox p { color: #E6EAF2; font-size: var(--fs-sm); text-align: center; max-width: 70ch; }
 
+/* ── v16 design pass (taste-skill, "editorial greeting" app style, UoB brand kept) ──────────────
+   One ground (white), one tonal panel step in a ward blue-grey, one ink (navy), the UoB navy as the
+   one action colour, gold only on the emblem. No shadows at rest, no gradients, one radius (8px).
+   Home grid: a centred 1100px column, 12 columns of 77px with 16px gutters
+   (12 x 77 + 11 x 16 = 1100); topics span 8 (8 x 77 + 7 x 16 = 728), the side column 4 (4 x 77 + 3 x 16 = 356),
+   728 + 16 + 356 = 1100. */
+:root { --ground: #FFFFFF; --panel: #F1F4F8; --line: #DCE2EA; --r: 8px; --r-sm: 8px; --shadow: none; }
+body { background: var(--ground); }
+.bar { background: var(--surface); }
+.tabs-in, .outline-in { max-width: 1100px; }
+.outline-in { padding: 36px 24px 72px; }
+
+/* greeting */
+.home-head { margin-bottom: 28px; }
+.home-head [data-title] { font-size: 2rem; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; color: var(--ink); }
+.home-sub { margin-top: 8px; color: var(--ink-2); font-size: var(--fs-md); }
+
+/* grid */
+.home-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.home-main { grid-column: span 8; display: grid; gap: 16px; min-width: 0; }
+.home-side { grid-column: span 4; display: grid; gap: 16px; min-width: 0; }
+
+/* tonal panels: title and content directly on one step off white */
+.panel { background: var(--panel); border-radius: var(--r); padding: 20px; margin: 0; }
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.panel h3, .panel-head h3 { font-size: var(--fs-md); font-weight: 600; color: var(--ink); margin: 0; }
+.panel h3::before { content: none; }
+.panel .count { font-size: var(--fs-sm); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.panel > p.muted { font-size: var(--fs-sm); margin-bottom: 12px; }
+.unit.panel { margin-top: 0; }
+
+/* row cards: one step lighter than the panel, border one step darker */
+.topic-list { background: none; border-radius: 0; overflow: visible; display: grid; gap: 8px; }
+.topic-list li + li { border-top: 0; }
+.topic-row { min-height: 63px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.topic-row .tnum { background: none; padding: 0; min-width: 76px; color: var(--brand); font-size: var(--fs-sm); font-weight: 600; }
+@media (hover: hover) and (pointer: fine) { .topic-row:hover { background: var(--surface); border-color: var(--brand); } }
+
+/* AI-skills rows */
+.skill-grid { grid-template-columns: 1fr; gap: 8px; }
+.skill-card { border: 1px solid var(--line); background: var(--surface); padding: 12px 14px; align-items: center; }
+.skill-num { width: 22px; height: 22px; background: none; border: 1.5px solid var(--muted); color: var(--ok); }
+.skill-num svg { width: 14px; height: 14px; }
+.skill-card.done .skill-num { background: none; border: 0; }
+.skill-card.done .skill-num svg { width: 20px; height: 20px; }
+@media (hover: hover) and (pointer: fine) { .skill-card:hover { border-color: var(--brand); transform: none; } }
+
+/* side cards */
+.goal-card, .aiwise, .guide-panel { margin: 0; }
+.goal-card.set { border-left: 0; display: block; }
+.goal-card.set p { margin: 6px 0 4px; }
+.goal-card p.muted { font-size: var(--fs-sm); margin-top: 4px; }
+.aiwise { display: block; background: var(--panel); }
+.aiwise .btn { margin-top: 12px; }
+.gate-card { background: var(--panel); border: 0; border-radius: var(--r); margin: 0; padding: 20px; }
+.gate-card strong { font-size: var(--fs-md); }
+.gate-card p { font-size: var(--fs-sm); line-height: 1.6; }
+.gate-check { background: var(--panel); border: 0; margin-top: 0; padding: 20px; }
+.gate-check.off { opacity: 1; }
+.gate-check.off strong, .gate-check.off span { color: var(--muted); }
+.gate-note { text-align: left; margin: 0; font-size: var(--fs-sm); }
+.check-call { border: 0; background: var(--brand-soft); border-radius: var(--r); margin-bottom: 16px; }
+
+/* headings in dialogs and screens: the context line goes under the heading */
+.subline { margin-top: 4px; color: var(--muted); font-size: var(--fs-sm); }
+.field-label { display: block; font-weight: 600; font-size: var(--fs-sm); margin: 16px 0 6px; }
+.consent-title { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.015em; font-weight: 600; margin-bottom: 12px; }
+
+/* chat: replies on the tonal step, no outline */
+.msg.ai .body { background: var(--panel); border: 0; }
+.msg-tool.thumb svg { width: 16px; height: 16px; }
+.play-dot svg { width: 20px; height: 20px; }
+
+/* controls: one radius, flat fills */
+.btn, .seg, .seg button, #user-input, .goal-card input, .chip, .media-btn { border-radius: var(--r-sm); }
+.style-card, .q, .review, .check-card, .locked-card, .signin, .modal-card, .media-card { border-radius: var(--r); }
+.locked-card, .signin { background: var(--panel); }
+
+@media (max-width: 900px) {
+  .home-main, .home-side { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .outline-in { padding: 24px 16px 48px; }
+  .home-head [data-title] { font-size: 1.5rem; }
+  .home-sub { font-size: var(--fs-sm); }
+  .panel { padding: 16px; }
+  .tab { padding-left: 10px; padding-right: 10px; white-space: nowrap; }
+}
+
+.topic-head .topic-title { font-size: var(--fs-md); font-weight: 600; line-height: 1.35; margin: 0; }
+@media (max-width: 760px) { .page h1 { font-size: 1.5rem; } }
+.tabs { padding: 0 24px; }
+.tabs-in { padding: 0; }
+.tab:first-child { margin-left: -12px; }
+.gate-card p + p { margin-top: 8px; }
+@media (max-width: 760px) {
+  .tabs { padding: 0 16px; }
+  .topic-row { flex-wrap: wrap; row-gap: 2px; }
+  .topic-row .tnum { order: 0; width: auto; min-width: 0; font-size: var(--fs-xs); }
+  .topic-row .ttext { order: 2; flex-basis: calc(100% - 32px); }
+  .topic-row svg { order: 1; margin-left: auto; }
+}
+@media (max-width: 760px) { .tab:first-child { margin-left: -10px; } .tabs { padding: 0 20px; } }
+.survey-in [data-title] { font-size: 1.75rem; line-height: 1.15; letter-spacing: -0.02em; font-weight: 600; }
+@media (max-width: 760px) { .survey-in [data-title] { font-size: 1.5rem; } }
+.check-card { background: var(--panel); }
+.check-card.warnish { border-left: 0; background: var(--warn-soft); }
+.check-card strong { display: block; }
+.check-card p:first-of-type { margin-top: 6px; }
+.pis h2 { font-size: var(--fs-lg); line-height: 1.25; margin-top: 8px; }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -774,7 +868,7 @@ body { background: var(--ground); }
   <header class="bar"><span class="wordmark"><span class="logo" aria-hidden="true"></span><span class="wm-text"><small>University of Bahrain</small>Nursing AI Companion</span></span><span class="ctx">Staff</span></header>
   <div class="hero">
     <main class="entry">
-      <h1>Staff sign-in</h1>
+      <h1 data-title>Staff sign-in</h1>
       <p class="lede">For course instructors and the principal investigator of project 25-2024. Students use the main study link.</p>
       <div class="roles" role="list">
         <button class="role-row" role="listitem" onclick="showScreen('faculty-login-screen')">
@@ -806,7 +900,7 @@ body { background: var(--ground); }
   </header>
   <div class="hero art-left">
   <main class="form-wrap">
-    <h1>Instructor sign-in</h1>
+    <h1 data-title>Instructor sign-in</h1>
     <p class="lede">For class checks and the weekly fidelity audit. The password comes from the principal investigator.</p>
     <form class="panel" novalidate onsubmit="event.preventDefault(); loginFaculty();">
       <div class="field" id="fld-f-name">
@@ -860,7 +954,7 @@ body { background: var(--ground); }
   </header>
   <main class="page">
     <section id="checks-block">
-      <h1>Class check</h1>
+      <h1 data-title>Class check</h1>
       <p class="lede">Open a 5-question check at the end of class. Group A students in the section you choose see it in the companion until it closes. It is formative only and does not count towards grades; answers are saved with research codes.</p>
       <div id="checks-unavailable" class="empty" hidden><strong>Not available yet</strong>Class checks are ready for NUR312 only. They will be added for this course once its materials are in place.</div>
       <div id="checks-ui">
@@ -889,7 +983,7 @@ body { background: var(--ground); }
     </section>
 
     <section class="block">
-    <h1>Weekly fidelity audit</h1>
+    <h1 data-title>Weekly fidelity audit</h1>
     <p class="lede">Rate 10 companion answers drawn at random from your course's last 7 days of student use. Student names and IDs are never shown. It takes about 15–20 minutes.</p>
 
     <div class="controls">
@@ -934,7 +1028,7 @@ body { background: var(--ground); }
   </header>
   <div class="hero art-left">
   <main class="form-wrap">
-    <h1>Principal investigator</h1>
+    <h1 data-title>Principal investigator</h1>
     <p class="lede">Sign in to see study usage.</p>
     <form class="panel" novalidate onsubmit="event.preventDefault(); loginAdmin();">
       <div class="field" id="fld-a-pass">
@@ -968,7 +1062,7 @@ body { background: var(--ground); }
     <button class="bar-btn" onclick="signOut()">Sign out</button>
   </header>
   <main class="page">
-    <h1>Study overview</h1>
+    <h1 data-title>Study overview</h1>
     <p class="lede">Impact of a Customized AI Companion on Nursing Students' Motivation for Learning and Self-Directed Learning. Weeks 1–7, February to April 2027.</p>
 
     <section class="block">
@@ -1457,6 +1551,27 @@ function downloadUsage() {
   a.download = 'companion_usage_' + new Date().toISOString().slice(0, 10) + '.csv';
   a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
+
+// Exactly one h1 in the document: the title of the screen on show (staff page has several screens).
+function retag(el, tag) {
+  if (el.tagName === tag.toUpperCase()) return;
+  const n = document.createElement(tag);
+  for (const a of el.attributes) n.setAttribute(a.name, a.value);
+  while (el.firstChild) n.appendChild(el.firstChild);
+  el.replaceWith(n);
+}
+let titleQueued = false;
+function syncTitle() {
+  if (titleQueued) return; titleQueued = true;
+  requestAnimationFrame(() => {
+    titleQueued = false;
+    const all = [...document.querySelectorAll('[data-title]')];
+    const main = all.find(el => el.offsetParent !== null);
+    all.forEach(el => retag(el, el === main ? 'h1' : 'h2'));
+  });
+}
+new MutationObserver(syncTitle).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] });
+syncTitle();
 
 </script>
 </body>
