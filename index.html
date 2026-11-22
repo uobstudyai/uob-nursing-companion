@@ -857,6 +857,30 @@ body { background: var(--ground); }
 .check-card p:first-of-type { margin-top: 6px; }
 .pis h2 { font-size: var(--fs-lg); line-height: 1.25; margin-top: 8px; }
 
+/* ── v17: phone chat ─────────────────────────────────────────────────────── */
+#app-screen { height: var(--vvh, 100dvh); }
+.to-latest { position: sticky; bottom: 12px; margin: 8px 0 0 auto; display: flex; align-items: center; gap: 6px; z-index: 2;
+  padding: 8px 14px; border: 0; border-radius: var(--r-pill); background: var(--ink); color: #fff; font-size: var(--fs-sm); font-weight: 600; }
+.to-latest[hidden] { display: none; }
+.to-latest svg { width: 16px; height: 16px; }
+@media (max-width: 760px) {
+  /* one compact row above the conversation: back, topic, pictures; the mode switch below it */
+  .modebar { padding-top: 8px; padding-bottom: 8px; }
+  .topic-head { flex-wrap: nowrap; gap: 4px; }
+  .topic-head .back-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .back-link { padding: 6px; margin-left: -6px; flex-shrink: 0; }
+  .topic-head .topic-title { flex: 1; min-width: 0; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .media-btn { padding: 8px; flex-shrink: 0; }
+  .seg button { padding-top: 6px; padding-bottom: 6px; }
+  #mode-desc { display: none; }
+  .thread { padding: 12px 14px; }
+  .composer { padding: 8px 12px 10px; }
+  .chips { margin-bottom: 8px; }
+  /* typing: the conversation and the box, nothing else */
+  body.kb-open #app-screen > .bar, body.kb-open .tabs, body.kb-open .modebar, body.kb-open #quick-chips, body.kb-open #survey-banner { display: none !important; }
+}
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -909,7 +933,7 @@ body { background: var(--ground); }
         <div class="modebar-in">
           <div class="topic-head" id="topic-head" hidden>
             <button class="back-link" type="button" onclick="showOutline()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Course outline</button>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span class="back-label">Course outline</span></button>
             <h2 class="topic-title" id="topic-title" data-title></h2>
             <button class="media-btn" id="media-btn" type="button" hidden onclick="showMediaGallery()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 9"/></svg><span>Pictures &amp; videos</span></button>
@@ -922,7 +946,9 @@ body { background: var(--ground); }
           <p id="mode-desc" aria-live="polite"></p>
         </div>
       </div>
-      <div class="thread" id="thread"><div class="thread-in" id="messages" aria-live="polite"></div></div>
+      <div class="thread" id="thread"><div class="thread-in" id="messages" aria-live="polite"></div>
+        <button type="button" class="to-latest" id="to-latest" hidden onclick="toLatest()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>Latest</button></div>
       <div class="checkview" id="check-view" hidden><div class="checkview-in" id="check-root" aria-live="polite"></div></div>
       <div class="composer" id="composer">
         <div class="composer-in">
@@ -2167,6 +2193,13 @@ function pickStyle(k) {
 const AITOOL_FLAWED = 'In THIS case the AI output MUST contain exactly one important error that the case details reveal (for clinical tools: a wrong dose or unit, a missed allergy or contraindication, an alert that ignores a deteriorating sign, a wrong priority, or teaching that contradicts the topic; for research tools: a causal claim from a non-experimental design, a wrong statistical test or sampling description, a misreported number, or a conclusion the results do not support). Make the error discoverable from the details given, not obvious.';
 const AITOOL_SOUND = 'In THIS case the AI output MUST be correct, safe and consistent with the case details and the course materials. Do not put any error in it.';
 const RESULT_RULE = '\n\nMARKING: Whenever you give feedback on the student\'s answer to a question you asked, begin that reply with exactly one tag: [[RESULT:correct]], [[RESULT:partly]] or [[RESULT:incorrect]]. Do not use the tag in any other reply.';
+// On a phone, long answers mean endless scrolling: ask for short, layered replies.
+const isPhone = () => window.matchMedia('(max-width: 760px)').matches;
+const isTouch = () => window.matchMedia('(pointer: coarse)').matches;
+function phoneNote() {
+  if (!isPhone() || state.verifying) return '';
+  return '\n\nPHONE SCREEN: The student is reading on a phone. Keep this reply short: about 120 words at most, the key point first, in 2 to 4 short paragraphs or a short list. Do not repeat the question. Where it helps, end with one short offer to go deeper (for example "Want a clinical example?"). If the student asks for more detail, give it in full. Practice questions, options and feedback keep their usual format.';
+}
 function styleNote() {
   if (state.verifying) return VERIFY_RULE;
   if (state.mode !== 'practice') return '';
@@ -2222,6 +2255,7 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
   input.value = ''; autoResize(input);
+  if (isTouch()) input.blur();              // keyboard down: the whole screen is free to read the answer
   if (listening) stopMic();
   const inputMethod = state.input; state.input = 'typed';
   if (state.mode === 'practice' && !state.style) state.style = 'mcq';   // typed straight into the picker
@@ -2233,7 +2267,7 @@ async function sendMessage() {
   addUserMessage(text);
   const tid = addTyping();
   const messages = [
-    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) + topicNote() + styleNote() },
+    { role: 'system', content: MODE_PROMPTS[state.mode](me.course) + topicNote() + styleNote() + phoneNote() },
     ...state.history.slice(-CONFIG.MAX_HISTORY),
     { role: 'user', content: text },
   ];
@@ -2281,7 +2315,8 @@ async function sendMessage() {
     logEvent('error', text, (e && e.message) || 'network error', '', inputMethod);
   }
   state.verifying = false;
-  state.busy = false; document.getElementById('send-btn').disabled = false; input.focus();
+  state.busy = false; document.getElementById('send-btn').disabled = false;
+  if (!isTouch()) input.focus();             // on a phone the keyboard stays down so the answer can be read
 }
 function topicNote() {
   const t = state.topic ? topicInfo(state.topic) : null;
@@ -2377,7 +2412,34 @@ function addTyping() {
   appendMsg(d); return id;
 }
 function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
-function appendMsg(el) { document.getElementById('messages').appendChild(el); const t = document.getElementById('thread'); t.scrollTop = t.scrollHeight; }
+function appendMsg(el) {
+  document.getElementById('messages').appendChild(el);
+  const t = document.getElementById('thread');
+  const isAnswer = el.classList.contains('ai') && el.previousElementSibling && el.previousElementSibling.classList.contains('user');
+  // an answer opens at its first line (a long reply is read from the top); everything else goes to the bottom
+  const top = isAnswer ? t.scrollTop + el.getBoundingClientRect().top - t.getBoundingClientRect().top - 12 : t.scrollHeight;
+  t.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+  updateToLatest();
+}
+function toLatest() { const t = document.getElementById('thread'); t.scrollTop = t.scrollHeight; }
+function updateToLatest() {
+  const t = document.getElementById('thread'), b = document.getElementById('to-latest'); if (!t || !b) return;
+  b.hidden = t.scrollHeight - t.scrollTop - t.clientHeight < 240;
+}
+document.getElementById('thread').addEventListener('scroll', updateToLatest, { passive: true });
+// Keyboard open on a phone: give the conversation the screen (hide the header, tabs and mode bar while typing)
+// and keep the app exactly as tall as the visible area, so the box you type in stays above the keyboard.
+if (window.visualViewport) {
+  const vv = window.visualViewport;
+  const fit = () => {
+    document.documentElement.style.setProperty('--vvh', vv.height + 'px');
+    const typing = document.activeElement && document.activeElement.id === 'user-input';
+    document.body.classList.toggle('kb-open', isPhone() && typing && window.innerHeight - vv.height > 120);
+    if (document.body.classList.contains('kb-open')) window.scrollTo(0, 0);
+  };
+  vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit);
+  document.addEventListener('focusin', fit); document.addEventListener('focusout', () => setTimeout(fit, 50));
+}
 function inline(t) {
   return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/(^|[^*])\*(?!\s)(.+?)\*/g,'$1<em>$2</em>').replace(/`([^`]+)`/g,'<code>$1</code>');
 }

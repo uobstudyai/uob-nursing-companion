@@ -858,6 +858,30 @@ body { background: var(--ground); }
 .check-card p:first-of-type { margin-top: 6px; }
 .pis h2 { font-size: var(--fs-lg); line-height: 1.25; margin-top: 8px; }
 
+/* ── v17: phone chat ─────────────────────────────────────────────────────── */
+#app-screen { height: var(--vvh, 100dvh); }
+.to-latest { position: sticky; bottom: 12px; margin: 8px 0 0 auto; display: flex; align-items: center; gap: 6px; z-index: 2;
+  padding: 8px 14px; border: 0; border-radius: var(--r-pill); background: var(--ink); color: #fff; font-size: var(--fs-sm); font-weight: 600; }
+.to-latest[hidden] { display: none; }
+.to-latest svg { width: 16px; height: 16px; }
+@media (max-width: 760px) {
+  /* one compact row above the conversation: back, topic, pictures; the mode switch below it */
+  .modebar { padding-top: 8px; padding-bottom: 8px; }
+  .topic-head { flex-wrap: nowrap; gap: 4px; }
+  .topic-head .back-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .back-link { padding: 6px; margin-left: -6px; flex-shrink: 0; }
+  .topic-head .topic-title { flex: 1; min-width: 0; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-btn span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .media-btn { padding: 8px; flex-shrink: 0; }
+  .seg button { padding-top: 6px; padding-bottom: 6px; }
+  #mode-desc { display: none; }
+  .thread { padding: 12px 14px; }
+  .composer { padding: 8px 12px 10px; }
+  .chips { margin-bottom: 8px; }
+  /* typing: the conversation and the box, nothing else */
+  body.kb-open #app-screen > .bar, body.kb-open .tabs, body.kb-open .modebar, body.kb-open #quick-chips, body.kb-open #survey-banner { display: none !important; }
+}
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
