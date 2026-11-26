@@ -1097,6 +1097,10 @@ html[lang="ar"] .tab { letter-spacing: 0; }
 @media (max-width: 520px) { .course-pick { grid-template-columns: 1fr; } .course-pick button { min-height: 0; } }
 .staff-frame { flex: 1; width: 100%; min-height: 0; border: 0; background: #fff; }
 .staff-tab { color: var(--sky); }
+.staff-entry { margin-top: 16px; padding: 14px 16px; border-radius: var(--r); background: var(--sky-soft); font-size: var(--fs-sm); color: var(--ink-2); }
+.staff-entry strong { display: block; color: var(--ink); margin-bottom: 4px; }
+.staff-entry p + p { margin-top: 6px; }
+.staff-entry a { color: var(--brand); font-weight: 600; }
 
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
@@ -1238,6 +1242,9 @@ html[lang="ar"] .tab { letter-spacing: 0; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <p>For study participants, use of the companion is recorded under an anonymous research code, never your name. The research team reviews a random selection of anonymous AI responses to check that the companion is accurate. <button type="button" class="linklike" onclick="showPIS()">Read the participant information sheet</button></p>
       </div>
+      <div class="staff-entry"><strong>Research team and principal investigator</strong>
+        <p>Sign in above with your UoB email. You get the student view of all three courses, the instructor audit and (PI) the study dashboard.</p>
+        <p>Course instructors without a personal account: <a href="staff.html">instructor and PI sign-in with the staff password</a>.</p></div>
       <p class="entry-foot">Questions about the study? Contact the principal investigator, Marwan Altheeb, at <a href="mailto:maltheeb@uob.edu.bh">maltheeb@uob.edu.bh</a>.</p>
     </main>
     <figure class="hero-art" aria-hidden="true" data-photo-slot="welcome">
@@ -1840,7 +1847,9 @@ function aiCheckState() {
   const s = state.aiCheckServer || {};
   return { attempts: Math.max(d.attempts || 0, s.attempts || 0), best: Math.max(d.best || 0, s.best || 0), passed: !!(d.passed || s.passed) };
 }
-function gateComplete() { return lessonsComplete() && aiCheckState().passed; }
+function gateComplete() { return staffSkip() || (lessonsComplete() && aiCheckState().passed); }
+function staffSkip() { try { return isStaff() && sessionStorage.getItem('staff-skip-gate') === '1'; } catch (e) { return false; } }
+function skipGate() { try { sessionStorage.setItem('staff-skip-gate', '1'); } catch (e) {} showOutline(); updateAITab(); }
 function aiCheckCard() {
   const st = aiCheckState(), ready = lessonsComplete();
   return `<div class="gate-check${ready ? '' : ' off'}"><div><strong>AI-skills check · 10 questions · pass mark 80%</strong>
@@ -2113,7 +2122,7 @@ function showOutline() {
     (done
       ? `<div class="home-grid"><div class="home-main">${staffCard()}${pwCard()}${caseOfDay(o)}${units}</div>
            <aside class="home-side">${levelCard()}${installCard()}${goalCard()}${aiWiseCard()}${guide}</aside></div>`
-      : `<div class="home-grid"><div class="home-main">${aiSkillsCard()}${aiCheckCard()}</div>
+      : `<div class="home-grid"><div class="home-main">${staffCard(true)}${aiSkillsCard()}${aiCheckCard()}</div>
            <aside class="home-side">${lessonsGate()}</aside></div>`);
   document.getElementById('outline').hidden = false;
   document.getElementById('outline').scrollTop = 0;
@@ -3298,7 +3307,14 @@ const AR = {
 "PI · nothing recorded": "الباحث الرئيسي · لا يُسجَّل شيء",
 "Research team · nothing recorded": "فريق البحث · لا يُسجَّل شيء",
 "Audit": "التدقيق",
-"PI": "الباحث الرئيسي"
+"PI": "الباحث الرئيسي",
+"You see the companion exactly as students do, without the consent and questionnaire steps. Nothing you do here is recorded. Choose the course to explore:": "ترى المرافق تمامًا كما يراه الطلبة، دون خطوتي الموافقة والاستبيان، ولا يُسجَّل شيء مما تفعله هنا. اختر المقرر الذي تريد استكشافه:",
+"Students must read the four AI-skills lessons and pass the check (below) before the course topics open. You can try them, or skip them for this visit.": "يجب على الطلبة قراءة دروس مهارات الذكاء الاصطناعي الأربعة واجتياز الاختبار (أدناه) قبل أن تُفتح موضوعات المقرر. يمكنك تجربتها أو تخطّيها في هذه الزيارة.",
+"Skip the lessons for now": "تخطَّ الدروس الآن",
+"Research team and principal investigator": "فريق البحث والباحث الرئيسي",
+"Sign in above with your UoB email. You get the student view of all three courses, the instructor audit and (PI) the study dashboard.": "سجّل الدخول أعلاه ببريدك في جامعة البحرين. ستحصل على واجهة الطالب للمقررات الثلاثة، وتدقيق المدرّس، ولوحة الدراسة (للباحث الرئيسي).",
+"Course instructors without a personal account:": "المدرّسون الذين ليس لديهم حساب شخصي:",
+"instructor and PI sign-in with the staff password": "دخول المدرّسين والباحث الرئيسي بكلمة مرور الطاقم"
 };
 const AR_RX = [
   [/^Lecture (\S+)$/, m => 'المحاضرة ' + m[1]],
@@ -3430,14 +3446,17 @@ async function exploreCourse(course) {
 
 // ── v22: research team (R) and PI (P): staff tools from the same sign-in; password change ──
 const isStaff = () => !!me && (me.group === 'R' || me.group === 'P');
-function staffCard() {
+function staffCard(gate) {
   if (!isStaff()) return '';
   return `<section class="panel staff-card"><div class="panel-head"><h3>${me.group === 'P' ? 'Principal investigator' : 'Research team'}</h3></div>
-    <p class="muted">You see the companion exactly as students do. Nothing you do here is recorded. Choose the course to explore:</p>
+    <p class="muted">You see the companion exactly as students do, without the consent and questionnaire steps. Nothing you do here is recorded. Choose the course to explore:</p>
     <div class="course-pick" role="group" aria-label="Course to explore">${['NUR125', 'NUR225', 'NUR312'].map(c =>
       `<button type="button" class="${c === me.course ? 'on' : ''}" aria-pressed="${c === me.course}" onclick="exploreCourse('${c}')"><strong>${c}</strong><span>${esc(COURSE_INFO[c].name)}</span></button>`).join('')}</div>
-    <div class="staff-links"><button type="button" class="btn btn-accent" onclick="showTab('audit')">Instructor audit</button>
-    ${me.group === 'P' ? '<button type="button" class="btn btn-ghost" onclick="showTab(\'admin\')">PI dashboard</button>' : ''}</div></section>`;
+    ${gate ? '<p class="muted">Students must read the four AI-skills lessons and pass the check (below) before the course topics open. You can try them, or skip them for this visit.</p>' : ''}
+    <div class="staff-links">${gate ? '<button type="button" class="btn btn-primary" onclick="skipGate()">Skip the lessons for now</button>' : ''}
+    <button type="button" class="btn btn-accent" onclick="showTab('audit')">Instructor audit</button>
+    ${me.group === 'P' ? '<button type="button" class="btn btn-ghost" onclick="showTab(\'admin\')">PI dashboard</button>' : ''}
+    <button type="button" class="linklike" onclick="showPIS()">Read the participant information sheet</button></div></section>`;
 }
 // the instructor audit and PI dashboard open inside this site (same sign-in)
 function openStaffTool(t) {
