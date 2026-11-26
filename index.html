@@ -1101,6 +1101,9 @@ html[lang="ar"] .tab { letter-spacing: 0; }
 .staff-entry strong { display: block; color: var(--ink); margin-bottom: 4px; }
 .staff-entry p + p { margin-top: 6px; }
 .staff-entry a { color: var(--brand); font-weight: 600; }
+.demo-note { padding: 14px 16px; border-radius: var(--r); background: var(--sun-soft); margin: 12px 0 16px; }
+.demo-note strong { display: block; font-weight: 700; }
+.demo-note p { font-size: var(--fs-sm); color: var(--ink-2); margin: 2px 0 8px; }
 
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
@@ -1134,6 +1137,7 @@ html[lang="ar"] .tab { letter-spacing: 0; }
       <button class="tab" role="tab" id="tab-companion" aria-selected="true" onclick="showTab('companion')">Companion</button>
       <button class="tab" role="tab" id="tab-learning" aria-selected="false" onclick="showTab('learning')"><span class="t-lg">My learning</span><span class="t-sm">Progress</span></button>
       <button class="tab" role="tab" id="tab-aiskills" aria-selected="false" onclick="showTab('aiskills')" hidden>AI skills</button>
+      <button class="tab staff-tab" role="tab" id="tab-consent" aria-selected="false" onclick="previewConsent()" hidden>Consent</button>
       <button class="tab staff-tab" role="tab" id="tab-audit" aria-selected="false" onclick="showTab('audit')" hidden><span class="t-lg">Instructor audit</span><span class="t-sm">Audit</span></button>
       <button class="tab staff-tab" role="tab" id="tab-admin" aria-selected="false" onclick="showTab('admin')" hidden><span class="t-lg">PI dashboard</span><span class="t-sm">PI</span></button>
       <button class="tab" role="tab" id="tab-survey" aria-selected="false" onclick="showTab('survey')">Questionnaire<span class="pip" id="survey-pip" hidden></span></button>
@@ -1498,6 +1502,7 @@ function enterApp(resumedStart) {
   const ex = document.getElementById('explore-box'); ex.hidden = !isStaff();
   if (isStaff()) document.getElementById('explore-course').value = me.course;
   document.getElementById('tab-audit').hidden = !isStaff();
+  document.getElementById('tab-consent').hidden = !isStaff();
   document.getElementById('tab-admin').hidden = !(me && me.group === 'P');
   const resumed = typeof resumedStart === 'string' && resumedStart;
   state.sessionStart = resumed || new Date().toISOString(); state.messageCount = 0; state.goal = '';
@@ -1566,8 +1571,9 @@ function applyAccess() {
         : `<p>Changed your mind? You can ask to join the study. The principal investigator will confirm whether you can still be included.</p>
            <button class="btn btn-ghost" type="button" onclick="showConsent(true)">I would like to join the study</button>`)
     : `<h2 data-title>The companion isn't open for your section yet</h2><p>Your section will get access later in the semester. You'll be told on Blackboard when it opens. Until then, please complete the questionnaire when it is announced.</p>`;
-  document.getElementById('companion-ui').style.display = me.companionOpen ? 'flex' : 'none';
-  const pending = !!me.wave && !me.waveDone;
+  // v24 fix: the chat shows only when a topic is open, never under the course page (where it could bypass the AI-skills gate)
+  document.getElementById('companion-ui').style.display = me.companionOpen && document.getElementById('outline').hidden ? 'flex' : 'none';
+  const pending = !!me.wave && !me.waveDone && !isStaff();
   document.getElementById('survey-pip').hidden = !pending;
   const banner = document.getElementById('survey-banner');
   banner.hidden = !(pending && me.companionOpen);
@@ -1651,6 +1657,10 @@ async function decideConsent(agree) {
   const msg = document.getElementById('consent-msg');
   if (agree && (!document.getElementById('cs-main').checked || !document.getElementById('cs-q').checked)) {
     msg.textContent = 'To take part, tick the first two boxes. The interview boxes are optional.'; return;
+  }
+  if (state.consentPreview) {                       // research-team preview: nothing is recorded
+    state.consentPreview = false; showScreen('app-screen');
+    showToast(agree ? 'Preview: a student would now go to the questionnaire. Nothing was recorded.' : 'Preview: a student who declines waits until Week 8. Nothing was recorded.'); return;
   }
   if (!agree && !confirm('Are you sure? You will not take part in the research. You can still use the companion from Week 8, and nothing about your use will be recorded. If you change your mind later, you can ask to join.')) return;
   const items = agree ? ['Q', ...(document.getElementById('cs-i').checked ? ['I'] : []), ...(document.getElementById('cs-a').checked ? ['A'] : [])] : [];
@@ -2019,17 +2029,19 @@ function addThumbs(msgEl, text) {
 // ── MY LEARNING ────────────────────────────────────────────────────────────
 async function renderLearning() {
   const root = document.getElementById('learning-root');
-  if (isStaff()) {
-    root.innerHTML = `<h2 data-title>My learning</h2><p class="lede">Research-team account: nothing you do is recorded, so this page stays empty. Students see their topics, quiz accuracy, mistakes, level and badges here.</p>${accountPanel()}`; return;
-  }
-  if (me.consent !== 'Y') {
+  if (me.consent !== 'Y' && !isStaff()) {
     root.innerHTML = `<h2 data-title>My learning</h2><p class="lede">Progress tracking is part of the research study, so it is only available to study participants.</p>`; return;
   }
-  root.innerHTML = '<p class="status">Loading your progress…</p>';
-  await flushLogs();                               // include anything still waiting to be sent
-  const r = await safeApi('/progress', { token: me.token });
-  if (!r.ok) { root.innerHTML = `<p class="status bad">${esc(friendlyError(r.status, r.data))}</p>`; return; }
-  const p = r.data, o = COURSE_OUTLINE[me.course];
+  let p;
+  if (isStaff()) p = demoProgress();               // research team: a random example of what a student sees
+  else {
+    root.innerHTML = '<p class="status">Loading your progress…</p>';
+    await flushLogs();                               // include anything still waiting to be sent
+    const r = await safeApi('/progress', { token: me.token });
+    if (!r.ok) { root.innerHTML = `<p class="status bad">${esc(friendlyError(r.status, r.data))}</p>`; return; }
+    p = r.data;
+  }
+  const o = COURSE_OUTLINE[me.course];
   const title = id => { const t = o && topicInfo(id); return t ? t.title : id; };
   const pct = (a, b) => b ? Math.round(100 * a / b) : null;
   const all = o ? o.units.flatMap(u => u.topics) : [];
@@ -2042,6 +2054,7 @@ async function renderLearning() {
     : 'Answer a few quick-quiz questions to see how well your confidence matches your results.';
   const byTopic = {}; (p.mistakes || []).forEach(m => { (byTopic[m.topic] = byTopic[m.topic] || []).push(m); });
   root.innerHTML = `<h2 data-title>My learning</h2>
+    ${p.demo ? `<div class="demo-note"><strong>Sample view</strong><p>Random example data, so you can see what a ${esc(me.course)} student sees here. Nothing is from a real student.</p><button type="button" class="btn btn-ghost btn-sm" onclick="renderLearning()">Show another example</button></div>` : ''}
     <p class="lede">Your own progress in ${esc(me.course)}. Only you see this page.</p>
     <div class="stat-row">
       <div class="stat"><b>${p.sessions || 0}</b><span>study sessions</span></div>
@@ -2061,12 +2074,13 @@ async function renderLearning() {
       <button class="btn btn-ghost btn-sm" type="button" onclick="practiseMistakes('${id}')">Practise these again</button></div>`).join('')
       : '<p class="muted">No mistakes recorded yet. Use Practice to test yourself.</p>'}</section>`;
   state.mistakes = byTopic;
-  state.lessonsServer = {}; Object.entries(p.lessons || {}).forEach(([k, v]) => state.lessonsServer[k] = v);
+  if (!p.demo) { state.lessonsServer = {}; Object.entries(p.lessons || {}).forEach(([k, v]) => state.lessonsServer[k] = v); }
   const ai = p.ai || {};
   root.insertAdjacentHTML('beforeend', `<section class="unit"><h3>AI skills</h3>
     <div class="check-card"><strong>${ai.cases || 0} AI suggestion${ai.cases === 1 ? '' : 's'} judged · ${p.verifies || 0} answer${p.verifies === 1 ? '' : 's'} checked</strong>
       <p>Your AI lessons, check result and AI-judgement practice are on the AI skills tab.</p>
-      <button class="btn btn-ghost btn-sm" type="button" onclick="showTab('aiskills')">Open AI skills</button></div></section>`);
+      <button class="btn btn-ghost btn-sm" type="button" onclick="showTab('aiskills')">Open AI skills</button></div></section>` + (isStaff() ? accountPanel() : ''));
+  if (p.demo) { state.progress = null; return; }   // the example never feeds the real level, badges or course page
   checkNewBadges();
 }
 function practiseMistakes(id) {
@@ -2311,6 +2325,7 @@ function readTags(text) {
 
 async function sendMessage() {
   if (state.busy || !me) return;
+  if (state.mode !== 'check' && !gateComplete()) { showToast('Complete the AI-skills lessons and check first.'); showOutline(); return; }
   const input = document.getElementById('user-input');
   const text = input.value.trim();
   if (!text) return;
@@ -2668,6 +2683,7 @@ window.addEventListener('pagehide', () => flushLogs(true));
 // ── QUESTIONNAIRE ──────────────────────────────────────────────────────────
 async function refreshSurvey() {
   const root = document.getElementById('survey-root');
+  if (isStaff()) { renderSurvey(); return; }        // research team: preview only, no status call
   if (!survey.pages.length || survey.wave !== me.wave) root.innerHTML = '<p class="status">Checking…</p>';
   const r = await safeApi('/student-status', { token: me.token });
   if (r.ok) { me.wave = r.data.wave; me.waveDone = r.data.waveDone; me.companionOpen = r.data.companionOpen; applyAccess(); }
@@ -2701,6 +2717,12 @@ function buildPages(wave) {
 
 function renderSurvey() {
   const root = document.getElementById('survey-root');
+  if (isStaff() && !me.wave) {
+    root.innerHTML = `<h2 data-title>Questionnaire</h2><div class="demo-note"><strong>Preview</strong><p>See both questionnaires exactly as students do. Your answers are not saved.</p></div>
+      <div class="staff-links"><button class="btn btn-primary" type="button" onclick="previewSurvey('T1')">Start-of-study questionnaire (T1)</button>
+      <button class="btn btn-ghost" type="button" onclick="previewSurvey('T2')">End-of-study questionnaire (T2)</button></div>`;
+    return;
+  }
   if (!me.wave) {
     root.innerHTML = `<h2 data-title>Questionnaire</h2><div class="done-card"><strong>No questionnaire is open right now.</strong><p>You'll be told on Blackboard when it opens.</p></div>`;
     return;
@@ -2779,8 +2801,14 @@ function goPage(i) { survey.page = i; renderSurvey(); document.getElementById('s
 function nextPage() { if (checkPage()) goPage(survey.page + 1); }
 restoreSession();
 
+function previewSurvey(w) { me.wave = w; me.waveDone = false; survey = { pages: [], page: 0, answers: {} }; renderSurvey(); }
 async function submitSurvey() {
   if (!checkPage()) return;
+  if (isStaff()) {                                   // research-team preview: nothing is sent
+    store('survey:' + me.code + ':' + me.wave, null);
+    me.wave = ''; survey = { pages: [], page: 0, answers: {} }; renderSurvey();
+    showToast('Preview finished. Nothing was saved.'); return;
+  }
   const btn = document.getElementById('survey-next'), msg = document.getElementById('survey-msg');
   btn.disabled = true; btn.textContent = 'Submitting…'; msg.textContent = '';
   const r = await safeApi('/survey-submit', { token: me.token, wave: me.wave, answers: survey.answers });
@@ -3314,7 +3342,19 @@ const AR = {
 "Research team and principal investigator": "فريق البحث والباحث الرئيسي",
 "Sign in above with your UoB email. You get the student view of all three courses, the instructor audit and (PI) the study dashboard.": "سجّل الدخول أعلاه ببريدك في جامعة البحرين. ستحصل على واجهة الطالب للمقررات الثلاثة، وتدقيق المدرّس، ولوحة الدراسة (للباحث الرئيسي).",
 "Course instructors without a personal account:": "المدرّسون الذين ليس لديهم حساب شخصي:",
-"instructor and PI sign-in with the staff password": "دخول المدرّسين والباحث الرئيسي بكلمة مرور الطاقم"
+"instructor and PI sign-in with the staff password": "دخول المدرّسين والباحث الرئيسي بكلمة مرور الطاقم",
+"Consent": "الموافقة",
+"Sample view": "عرض نموذجي",
+"Show another example": "اعرض مثالًا آخر",
+"Preview": "معاينة",
+"See both questionnaires exactly as students do. Your answers are not saved.": "اطّلع على الاستبيانين تمامًا كما يراهما الطلبة. لا تُحفظ إجاباتك.",
+"Start-of-study questionnaire (T1)": "استبيان بداية الدراسة (T1)",
+"End-of-study questionnaire (T2)": "استبيان نهاية الدراسة (T2)",
+"Preview finished. Nothing was saved.": "انتهت المعاينة. لم يُحفظ شيء.",
+"This is the consent form students see first. Your choice is not recorded.": "هذا نموذج الموافقة الذي يراه الطلبة أولًا. لا يُسجَّل اختيارك.",
+"Back to the companion": "العودة إلى المرافق",
+"Preview: a student would now go to the questionnaire. Nothing was recorded.": "معاينة: سينتقل الطالب الآن إلى الاستبيان. لم يُسجَّل شيء.",
+"Preview: a student who declines waits until Week 8. Nothing was recorded.": "معاينة: الطالب الذي يرفض ينتظر حتى الأسبوع 8. لم يُسجَّل شيء."
 };
 const AR_RX = [
   [/^Lecture (\S+)$/, m => 'المحاضرة ' + m[1]],
@@ -3351,6 +3391,7 @@ const AR_RX = [
   [/^(.+): (\d+) answers? to revisit$/, m => `${m[1]}: إجابات للمراجعة: ${m[2]}`],
   [/^(\d+) mastered$/, m => `متقَن: ${m[1]}`],
   [/^Now exploring (\S+)\.$/, m => `تستكشف الآن ${m[1]}.`],
+  [/^Random example data, so you can see what a (\S+) student sees here\. Nothing is from a real student\.$/, m => `بيانات مثال عشوائية لترى ما يراه طالب ${m[1]} هنا. لا شيء منها لطالب حقيقي.`],
 ];
 const I18N_SKIP = '.msg:not(.err) .body, .chips .chip:not(.ui-chip), .ttext, .topic-title, .u-title, .home-sub, #ctx, .wm-text, .lesson, .opt-row, #consent-root, #modal-card:not(.i18n), script, style, textarea, [data-noi18n]';
 const I18N_BTN_ONLY = '#survey-root, #check-root';
@@ -3504,6 +3545,31 @@ async function submitPasswordChange() {
   me.pwDefault = false; saveSession(); closeModal();
   showToast('Password changed. Use the new one next time you sign in.');
   if (!document.getElementById('outline').hidden) showOutline();
+}
+
+// ── v25: research-team previews of the consent form ──
+function previewConsent() {
+  if (!isStaff()) return;
+  state.consentPreview = true; showConsent(false);
+  const root = document.getElementById('consent-root');
+  root.insertAdjacentHTML('afterbegin', `<div class="demo-note"><strong>Preview</strong><p>This is the consent form students see first. Your choice is not recorded.</p>
+    <button type="button" class="btn btn-ghost btn-sm" onclick="state.consentPreview=false; showScreen('app-screen')">Back to the companion</button></div>`);
+}
+function demoProgress() {
+  const o = COURSE_OUTLINE[me.course], all = o ? o.units.flatMap(u => u.topics) : [];
+  const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const topics = {}, mistakes = [];
+  all.forEach(t => {
+    if (Math.random() > 0.6) return;
+    const q = R(0, 8), r = q ? R(Math.floor(q * 0.3), q) : 0;
+    topics[t.id] = { messages: R(2, 25), quiz: q, right: r };
+    for (let k = 0; k < Math.min(2, q - r); k++) mistakes.push({ topic: t.id, when: new Date(Date.now() - R(1, 20) * 864e5).toISOString(), q: 'Example question on ' + t.title });
+  });
+  const quiz = Object.values(topics).reduce((n, x) => n + x.quiz, 0), right = Object.values(topics).reduce((n, x) => n + x.right, 0);
+  const cases = R(2, 8), flawed = R(1, cases);
+  return { recorded: true, demo: true, sessions: R(3, 15), quiz, right, topics, mistakes,
+    confidence: { whenRight: 3.4 + Math.random(), whenWrong: 2.6 + Math.random() * 1.6 }, verifies: R(0, 6),
+    ai: { cases, right: R(Math.floor(cases / 2), cases), flawed, overTrust: R(0, flawed) }, lessons: {} };
 }
 </script>
 </body>

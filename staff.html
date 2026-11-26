@@ -1095,6 +1095,9 @@ html[lang="ar"] .tab { letter-spacing: 0; }
 .staff-entry strong { display: block; color: var(--ink); margin-bottom: 4px; }
 .staff-entry p + p { margin-top: 6px; }
 .staff-entry a { color: var(--brand); font-weight: 600; }
+.demo-note { padding: 14px 16px; border-radius: var(--r); background: var(--sun-soft); margin: 12px 0 16px; }
+.demo-note strong { display: block; font-weight: 700; }
+.demo-note p { font-size: var(--fs-sm); color: var(--ink-2); margin: 2px 0 8px; }
 
 .d { color: var(--muted); font-size: var(--fs-xs); }
 
@@ -1517,7 +1520,7 @@ async function loginFaculty() {
   let r;
   try { r = await api('/auth', SSO ? { role: 'faculty', token: SSO.token } : { role: 'faculty', password: pass }); }
   catch (e) { r = { ok: false, status: 0 }; }
-  btn.disabled = false; btn.textContent = 'Sign in';
+  btn.disabled = false; btn.textContent = SSO ? 'Start the audit' : 'Sign in';
   if (!r.ok) { msg.textContent = friendlyError(r.status); return; }
 
   portal = { role: 'faculty', password: SSO ? '' : pass, token: SSO ? SSO.token : '', name, course, items: [] };
@@ -1824,6 +1827,14 @@ const EMBED = /[?&]embed=1/.test(location.search) && window.parent !== window;
 if (EMBED) document.body.classList.add('embed');      // shown inside the main site: no second header
 if (SSO) {
   document.getElementById('fld-f-pass').hidden = true;
+  // v24: signed in with a personal account: the name comes from the account (UoB email); only the course is chosen
+  let who = ''; try { who = JSON.parse(decodeURIComponent(escape(atob(SSO.token.split('.')[0].replace(/-/g, '+').replace(/_/g, '/'))))).id || ''; } catch (e) {}
+  document.getElementById('f-name').value = who || (SSO.group === 'P' ? 'Principal investigator' : 'Research team');
+  document.getElementById('fld-f-name').hidden = true;
+  if (SSO.course) document.getElementById('f-course').value = SSO.course;
+  const intro = document.querySelector('#faculty-login-screen .lede');
+  if (intro) intro.textContent = 'Signed in as ' + document.getElementById('f-name').value + '. Choose the course to audit.';
+  const fb = document.getElementById('f-submit'); if (fb) fb.textContent = 'Start the audit';
   document.querySelectorAll('.bar .bar-btn').forEach(x => { if (/^(Sign out|Back)$/.test(x.textContent.trim())) x.hidden = true; });
   if (!EMBED) document.querySelectorAll('.bar').forEach(b => { const a = document.createElement('a'); a.className = 'bar-btn'; a.href = './'; a.textContent = 'Student view'; a.style.marginInlineStart = '8px'; b.appendChild(a); });
   if (location.hash === '#admin' && SSO.group === 'P') openAdmin();
