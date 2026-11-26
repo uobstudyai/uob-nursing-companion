@@ -1081,8 +1081,20 @@ html[lang="ar"] .tab { letter-spacing: 0; }
 .pw-form .hint { font-size: var(--fs-xs); color: var(--muted); margin-top: 4px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
+/* v23: course picker for the research team; staff tools inside the site */
+.course-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 4px; }
+.course-pick button { display: flex; flex-direction: column; gap: 2px; text-align: start; padding: 10px 12px; border-radius: var(--r); border: 1.5px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; min-height: 64px; }
+.course-pick button strong { font-weight: 700; }
+.course-pick button span { font-size: var(--fs-xs); color: var(--muted); line-height: 1.35; }
+.course-pick button.on { border-color: var(--teal); background: var(--teal-soft); }
+.course-pick button.on strong { color: var(--teal-ink); }
+@media (max-width: 520px) { .course-pick { grid-template-columns: 1fr; } .course-pick button { min-height: 0; } }
+.staff-frame { flex: 1; width: 100%; min-height: 0; border: 0; background: #fff; }
+.staff-tab { color: var(--sky); }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
-</style>
+
+body.embed .bar { display: none; } body.embed .hero { min-height: 0; } body.embed .side-art, body.embed .hero-art { display: none; }</style>
 </head>
 <body>
 
@@ -1804,10 +1816,12 @@ function openAdmin() {
   if (SSO && SSO.group === 'P') { portal = { role: 'admin', password: '', token: SSO.token, name: '', course: '', items: [] }; showScreen('admin-screen'); loadStats(); loadRequests(); }
   else showScreen('admin-login-screen');
 }
+const EMBED = /[?&]embed=1/.test(location.search) && window.parent !== window;
+if (EMBED) document.body.classList.add('embed');      // shown inside the main site: no second header
 if (SSO) {
   document.getElementById('fld-f-pass').hidden = true;
   document.querySelectorAll('.bar .bar-btn').forEach(x => { if (/^(Sign out|Back)$/.test(x.textContent.trim())) x.hidden = true; });
-  document.querySelectorAll('.bar').forEach(b => { const a = document.createElement('a'); a.className = 'bar-btn'; a.href = './'; a.textContent = 'Student view'; a.style.marginInlineStart = '8px'; b.appendChild(a); });
+  if (!EMBED) document.querySelectorAll('.bar').forEach(b => { const a = document.createElement('a'); a.className = 'bar-btn'; a.href = './'; a.textContent = 'Student view'; a.style.marginInlineStart = '8px'; b.appendChild(a); });
   if (location.hash === '#admin' && SSO.group === 'P') openAdmin();
   else if (location.hash === '#faculty') showScreen('faculty-login-screen');
 }

@@ -1087,6 +1087,17 @@ html[lang="ar"] .tab { letter-spacing: 0; }
 .pw-form .hint { font-size: var(--fs-xs); color: var(--muted); margin-top: 4px; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 
+/* v23: course picker for the research team; staff tools inside the site */
+.course-pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 10px 0 4px; }
+.course-pick button { display: flex; flex-direction: column; gap: 2px; text-align: start; padding: 10px 12px; border-radius: var(--r); border: 1.5px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; min-height: 64px; }
+.course-pick button strong { font-weight: 700; }
+.course-pick button span { font-size: var(--fs-xs); color: var(--muted); line-height: 1.35; }
+.course-pick button.on { border-color: var(--teal); background: var(--teal-soft); }
+.course-pick button.on strong { color: var(--teal-ink); }
+@media (max-width: 520px) { .course-pick { grid-template-columns: 1fr; } .course-pick button { min-height: 0; } }
+.staff-frame { flex: 1; width: 100%; min-height: 0; border: 0; background: #fff; }
+.staff-tab { color: var(--sky); }
+
 .d { color: var(--muted); font-size: var(--fs-xs); }
 </style>
 </head>
@@ -1119,6 +1130,8 @@ html[lang="ar"] .tab { letter-spacing: 0; }
       <button class="tab" role="tab" id="tab-companion" aria-selected="true" onclick="showTab('companion')">Companion</button>
       <button class="tab" role="tab" id="tab-learning" aria-selected="false" onclick="showTab('learning')"><span class="t-lg">My learning</span><span class="t-sm">Progress</span></button>
       <button class="tab" role="tab" id="tab-aiskills" aria-selected="false" onclick="showTab('aiskills')" hidden>AI skills</button>
+      <button class="tab staff-tab" role="tab" id="tab-audit" aria-selected="false" onclick="showTab('audit')" hidden><span class="t-lg">Instructor audit</span><span class="t-sm">Audit</span></button>
+      <button class="tab staff-tab" role="tab" id="tab-admin" aria-selected="false" onclick="showTab('admin')" hidden><span class="t-lg">PI dashboard</span><span class="t-sm">PI</span></button>
       <button class="tab" role="tab" id="tab-survey" aria-selected="false" onclick="showTab('survey')">Questionnaire<span class="pip" id="survey-pip" hidden></span></button>
     </div>
   </nav>
@@ -1182,6 +1195,10 @@ html[lang="ar"] .tab { letter-spacing: 0; }
   </section>
 
   <!-- AI skills -->
+  <!-- v23: staff tools inside the same website (research team and PI only) -->
+  <section class="panel-view" id="view-audit"></section>
+  <section class="panel-view" id="view-admin"></section>
+
   <section class="panel-view" id="view-aiskills">
     <div class="survey"><div class="survey-in" id="aiskills-root"></div></div>
   </section>
@@ -1470,9 +1487,11 @@ async function signIn() {
 }
 function enterApp(resumedStart) {
   document.getElementById('consent-root').innerHTML = '';
-  document.getElementById('ctx').textContent = me.group === 'R' ? 'Research team · exploring' : me.course + ' · Section ' + me.section;
-  const ex = document.getElementById('explore-box'); ex.hidden = me.group !== 'R';
-  if (me.group === 'R') document.getElementById('explore-course').value = me.course;
+  document.getElementById('ctx').textContent = isStaff() ? (me.group === 'P' ? 'PI' : 'Research team') + ' · nothing recorded' : me.course + ' · Section ' + me.section;
+  const ex = document.getElementById('explore-box'); ex.hidden = !isStaff();
+  if (isStaff()) document.getElementById('explore-course').value = me.course;
+  document.getElementById('tab-audit').hidden = !isStaff();
+  document.getElementById('tab-admin').hidden = !(me && me.group === 'P');
   const resumed = typeof resumedStart === 'string' && resumedStart;
   state.sessionStart = resumed || new Date().toISOString(); state.messageCount = 0; state.goal = '';
   showScreen('app-screen');
@@ -1552,13 +1571,14 @@ function applyAccess() {
 }
 
 function showTab(t) {
-  ['companion', 'learning', 'aiskills', 'survey'].forEach(x => {
+  ['companion', 'learning', 'aiskills', 'survey', 'audit', 'admin'].forEach(x => {
     document.getElementById('tab-' + x).setAttribute('aria-selected', x === t ? 'true' : 'false');
     document.getElementById('view-' + x).classList.toggle('active', x === t);
   });
   if (t === 'survey') refreshSurvey();
   if (t === 'learning') renderLearning();
   if (t === 'aiskills') renderAISkills();
+  if (t === 'audit' || t === 'admin') openStaffTool(t);
 }
 
 // ── PARTICIPANT INFORMATION SHEET + ELECTRONIC CONSENT ────────────────────
@@ -3269,7 +3289,16 @@ const AR = {
 "Your current password is not right.": "كلمة المرور الحالية غير صحيحة.",
 "Choose a password with at least 8 characters that is not your username or your current password.": "اختر كلمة مرور من 8 أحرف على الأقل، ليست اسم المستخدم ولا كلمة المرور الحالية.",
 "Too many attempts. Wait 15 minutes and try again.": "محاولات كثيرة. انتظر 15 دقيقة وحاول مرة أخرى.",
-"Password changed. Use the new one next time you sign in.": "تم تغيير كلمة المرور. استخدم الجديدة عند تسجيل الدخول القادم."
+"Password changed. Use the new one next time you sign in.": "تم تغيير كلمة المرور. استخدم الجديدة عند تسجيل الدخول القادم.",
+"Principal investigator": "الباحث الرئيسي",
+"You see the companion exactly as students do. Nothing you do here is recorded. Choose the course to explore:": "ترى المرافق تمامًا كما يراه الطلبة، ولا يُسجَّل شيء مما تفعله هنا. اختر المقرر الذي تريد استكشافه:",
+"Fundamentals of Nursing I": "أساسيات التمريض 1",
+"Adult Health Nursing I": "تمريض صحة البالغين 1",
+"Nursing Research and Evidence-Based Practice": "البحث في التمريض والممارسة المبنية على الدليل",
+"PI · nothing recorded": "الباحث الرئيسي · لا يُسجَّل شيء",
+"Research team · nothing recorded": "فريق البحث · لا يُسجَّل شيء",
+"Audit": "التدقيق",
+"PI": "الباحث الرئيسي"
 };
 const AR_RX = [
   [/^Lecture (\S+)$/, m => 'المحاضرة ' + m[1]],
@@ -3390,7 +3419,7 @@ function toggleUnit(i) {
 
 // ── v21: research-team explorer accounts (group R) can look at any course ──
 async function exploreCourse(course) {
-  if (!me || me.group !== 'R' || course === me.course || state.busy) return;
+  if (!isStaff() || course === me.course || state.busy) return;
   const r = await safeApi('/explore-course', { token: me.token, course });
   if (!r.ok || !me) { showToast('Could not switch course. Try again.'); document.getElementById('explore-course').value = me ? me.course : course; return; }
   me.token = r.data.token; me.course = r.data.course;
@@ -3403,10 +3432,17 @@ async function exploreCourse(course) {
 const isStaff = () => !!me && (me.group === 'R' || me.group === 'P');
 function staffCard() {
   if (!isStaff()) return '';
-  return `<section class="panel staff-card"><div class="panel-head"><h3>Research team</h3></div>
-    <p class="muted">You are exploring the student view. Nothing you do here is recorded.</p>
-    <div class="staff-links"><a class="btn btn-accent" href="staff.html#faculty">Instructor audit</a>
-    ${me.group === 'P' ? '<a class="btn btn-ghost" href="staff.html#admin">PI dashboard</a>' : ''}</div></section>`;
+  return `<section class="panel staff-card"><div class="panel-head"><h3>${me.group === 'P' ? 'Principal investigator' : 'Research team'}</h3></div>
+    <p class="muted">You see the companion exactly as students do. Nothing you do here is recorded. Choose the course to explore:</p>
+    <div class="course-pick" role="group" aria-label="Course to explore">${['NUR125', 'NUR225', 'NUR312'].map(c =>
+      `<button type="button" class="${c === me.course ? 'on' : ''}" aria-pressed="${c === me.course}" onclick="exploreCourse('${c}')"><strong>${c}</strong><span>${esc(COURSE_INFO[c].name)}</span></button>`).join('')}</div>
+    <div class="staff-links"><button type="button" class="btn btn-accent" onclick="showTab('audit')">Instructor audit</button>
+    ${me.group === 'P' ? '<button type="button" class="btn btn-ghost" onclick="showTab(\'admin\')">PI dashboard</button>' : ''}</div></section>`;
+}
+// the instructor audit and PI dashboard open inside this site (same sign-in)
+function openStaffTool(t) {
+  const v = document.getElementById('view-' + t);
+  if (!v.querySelector('iframe')) v.innerHTML = `<iframe class="staff-frame" title="${t === 'admin' ? 'PI dashboard' : 'Instructor audit'}" src="staff.html?embed=1#${t === 'admin' ? 'admin' : 'faculty'}"></iframe>`;
 }
 function pwCard() {
   let off = false; try { off = sessionStorage.getItem('pw-later') === '1'; } catch (e) {}
